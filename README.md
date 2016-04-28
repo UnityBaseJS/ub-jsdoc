@@ -5,7 +5,7 @@ Inspired by [godoc](https://godoc.org/golang.org/x/tools/cmd/godoc)
 
 ![Screenshot](screenshot.png)
 
-Live sample is a [UnityBase framework documentation](https://unitybase.info/api/server/)
+Live sample is a [UnityBase framework documentation](https://unitybase.info/api/serverNew/)
 
 ## Uses
 
