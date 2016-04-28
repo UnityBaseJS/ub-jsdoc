@@ -61,9 +61,16 @@ In your `.jsdoc.json` file, add a template option.
 	"./ub-jsdocs/plugins/sripPFromDescription"
     ],
     "templates": {
-        "cleverLinks": false,
-        "monospaceLinks": true,
-	"smallSourceLink": true
+        "cleverLinks": true,
+        "monospaceLinks": false,
+
+	"smallSourceLink": true, // go to sources by click on the function/prop name 
+	"hideAuthor": true, // do not show a @author tag
+	"stylesheet": "styles/ub-jsdoc.css", // custom css
+	"googleAnalytics": "UA-66006954-1",  
+        "default": {
+            "outputSourceFiles": true
+        }
     },
     "opts": {
         "destination": "./docs/",
