@@ -66,10 +66,10 @@ In your `.jsdoc.json` file, add a template option.
         "cleverLinks": true,
         "monospaceLinks": false,
 
-	"smallSourceLink": true, // go to sources by click on the function/prop name 
-	"hideAuthor": true, // do not show a @author tag
-	"stylesheet": "styles/ub-jsdoc.css", // custom css
-	"googleAnalytics": "UA-66006954-1",  
+	"smallSourceLink": true, 
+	"hideAuthor": true, 
+	"stylesheet": "styles/ub-jsdoc.css",
+	"googleAnalytics": "yourGAAccount",  
         "default": {
             "outputSourceFiles": true
         }
