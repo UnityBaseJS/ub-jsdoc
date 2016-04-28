@@ -6,22 +6,27 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "description": "UnityBase site",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/UnityBaseJS/unitybase.info"
+    "url": "git+https://github.com/UnityBaseJS/ub-jsdoc.git"
   },
   "author": "Pavl Mash <pavel.mash@gmail.com>",
-  "license":  "MIT",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/UnityBaseJS/ub-jsdoc/issues"
   },
   "homepage": "https://github.com/UnityBaseJS/ub-jsdoc",
   "dependencies": {
     "jsdoc": "~3.4.0"
-  }	
+  },
   "devDependencies": {
     "lunr": "^0.7.0"
-  }
+  },
+  "keywords": [
+    "jsdoc",
+    "documentation",
+    "template",
+    "theme"
+  ]
 }

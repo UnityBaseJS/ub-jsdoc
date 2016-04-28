@@ -3,6 +3,8 @@
 Documentation template theme for JSDoc 3 based on [minami](https://github.com/Nijikokun/minami) theme.
 Inspired by [godoc](https://godoc.org/golang.org/x/tools/cmd/godoc)
 
+![Screenshot](screenshot.png)
+
 Live sample is a [UnityBase framework documentation](https://unitybase.info/api/server/)
 
 ## Uses
