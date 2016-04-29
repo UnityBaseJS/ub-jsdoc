@@ -320,7 +320,7 @@ var getNavID = idGeneratorFabric('n');
 function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
     var nav = '', id, totalMembers;
 
-    function generateSubMembers(members, type){
+    function generateSubMembers(members, type, addToSeen){
         itemMember = '';
         if (members.length) {
             itemMember += "<ul class='methods'><lh>" + type + "</lh>";
@@ -329,6 +329,9 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                 itemMember += "<li data-type='method'" + (member.deprecated ? " class='deprecated'>" : ">");
                 itemMember += linkto(member.longname, member.name);
                 itemMember += "</li>";
+                if (addToSeen && !hasOwnProp.call(itemsSeen, member.longname)) {
+                    itemsSeen[member.longname] = true;
+                }
             });
 
             itemMember += "</ul>";
@@ -355,7 +358,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                     itemMember += '<section>';
                     itemMember += generateSubMembers(methods, 'Methods');
                     itemMember += generateSubMembers(members, 'Props');
-                    itemMember += generateSubMembers(classes, 'Classes');
+                    itemMember += generateSubMembers(classes, 'Classes', true);
                     itemMember += '</section>'
                 }
                 itemsNav += '<li>' + itemMember + '</li>';
@@ -398,10 +401,12 @@ function buildNav(members) {
     var seen = {};
     var seenTutorials = {};
 
-    nav += buildMemberNav(members.modules, 'Modules', seen, linkto); //MPV - check!!
+    // the order here is important - we need to parse modules & namespaces before classes
+    // to mark a class as seen
+    nav += buildMemberNav(members.modules, 'Modules', seen, linkto);
+    nav += buildMemberNav(members.namespaces, 'Namespaces', seen, linkto);
     nav += buildMemberNav(members.classes, 'Classes', seen, linkto);
     nav += buildMemberNav(members.interfaces, 'Interfaces', seen, linkto);
-    nav += buildMemberNav(members.namespaces, 'Namespaces', seen, linkto);
     nav += buildMemberNav(members.externals, 'Externals', seen, linktoExternal);
     nav += buildMemberNav(members.events, 'Events', seen, linkto);
     nav += buildMemberNav(members.mixins, 'Mixins', seen, linkto);
