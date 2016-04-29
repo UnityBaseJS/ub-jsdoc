@@ -12,7 +12,7 @@ body {
   color: #4d4e53;
   background-color: white;
   margin: 0 auto;
-  font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif,Consolas;
+  font-family: 'Open Sans',Arial,sans-serif,Consolas;
   line-height: 1.5;
 }
 
@@ -32,8 +32,8 @@ nav label{
     padding: 3px;
     padding-left: 25px;
 }
-input[type=checkbox] { display: none; }
-input[type=checkbox] ~ section {
+nav input[type=checkbox] { display: none; }
+nav input[type=checkbox] ~ section {
     max-height: 0;
     max-width: 0;
     opacity: 0;
@@ -42,12 +42,12 @@ input[type=checkbox] ~ section {
     transition:all 0.2s ease;
 
 }
-input[type=checkbox]:checked ~ section {
+nav input[type=checkbox]:checked ~ section {
     max-height: 100%;
     max-width: 100%;
     opacity: 1;
 }
-input[type=checkbox] + label:before{
+nav input[type=checkbox] + label:before{
     transform-origin:25% 50%;
     border: solid transparent;
     border-width: 5px 8px; /*8px 12px;*/
@@ -60,7 +60,7 @@ input[type=checkbox] + label:before{
     position: absolute;
     margin-top: 0.5em;
 }
-input[type=checkbox]:checked + label:before {
+nav input[type=checkbox]:checked + label:before {
     transform: rotate(90deg);
 }
 
@@ -133,12 +133,8 @@ nav > h2 > a {
 }
 
 /* params */
-ol {
-  text-indent: -2em
-}
-
 ol > li {
-  padding-left: 2em
+  padding-left: 0.5em
 }
 
 a,
@@ -152,31 +148,23 @@ a:hover {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #000;
-  font-weight: 400;
+  font-weight: 700;
   margin: 0;
-}
-
-h1 {
-  font-weight: 300;
-  margin: 1em 0 .5em;
+  margin-top: 1em;
 }
 
 h2 {
-  margin: 1.5em 0 .3em;
+  letter-spacing: -1px;
 }
 
 h3 {
-  margin: 1.2em 0 .3em;
 }
 
 h4 {
-  margin: 1em 0 .2em;
   color: #4d4e53;
 }
 
 h5, .container-overview .subsection-title {
-  font-weight: 700;
   letter-spacing: -0.01em;
   margin: 8px 0 3px 0;
 }
@@ -186,13 +174,6 @@ h6 {
   letter-spacing: -0.01em;
   margin: 6px 0 3px 0;
   font-style: italic;
-}
-
-.class-description {
-  font-size: 110%;
-  line-height: 140%;
-  margin-bottom: 1em;
-  margin-top: 1em;
 }
 
 .class-description:empty {
@@ -243,8 +224,7 @@ footer {
   margin-left: 250px;
   display: block;
   padding: 15px;
-  font-style: italic;
-  font-size: 90%;
+  font-size: 70%;
 }
 
 .ancestors {
@@ -413,7 +393,7 @@ dl.param-type {
 .navicon-button {
   display: none;
   position: relative;
-  padding: 2.0625rem 1.5rem;
+  padding: 1.625rem 1.5rem;
   transition: 0.25s;
   cursor: pointer;
   user-select: none;
@@ -528,7 +508,7 @@ dl.param-type {
   z-index: 1;
 }
 
-@media only screen and (min-width: 320px) and (max-width: 680px) {
+@media only screen and (min-width: 320px) and (max-width: 1200px) {
   body {
     overflow-x: hidden;
   }
@@ -550,7 +530,6 @@ dl.param-type {
   .navicon-button {
     display: inline-block;
     position: fixed;
-    top: 1.5em;
     right: 0;
     z-index: 2;
   }
