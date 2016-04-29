@@ -334,7 +334,7 @@ function buildLink(longname, linkText, options) {
 
     text = options.monospace ? '<code>' + text + '</code>' : text;
 
-         //MPV+
+//MPV+
 // The problem solved here is a `module:....` type definition. Such syntax do not understand WebStorm, so
 // we mark a type {ClassName} instead of {module:moduleName~ClassName} and here try to found a class definition inside
 // any module. If found only definition - resolve it.
@@ -342,7 +342,7 @@ function buildLink(longname, linkText, options) {
         && (longname.indexOf('~') === -1))
     {
         var linkKeys = Object.keys(options.linkMap);
-        var classInsideModuleRe = new RegExp('module:.*' + longname + '$');
+        var classInsideModuleRe = new RegExp('module:.*[~.]' + longname + '$');
         var possibleLinks = linkKeys.filter(function(linkKey){
             return classInsideModuleRe.test(linkKey);
         });
