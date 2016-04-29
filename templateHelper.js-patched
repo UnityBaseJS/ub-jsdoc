@@ -338,20 +338,30 @@ function buildLink(longname, linkText, options) {
 // The problem solved here is a `module:....` type definition. Such syntax do not understand WebStorm, so
 // we mark a type {ClassName} instead of {module:moduleName~ClassName} and here try to found a class definition inside
 // any module. If found only definition - resolve it.
-	if (!fileUrl && (['*', 'string', 'number', 'object', 'date', 'boolean'].indexOf(longname.toLowerCase()) === -1)
-        && (longname.indexOf('~') === -1))
-    {
-        var linkKeys = Object.keys(options.linkMap);
-        var classInsideModuleRe = new RegExp('module:.*[~.]' + longname + '$');
-        var possibleLinks = linkKeys.filter(function(linkKey){
-            return classInsideModuleRe.test(linkKey);
-        });
-        if (possibleLinks.length === 1){ // the single definition of this type
-            options.linkMap[longname] = options.linkMap[possibleLinks[0]];
-            fileUrl = options.linkMap[longname];
-            text = linkText || longname;
+	var lowerName = longname.toLowerCase();
+    var buildins = (env.conf.templates && env.conf.templates.buildins) || ['*', 'string', 'number', 'object', 'date', 'boolean'];
+    var buildinsURL = env.conf.templates && env.conf.templates.buildInURL;
+    if (!fileUrl && lowerName !== '*'){
+        var bldInIdx = buildins.indexOf(longname.toLowerCase());
+        if (bldInIdx !== -1) {
+            if (buildinsURL) {
+                fileUrl = buildinsURL + lowerName;
+                text = linkText || longname;
+                return util.format('<a href="%s"%s target="_blank">%s</a>', encodeURI(fileUrl + fragmentString), classString, text);
+            }
+        } else if (longname.indexOf('~') === -1) {
+            var linkKeys = Object.keys(options.linkMap);
+            var classInsideModuleRe = new RegExp('module:.*[~.]' + longname + '$');
+            var possibleLinks = linkKeys.filter(function(linkKey){
+                return classInsideModuleRe.test(linkKey);
+            });
+            if (possibleLinks.length === 1){ // the single definition of this type
+                options.linkMap[longname] = options.linkMap[possibleLinks[0]];
+                fileUrl = options.linkMap[longname];
+                text = linkText || longname;
+            }
         }
-	}
+    }
 //MPV-
     if (!fileUrl) {
         return text;
