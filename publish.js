@@ -318,52 +318,55 @@ function idGeneratorFabric(prefix){
 var getNavID = idGeneratorFabric('n');
 
 function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
-    var nav = '', id, totalMembers;
+    var nav = '';
+    var itemsNav = '';
 
-    function generateSubMembers(members, type, addToSeen){
-        itemMember = '';
-        if (members.length) {
-            itemMember += "<ul class='methods'><lh>" + type + "</lh>";
-
-            members.forEach(function (member) {
-                itemMember += "<li data-type='method'" + (member.deprecated ? " class='deprecated'>" : ">");
-                itemMember += linkto(member.longname, member.name);
-                itemMember += "</li>";
-                if (addToSeen && !hasOwnProp.call(itemsSeen, member.longname)) {
-                    itemsSeen[member.longname] = true;
-                }
-            });
-
-            itemMember += "</ul>";
-        }
-        return itemMember;
-    }
-    if (items && items.length) {
-        var itemsNav = '', itemMember;
-
-        items.forEach(function(item) {
+    function addContainer(item, cType){
+        var containerHTML = '<li>', childCount, id;
+        if ( !hasOwnProp.call(item, 'longname') ) {
+            containerHTML +=  linktoFn('', item.name);
+        } else if ( !hasOwnProp.call(itemsSeen, item.longname) ) {
+            itemsSeen[item.longname] = true;
             var methods = find({kind:'function', memberof: item.longname});
             var classes = find({kind:'class', memberof: item.longname});
             var members = find({kind:'member', memberof: item.longname});
 
-            if ( !hasOwnProp.call(item, 'longname') ) {
-                itemsNav += '<li>' + linktoFn('', item.name);
-                itemsNav += '</li>';
-            } else if ( !hasOwnProp.call(itemsSeen, item.longname) ) {
-                id = getNavID();
-                totalMembers = methods.length + classes.length + members.length ;
-                itemMember = '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, '')) + '</label>';
-                if (totalMembers) {
-                    itemMember = '<input type="checkbox" id="' + id + '"/>' + itemMember;
-                    itemMember += '<section>';
-                    itemMember += generateSubMembers(methods, 'Methods');
-                    itemMember += generateSubMembers(members, 'Props');
-                    itemMember += generateSubMembers(classes, 'Classes', true);
-                    itemMember += '</section>'
-                }
-                itemsNav += '<li>' + itemMember + '</li>';
-                itemsSeen[item.longname] = true;
+            id = getNavID();
+            childCount = methods.length + classes.length + members.length ;
+
+            if (childCount) {
+                containerHTML += '<input type="checkbox" id="' + id + '"/>';
             }
+            containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>';
+            if (childCount) {
+                containerHTML += '<section>';
+                containerHTML += generateChildByType(methods);
+                containerHTML += generateChildByType(members);
+                for (var cIdx = 0, cLen = classes.length; cIdx < cLen; cIdx++ ) {
+                    containerHTML += '<ul>' + addContainer(classes[cIdx]) +'</ul>';
+                }
+                containerHTML += '</section>'
+            }
+        }
+        return containerHTML + '</li>';
+    }
+    function generateChildByType(members){
+        var itemsHTML = '';
+        if (members.length) {
+            itemsHTML = "<ul>";
+            members.forEach(function (member) {
+                itemsHTML += '<li>';
+                itemsHTML += linktoFn(member.longname, member.name, 'member-kind-' + member.kind + (member.deprecated ? ' deprecated' : ''));
+                itemsHTML += "</li>";
+            });
+            itemsHTML += "</ul>";
+        }
+        return itemsHTML;
+    }
+
+    if (items && items.length) {
+        items.forEach(function(item) {
+            itemsNav += addContainer(item);
         });
 
         if (itemsNav !== '') {
@@ -403,21 +406,21 @@ function buildNav(members) {
 
     // the order here is important - we need to parse modules & namespaces before classes
     // to mark a class as seen
-    nav += buildMemberNav(members.modules, 'Modules', seen, linkto);
-    nav += buildMemberNav(members.namespaces, 'Namespaces', seen, linkto);
-    nav += buildMemberNav(members.classes, 'Classes', seen, linkto);
-    nav += buildMemberNav(members.interfaces, 'Interfaces', seen, linkto);
+    nav += buildMemberNav(members.modules, 'Modules', seen, linkto, 'module');
+    nav += buildMemberNav(members.namespaces, 'Namespaces', seen, linkto, 'ns');
+    nav += buildMemberNav(members.classes, 'Classes', seen, linkto, 'class');
+    nav += buildMemberNav(members.interfaces, 'Interfaces', seen, linkto, 'interface');
     nav += buildMemberNav(members.externals, 'Externals', seen, linktoExternal);
-    nav += buildMemberNav(members.events, 'Events', seen, linkto);
-    nav += buildMemberNav(members.mixins, 'Mixins', seen, linkto);
-    nav += buildMemberNav(members.tutorials, 'Tutorials', seenTutorials, linktoTutorial);
+    nav += buildMemberNav(members.events, 'Events', seen, linkto, 'event');
+    nav += buildMemberNav(members.mixins, 'Mixins', seen, linkto, 'mixin');
+    nav += buildMemberNav(members.tutorials, 'Tutorials', seenTutorials, linktoTutorial, 'tutorial');
 
     if (members.globals.length) {
         var globalNav = '';
 
         members.globals.forEach(function(g) {
             if ( g.kind !== 'typedef' && !hasOwnProp.call(seen, g.longname) ) {
-                globalNav += '<li' + (g.deprecated ? " class='deprecated'>" : ">") + '<label>' + linkto(g.longname, g.name)  + '</label></li>';
+                globalNav += '<li class="member-kind-' + g.kind + (g.deprecated ? ' deprecated' : '') + '"><label>' + linkto(g.longname, g.name)  + '</label></li>';
             }
             seen[g.longname] = true;
         });
