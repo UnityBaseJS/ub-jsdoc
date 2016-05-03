@@ -333,7 +333,6 @@ function buildLink(longname, linkText, options) {
     }
 
     text = options.monospace ? '<code>' + text + '</code>' : text;
-
 //MPV+
 // The problem solved here is a `module:....` type definition. Such syntax do not understand WebStorm, so
 // we mark a type {ClassName} instead of {module:moduleName~ClassName} and here try to found a class definition inside
@@ -356,7 +355,8 @@ function buildLink(longname, linkText, options) {
                 return classInsideModuleRe.test(linkKey);
             });
             if (possibleLinks.length === 1){ // the single definition of this type
-                options.linkMap[longname] = options.linkMap[possibleLinks[0]];
+                registerLink(longname, options.linkMap[possibleLinks[0]]);
+                //options.linkMap[longname] = options.linkMap[possibleLinks[0]];
                 fileUrl = options.linkMap[longname];
                 text = linkText || longname;
             }
