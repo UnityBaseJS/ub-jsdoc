@@ -109,6 +109,7 @@ function fullTextSearch(textToSearch){
     if (searchInProgress) return;
     if (!textToSearch){
         document.getElementById('search-trigger').checked = false;
+        return;
     }
     searchInProgress = true;
     if (!ftsData) { //fetch data
