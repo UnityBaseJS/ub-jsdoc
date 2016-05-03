@@ -1,6 +1,6 @@
 {
   "name": "ub-jsdoc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "JSDoc 3 Template / Theme",
   "main": "publish.js",
   "scripts": {
@@ -18,9 +18,7 @@
   },
   "homepage": "https://github.com/UnityBaseJS/ub-jsdoc",
   "dependencies": {
-    "jsdoc": "~3.4.0"
-  },
-  "devDependencies": {
+    "jsdoc": "~3.4.0",
     "lunr": "^0.7.0"
   },
   "keywords": [
