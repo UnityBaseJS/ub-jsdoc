@@ -316,6 +316,30 @@ function idGeneratorFabric(prefix){
     }
 }
 var getNavID = idGeneratorFabric('n');
+var getFTSid = idGeneratorFabric('f');
+
+var lunr = require('lunr');
+var ftsIndex = lunr(function() {
+    this.ref('id');
+    this.field('name', {boost: 5});
+    this.field('description', { boost: 1});
+});
+var ftsData = {};
+
+function addToSearch(member, group){
+    var id = getFTSid();
+    ftsIndex.add({
+        id: id,
+        name: member.name,
+        description: member.classdesc || member.description
+    });
+    ftsData[id] = {
+        href: helper.longnameToUrl[member.longname],
+        path: member.longname,
+        group: group,
+        name: member.name
+    };
+}
 
 function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
     var nav = '';
@@ -338,6 +362,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                 containerHTML += '<input type="checkbox" id="' + id + '"/>';
             }
             containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>';
+            addToSearch(item, itemHeading);
             if (childCount) {
                 containerHTML += '<section>';
                 containerHTML += generateChildByType(methods);
@@ -358,6 +383,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                 itemsHTML += '<li>';
                 itemsHTML += linktoFn(member.longname, member.name, 'member-kind-' + member.kind + (member.deprecated ? ' deprecated' : ''));
                 itemsHTML += "</li>";
+                addToSearch(member, itemHeading);
             });
             itemsHTML += "</ul>";
         }
@@ -400,7 +426,7 @@ function linktoExternal(longName, name) {
  * @return {string} The HTML for the navigation sidebar.
  */
 function buildNav(members) {
-    var nav = '<h2><a href="index.html">Home</a></h2>';
+    var nav = '<h3><a href="index.html">Home</a></h3>';
     var seen = {};
     var seenTutorials = {};
 
@@ -421,6 +447,7 @@ function buildNav(members) {
         members.globals.forEach(function(g) {
             if ( g.kind !== 'typedef' && !hasOwnProp.call(seen, g.longname) ) {
                 globalNav += '<li class="member-kind-' + g.kind + (g.deprecated ? ' deprecated' : '') + '"><label>' + linkto(g.longname, g.name)  + '</label></li>';
+                addToSearch(g, "global's");
             }
             seen[g.longname] = true;
         });
@@ -627,6 +654,12 @@ exports.publish = function(taffyData, opts, tutorials) {
     // once for all
     view.nav = buildNav(members);
     attachModuleSymbols( find({ longname: {left: 'module:'} }), members.modules );
+    //save constructed FTS data
+    var ftsPath = path.join(outdir, 'ftsIndex.json');
+    fs.writeFileSync(ftsPath, JSON.stringify(ftsIndex));
+    ftsPath = path.join(outdir, 'ftsData.json');
+    fs.writeFileSync(ftsPath, JSON.stringify(ftsData));
+
 
     // generate the pretty-printed source files first so other pages can link to them
     if (outputSourceFiles) {
@@ -635,7 +668,7 @@ exports.publish = function(taffyData, opts, tutorials) {
 
     if (members.globals.length) { 
         generate('', 'Global', [{kind: 'globalobj'}], globalUrl); 
-	generatePartial('', 'Global', [{kind: 'globalobj'}], globalUrl); 
+	    generatePartial('', 'Global', [{kind: 'globalobj'}], globalUrl);
     }
 
     // index page displays information from package.json and lists files

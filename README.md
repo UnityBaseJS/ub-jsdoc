@@ -3,12 +3,26 @@
 Documentation template theme for JSDoc 3 based on [minami](https://github.com/Nijikokun/minami) theme.
 Inspired by [godoc](https://godoc.org/golang.org/x/tools/cmd/godoc)
 
-![Screenshot](screenshot.png)
+![ScreenshotMobile](screenshotMobile.png)
+
+![ScreenshotSearch](screenshotSearch.png)
 
 Live sample is a [UnityBase framework documentation](https://unitybase.info/api/serverNew/)
 
+## Features
+
+- Designed for a framework with many modules inside
+- Partial navigation
+- Full Text Search with rank
+- Cross-module navigation using {@link ClassName} instead of {module:ModuleName.ClassName}
+- Links to [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) for a standard built-in objects
+- Click on member name will navigate to source
+- Compact layout on members
+- Responsive design
+
 ## Uses
 
+- [lunr Full Text Search](http://lunrjs.com/)
 - [the Taffy Database library](http://taffydb.com/)
 - [Underscore Template library](http://documentcloud.github.com/underscore/#template)
 
@@ -18,6 +32,8 @@ Live sample is a [UnityBase framework documentation](https://unitybase.info/api/
 ```bash
 $ npm install --save-dev ub-jsdoc
 ```
+
+For simple Cross-module navigation replace a js-doc `templateHelper.js` with `templateHelper.js-patched`
 
 ## Usage
 
