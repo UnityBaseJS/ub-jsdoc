@@ -3,12 +3,12 @@
 
     function getPartial(originalHref){
         var partialHref = 'partials/' + originalHref;
-        var currentURI = document.location.pathname[0] === '/' ? document.location.pathname.substr(1) :  document.location.pathname;
+        var currentPageURN = document.location.pathname.split('/').pop();
         var targetURI = originalHref.split('#')[0];
         var scrollToElmID = originalHref.split('#')[1];
         var fetched;
 
-        if (currentURI === targetURI) { //already loaded
+        if (currentPageURN === targetURI) { //already loaded
             fetched = Promise.resolve()
         } else {
             fetched = window.fetch(partialHref)
