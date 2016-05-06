@@ -8,7 +8,7 @@ var self = this;
     <?js } ?>
 
     <h4 class="name <?js= data.deprecated ? "deprecated": "" ?>" id="<?js= id ?>"><?js= (kind === 'class' ? 'new ' : '') +
-    (self.conf.smallSourceLink ? self.linkto(meta.shortpath, name, null, 'line' + meta.lineno) : name)
+    (self.conf.smallSourceLink !== false ? self.linkto(meta.shortpath, name, null, 'line' + meta.lineno) : name)
     + (data.signature || '') ?>
 
     <?js if (data.attribsRaw) { 
@@ -96,7 +96,7 @@ var self = this;
     <?js });
 } } ?>
 
-<?js if (data.returns && returns.length && !self.conf.smallSourceLink) { ?>
+<?js if (data.returns && returns.length && (self.conf.smallSourceLink === false) ) { ?>
 <h5>Returns:</h5>
 <?js if (returns.length > 1) { ?><ul><?js
     returns.forEach(function(r) { ?>

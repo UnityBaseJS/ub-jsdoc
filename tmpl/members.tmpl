@@ -3,7 +3,7 @@ var data = obj;
 var self = this;
 ?>
 <h4 class="name" id="<?js= id ?>"><?js= 
-  (self.conf.smallSourceLink ? self.linkto(meta.shortpath, name, null, 'line' + meta.lineno) : name) 
+  (self.conf.smallSourceLink !== false ? self.linkto(meta.shortpath, name, null, 'line' + meta.lineno) : name) 
   + (data.signature ? data.signature : '') 
 ?>
 <?js data.attribsRaw.forEach(function(attr){  ?>

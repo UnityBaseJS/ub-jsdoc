@@ -1,30 +1,40 @@
 (function(){
 	var idDiv = document.getElementById('main');
-	
-	function getPartial(originalHref){
-		var partialHref = 'partials/' + originalHref;
-		window.fetch(partialHref)
-		.then(function(resp){
-			return resp.text()
-		})
-		.then(function(pageText){
-			idDiv.innerHTML = pageText;
-			window.prettyPrint();
-			var scrollTo = originalHref.split('#')[1],
-				elm;
-			if (scrollTo){
-				elm = document.getElementById(scrollTo);
-			} else {
-				elm = idDiv;
-			}
-			if (elm) elm.scrollIntoView();
-			if (needUpdateURL) {
-				history.pushState({href: originalHref}, "", originalHref);
-			}
-		});
-	}	
-	
-	function isPartial(href){
+
+    function getPartial(originalHref){
+        var partialHref = 'partials/' + originalHref;
+        var currentURI = document.location.pathname[0] === '/' ? document.location.pathname.substr(1) :  document.location.pathname;
+        var targetURI = originalHref.split('#')[0];
+        var scrollToElmID = originalHref.split('#')[1];
+        var fetched;
+
+        if (currentURI === targetURI) { //already loaded
+            fetched = Promise.resolve()
+        } else {
+            fetched = window.fetch(partialHref)
+                .then(function(resp){
+                    return resp.text()
+                })
+                .then(function(pageText){
+                    idDiv.innerHTML = pageText;
+                    window.prettyPrint();
+                });
+        }
+        fetched.then(function scrollTo(){
+            var elm;
+            if (scrollToElmID){
+                elm = document.getElementById(scrollToElmID);
+            } else {
+                elm = idDiv;
+            }
+            if (elm) elm.scrollIntoView();
+            if (needUpdateURL) {
+                history.pushState({href: originalHref}, "", originalHref);
+            }
+        });
+    }
+
+    function isPartial(href){
 		var res = Boolean(href);
 		if (res) res = (href.indexOf('.js.html') === -1) 
 			&& (href.indexOf('http://') === -1)
