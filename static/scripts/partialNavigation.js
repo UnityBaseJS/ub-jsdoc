@@ -304,7 +304,16 @@ function doFTS(){
   fullTextSearch(textToSearch);
 }
 var debouncedFTS = debounce(doFTS, 300);
+
+function clearOnEsc(evt) {
+    var code = evt.charCode || evt.keyCode;
+    if (code == 27) {
+        evt.target.value = '';
+        debouncedFTS();
+    }
+}
 searchInput.addEventListener('input', debouncedFTS);
+searchInput.addEventListener('keydown', clearOnEsc);
 searchInput.addEventListener('focus', debouncedFTS);
 
 })();

@@ -235,7 +235,7 @@ function generatePartial(type, title, docs, filename, resolveLinks) {
     };
 
     var originalLayout = view.layout;
-	view.layout = 'partial_layout.tmpl'
+	view.layout = 'partial_layout.tmpl';
 	var outpath = path.join(outdir, 'partials', filename),
         html = view.render('container.tmpl', docData);
     view.layout = originalLayout;
@@ -328,49 +328,80 @@ var ftsData = {};
 
 function addToSearch(member, group){
     var id = getFTSid();
-    ftsIndex.add({
-        id: id,
-        name: member.name,
-        description: member.classdesc || member.description
-    });
-    ftsData[id] = {
-        href: helper.longnameToUrl[member.longname],
-        path: member.longname,
-        group: group,
-        name: member.name
-    };
+    if (group === 'Tutorials'){
+        ftsIndex.add({
+            id: id,
+            name: member.title,
+            description: member.content /* for tutorials */
+        });
+        ftsData[id] = {
+            href: helper.tutorialToUrl(member.name),
+            path: member.title,
+            group: group,
+            name: member.title
+        };
+    } else {
+        ftsIndex.add({
+            id: id,
+            name: member.name,
+            description: member.classdesc || member.description || member.content /* for tutorials */
+        });
+        ftsData[id] = {
+            href: helper.longnameToUrl[member.longname],
+            path: member.longname,
+            group: group,
+            name: member.name
+        };
+    }
 }
 
 function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
     var nav = '';
     var itemsNav = '';
 
-    function addContainer(item, cType){
+    function addContainer(item){
         var containerHTML = '<li>', childCount, id;
         if ( !hasOwnProp.call(item, 'longname') ) {
             containerHTML +=  linktoFn('', item.name);
         } else if ( !hasOwnProp.call(itemsSeen, item.longname) ) {
             itemsSeen[item.longname] = true;
-            var methods = find({kind:'function', memberof: item.longname});
-            var classes = find({kind:'class', memberof: item.longname});
-            var members = find({kind:'member', memberof: item.longname});
+            if (itemHeading !== 'Tutorials') {
+                var methods = find({kind: 'function', memberof: item.longname});
+                var classes = find({kind: 'class', memberof: item.longname});
+                var members = find({kind: 'member', memberof: item.longname});
 
-            id = getNavID();
-            childCount = methods.length + classes.length + members.length ;
+                id = getNavID();
+                childCount = methods.length + classes.length + members.length;
 
-            if (childCount) {
-                containerHTML += '<input type="checkbox" id="' + id + '"/>';
-            }
-            containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>';
-            addToSearch(item, itemHeading);
-            if (childCount) {
-                containerHTML += '<section>';
-                containerHTML += generateChildByType(methods);
-                containerHTML += generateChildByType(members);
-                for (var cIdx = 0, cLen = classes.length; cIdx < cLen; cIdx++ ) {
-                    containerHTML += '<ul>' + addContainer(classes[cIdx]) +'</ul>';
+                if (childCount) {
+                    containerHTML += '<input type="checkbox" id="' + id + '"/>';
                 }
-                containerHTML += '</section>'
+                containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>';
+                addToSearch(item, itemHeading);
+                if (childCount) {
+                    containerHTML += '<section>';
+                    containerHTML += generateChildByType(methods);
+                    containerHTML += generateChildByType(members);
+                    for (var cIdx = 0, cLen = classes.length; cIdx < cLen; cIdx++) {
+                        containerHTML += '<ul>' + addContainer(classes[cIdx]) + '</ul>';
+                    }
+                    containerHTML += '</section>'
+                }
+            } else {
+                id = getNavID();
+                childCount = item.children.length;
+                if (childCount) {
+                    containerHTML += '<input type="checkbox" id="' + id + '"/>';
+                }
+                containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>';
+                addToSearch(item, itemHeading);
+                if (childCount) {
+                    containerHTML += '<section>';
+                    for (var cIdx = 0, cLen = item.children.length; cIdx < cLen; cIdx++) {
+                        containerHTML += '<ul>' + addContainer(item.children[cIdx]) + '</ul>';
+                    }
+                    containerHTML += '</section>'
+                }
             }
         }
         return containerHTML + '</li>';
@@ -432,14 +463,14 @@ function buildNav(members) {
 
     // the order here is important - we need to parse modules & namespaces before classes
     // to mark a class as seen
+    nav += buildMemberNav(members.tutorials, 'Tutorials', seenTutorials, linktoTutorial, 'tutorial');
     nav += buildMemberNav(members.modules, 'Modules', seen, linkto, 'module');
     nav += buildMemberNav(members.namespaces, 'Namespaces', seen, linkto, 'ns');
     nav += buildMemberNav(members.classes, 'Classes', seen, linkto, 'class');
     nav += buildMemberNav(members.interfaces, 'Interfaces', seen, linkto, 'interface');
-    nav += buildMemberNav(members.externals, 'Externals', seen, linktoExternal);
     nav += buildMemberNav(members.events, 'Events', seen, linkto, 'event');
     nav += buildMemberNav(members.mixins, 'Mixins', seen, linkto, 'mixin');
-    nav += buildMemberNav(members.tutorials, 'Tutorials', seenTutorials, linktoTutorial, 'tutorial');
+    nav += buildMemberNav(members.externals, 'Externals', seen, linktoExternal);
 
     if (members.globals.length) {
         var globalNav = '';
@@ -651,25 +682,19 @@ exports.publish = function(taffyData, opts, tutorials) {
     // allow to analyse config in templates
     view.conf = conf;
 
-    // once for all
-    view.nav = buildNav(members);
     attachModuleSymbols( find({ longname: {left: 'module:'} }), members.modules );
-    //save constructed FTS data
-    var ftsPath = path.join(outdir, 'ftsIndex.json');
-    fs.writeFileSync(ftsPath, JSON.stringify(ftsIndex));
-    ftsPath = path.join(outdir, 'ftsData.json');
-    fs.writeFileSync(ftsPath, JSON.stringify(ftsData));
-
 
     // generate the pretty-printed source files first so other pages can link to them
     if (outputSourceFiles) {
         generateSourceFiles(sourceFiles, opts.encoding);
     }
 
-    if (members.globals.length) { 
-        generate('', 'Global', [{kind: 'globalobj'}], globalUrl); 
-	    generatePartial('', 'Global', [{kind: 'globalobj'}], globalUrl);
-    }
+    view.nav = buildNav(members);
+    //save constructed FTS data
+    var ftsPath = path.join(outdir, 'ftsIndex.json');
+    fs.writeFileSync(ftsPath, JSON.stringify(ftsIndex));
+    ftsPath = path.join(outdir, 'ftsData.json');
+    fs.writeFileSync(ftsPath, JSON.stringify(ftsData));
 
     // index page displays information from package.json and lists files
     var files = find({kind: 'file'});
@@ -679,12 +704,17 @@ exports.publish = function(taffyData, opts, tutorials) {
         packages.concat(
             [{kind: 'mainpage', readme: opts.readme, longname: (opts.mainpagetitle) ? opts.mainpagetitle : 'Main Page'}]
         ).concat(files),
-    indexUrl);
+        indexUrl);
     generatePartial('', 'Home',
         packages.concat(
             [{kind: 'mainpage', readme: opts.readme, longname: (opts.mainpagetitle) ? opts.mainpagetitle : 'Main Page'}]
         ).concat(files),
-    indexUrl);
+        indexUrl);
+
+    if (members.globals.length) { 
+        generate('', 'Global', [{kind: 'globalobj'}], globalUrl); 
+	    generatePartial('', 'Global', [{kind: 'globalobj'}], globalUrl);
+    }
 
     // set up the lists that we'll use to generate pages
     var classes = taffy(members.classes);
@@ -747,6 +777,15 @@ exports.publish = function(taffyData, opts, tutorials) {
         // yes, you can use {@link} in tutorials too!
         html = helper.resolveLinks(html); // turn {@link foo} into <a href="foodoc.html">foo</a>
         fs.writeFileSync(tutorialPath, html, 'utf8');
+
+        // generate a partial
+        var originalLayout = view.layout;
+        view.layout = 'partial_layout.tmpl';
+        tutorialPath = path.join(outdir, 'partials', filename);
+        html = view.render('tutorial.tmpl', tutorialData);
+        html = helper.resolveLinks(html); // turn {@link foo} into <a href="foodoc.html">foo</a>
+        view.layout = originalLayout;
+        fs.writeFileSync(tutorialPath, html, 'utf8');
     }
 
     // tutorials can have only one parent so there is no risk for loops
@@ -758,4 +797,5 @@ exports.publish = function(taffyData, opts, tutorials) {
     }
     
     saveChildren(tutorials);
+
 };

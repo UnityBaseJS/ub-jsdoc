@@ -572,7 +572,7 @@ dl.param-type {
 
   nav {
     background: #FFF;
-    width: 250px;
+    width: 300px;
     height: 100%;
     position: fixed;
     top: 0;
@@ -583,6 +583,7 @@ dl.param-type {
     z-index: 3;
     padding: 0 10px;
     display: none;
+    font-size: 1em;
     /*transition: display 0.2s;*/
   }
 
@@ -593,9 +594,14 @@ dl.param-type {
     z-index: 2;
   }
 
+  nav ul a {
+      font-size: 1em;
+  }
+
   #main {
     width: 100%;
-    min-width: 360px;
+    min-width: 320px;
+    padding-left: 10px;
   }
 
   #main h1.page-title {

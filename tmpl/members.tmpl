@@ -6,7 +6,7 @@ var self = this;
   (self.conf.smallSourceLink !== false ? self.linkto(meta.shortpath, name, null, 'line' + meta.lineno) : name) 
   + (data.signature ? data.signature : '') 
 ?>
-<?js data.attribsRaw.forEach(function(attr){  ?>
+<?js if (data.attribsRaw) data.attribsRaw.forEach(function(attr){  ?>
    <span class="member-attr <?js= attr ?>"><?js= attr ?></span>
 <?js }); ?>
 </h4>

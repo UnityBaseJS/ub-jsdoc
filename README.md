@@ -82,15 +82,19 @@ In your `.jsdoc.json` file, add a template option.
         "cleverLinks": true,
         "monospaceLinks": false,
 
-	"buildInURL": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/",
-	"buildins": ["array", "arraybuffer", "boolean", "date", "error", "function", "json", "number", "object", "regexp", "string", "null"],
-	"smallSourceLink": true, 
-	"hideAuthor": true, 
-	"stylesheet": "styles/ub-jsdoc.css",
-	"googleAnalytics": "yourGAAccount",  
+		"buildInURL": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/",
+		"buildins": ["array", "arraybuffer", "boolean", "date", "error", "function", "json", "number", "object", "regexp", "string", "null"],
+		"smallSourceLink": true, 
+		"hideAuthor": true, 
+		"stylesheet": "styles/ub-jsdoc.css",
+		"googleAnalytics": "yourGAAccount",  
         "default": {
-            "outputSourceFiles": true
-        }
+            "outputSourceFiles": true,
+			"staticFiles": {
+				"include": ["./pathToYourTutorialFolder"],
+				"excludePattern": "\\.md$"
+			}
+		}
     },
     "opts": {
         "destination": "./docs/",
@@ -98,6 +102,7 @@ In your `.jsdoc.json` file, add a template option.
         "private": true,
         "recurse": true,
         "template": "./node_modules/ub-jsdoc"
+		"tutorials": "./pathToYourTutorialFolder"
     }
 }
 ```
