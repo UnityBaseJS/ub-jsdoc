@@ -764,10 +764,11 @@ exports.publish = function(taffyData, opts, tutorials) {
 
     // TODO: move the tutorial functions to templateHelper.js
     function generateTutorial(title, tutorial, filename) {
+        var parsedTutorial = tutorial.parse();
         var tutorialData = {
             title: title,
             header: tutorial.title,
-            content: tutorial.parse(),
+            content: parsedTutorial,
             children: tutorial.children
         };
 
@@ -782,6 +783,8 @@ exports.publish = function(taffyData, opts, tutorials) {
         var originalLayout = view.layout;
         view.layout = 'partial_layout.tmpl';
         tutorialPath = path.join(outdir, 'partials', filename);
+        // view.render mutate a tutorialData.content :(
+        tutorialData.content = parsedTutorial;
         html = view.render('tutorial.tmpl', tutorialData);
         html = helper.resolveLinks(html); // turn {@link foo} into <a href="foodoc.html">foo</a>
         view.layout = originalLayout;
