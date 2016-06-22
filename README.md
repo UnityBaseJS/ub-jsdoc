@@ -101,8 +101,8 @@ In your `.jsdoc.json` file, add a template option.
         "encoding": "utf8",
         "private": true,
         "recurse": true,
-        "template": "./node_modules/ub-jsdoc"
-		"tutorials": "./pathToYourTutorialFolder"
+        "template": "./node_modules/ub-jsdoc",
+	"tutorials": "./pathToYourTutorialFolder"
     }
 }
 ```

@@ -665,6 +665,10 @@ exports.publish = function(taffyData, opts, tutorials) {
     });
 
     var members = helper.getMembers(data);
+    // sort a top-level tutorials by it's name
+    if (tutorials.children.length) {
+        tutorials.children.sort(function(a, b){ return a.title > b.title ? 1 : (a.title < b.title ? -1 : 0)});
+    }
     members.tutorials = tutorials.children;
 
     // output pretty-printed source files by default
