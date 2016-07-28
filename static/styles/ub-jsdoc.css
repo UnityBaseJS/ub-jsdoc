@@ -12,8 +12,9 @@ body {
   color: #4d4e53;
   background-color: white;
   margin: 0 auto;
-  font-family: Arial,sans-serif,Consolas;
   line-height: 1.5;
+  max-width: 80em;
+  font-family: "Open Sans","Arial",sans-serif;
 }
 
 code {
@@ -75,6 +76,10 @@ nav input[type=checkbox]:checked + label:before {
     list-style-type: none;
 }
 
+#search-result  h2 {
+  color: white; 
+}
+
 #search-result input[type=checkbox] { display: none; }
 #search-result input[type=checkbox] ~ section {
     display: none;
@@ -110,7 +115,7 @@ nav input[type=checkbox]:checked + label:before {
 nav {
     float: left;
     display: block;
-    width: 250px;
+    width: 300px;
     overflow: auto;
     position: fixed;
     height: 100%;
@@ -126,14 +131,13 @@ nav h3 {
 }
 
 nav ul {
-    font-family: 'Lucida Grande', 'Lucida Sans Unicode', arial, sans-serif;
     list-style-type: none;
     padding-left: 0;
     margin: 2px;
 }
 
 nav ul a {
-    font-size: 12px;
+    font-size: 0.8em;
 }
 
 nav ul a:hover,
@@ -170,8 +174,9 @@ a:hover {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
-  margin: 0;
   margin-top: 1em;
+  padding-top: 1em;
+  color: #333; 
 }
 
 h2 {
@@ -204,7 +209,7 @@ h6 {
 #main {
   float: right;
   min-width: 360px;
-  width: calc(100% - 250px);
+  width: calc(100% - 300px);
   padding-left: 30px;
 }
 
@@ -218,6 +223,10 @@ li.selected {
 
 #main body{
   font-size:.85em
+}
+
+#main li {
+    margin: 0.5em 0;
 }
 
 header {
@@ -241,7 +250,7 @@ section {
 
 footer {
   color: hsl(0, 0%, 28%);
-  margin-left: 250px;
+  margin-left: 300px;
   display: block;
   padding: 15px;
   font-size: 70%;
@@ -372,7 +381,7 @@ h4.name {
 }
 
 .description {
-  margin: 1em
+   /* margin: 1em */
 }
 
 .code-caption {
