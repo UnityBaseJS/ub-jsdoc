@@ -35,7 +35,7 @@
     }
 
     function isPartial(href){
-		var res = Boolean(href);
+		var res = Boolean(href) && window.location.protocol !== 'file:'; //Chrome can't fetch from file://
 		if (res) res = (href.indexOf('.js.html') === -1) 
 			&& (href.indexOf('http://') === -1)
 			&& (href.indexOf('https://') === -1)
