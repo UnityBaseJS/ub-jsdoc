@@ -456,11 +456,18 @@ function linktoExternal(longName, name) {
  * @param {array<object>} members.interfaces
  * @return {string} The HTML for the navigation sidebar.
  */
-function buildNav(members) {
+function buildNav(members, conf) {
     var nav = '<h3><a href="index.html">Home</a></h3>';
     var seen = {};
     var seenTutorials = {};
-
+    
+    if (conf && conf.links && conf.links.length){
+      nav += '<section><h3>Other docs</h3><ul>';
+      conf.links.forEach(function(link){
+        nav += '<li><a href="' + link.href + '">' + link.text + '</a></li>'; 
+      });  
+      nav += '</ul></section>';
+    }
     // the order here is important - we need to parse modules & namespaces before classes
     // to mark a class as seen
     nav += buildMemberNav(members.tutorials, 'Tutorials', seenTutorials, linktoTutorial, 'tutorial');
@@ -693,7 +700,7 @@ exports.publish = function(taffyData, opts, tutorials) {
         generateSourceFiles(sourceFiles, opts.encoding);
     }
 
-    view.nav = buildNav(members);
+    view.nav = buildNav(members, conf);
     //save constructed FTS data
     var ftsPath = path.join(outdir, 'ftsIndex.json');
     fs.writeFileSync(ftsPath, JSON.stringify(ftsIndex));
@@ -730,6 +737,7 @@ exports.publish = function(taffyData, opts, tutorials) {
 
     Object.keys(helper.longnameToUrl).forEach(function(longname) {
         var myModules = helper.find(modules, {longname: longname});
+    	myModules.sort((a, b) => a.longname > b.longname)
         if (myModules.length) {
             generate('Module', myModules[0].name, myModules, helper.longnameToUrl[longname]);
 			generatePartial('Module', myModules[0].name, myModules, helper.longnameToUrl[longname]);

@@ -76,7 +76,8 @@ In your `.jsdoc.json` file, add a template option.
     },
     "plugins": [
         "plugins/markdown",
-	"./ub-jsdocs/plugins/sripPFromDescription"
+	"./ub-jsdocs/plugins/sripPFromDescription",
+	"./packages/ub-jsdocs/plugins/memberOfModule.js"
     ],
     "templates": {
         "cleverLinks": true,

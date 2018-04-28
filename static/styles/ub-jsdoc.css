@@ -1,6 +1,6 @@
 
 * {
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
 html, body {
@@ -115,7 +115,7 @@ nav input[type=checkbox]:checked + label:before {
 nav {
     float: left;
     display: block;
-    width: 300px;
+    /* width: 300px; */
     overflow: auto;
     position: fixed;
     height: 100%;
@@ -128,6 +128,8 @@ nav h3 {
     letter-spacing: 1px;
     font-weight: 700;
     line-height: 24px;
+    margin-top: 0;
+    padding-top: 0;
 }
 
 nav ul {
@@ -176,7 +178,6 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   margin-top: 1em;
   padding-top: 1em;
-  color: #333; 
 }
 
 h2 {
@@ -192,7 +193,8 @@ h4 {
 
 h5, .container-overview .subsection-title {
   letter-spacing: -0.01em;
-  margin: 8px 0 3px 0;
+  /* margin: 8px 0 3px 0; */
+  padding-top: 0;
 }
 
 h6 {
@@ -250,10 +252,10 @@ section {
 
 footer {
   color: hsl(0, 0%, 28%);
-  margin-left: 300px;
   display: block;
   padding: 15px;
   font-size: 70%;
+  text-align: right;
 }
 
 dd {
@@ -338,8 +340,10 @@ h4.name {
   color: rgb(55,94,171);
   font-weight: bold;
   font-size: 20px;
-  padding: 5px;
-  background: rgb(224, 235, 245);
+  padding: 1rem;
+  margin-top: 3rem;
+  background-color: #eee;
+  margin-bottom: 0.5rem;
 }
 .name a {
   color: rgb(55,94,171);
@@ -381,7 +385,7 @@ h4.name {
 }
 
 .description {
-   /* margin: 1em */
+   margin: 0.5rem
 }
 
 .code-caption {
@@ -581,7 +585,7 @@ dl.param-type {
 
   nav {
     background: #FFF;
-    width: 300px;
+    /*width: 300px;*/
     height: 100%;
     position: fixed;
     top: 0;
