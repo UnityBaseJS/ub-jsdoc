@@ -1,15 +1,12 @@
 {
   "name": "ub-jsdoc",
-  "version": "1.4.16",
+  "version": "1.5.0",
   "description": "JSDoc 3 Template / Theme",
   "main": "publish.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "public": true,
-  "publishConfig": {
-    "registry": "http://registry.unitybase.info"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UnityBaseJS/ub-jsdoc.git"
@@ -21,8 +18,8 @@
   },
   "homepage": "https://github.com/UnityBaseJS/ub-jsdoc",
   "dependencies": {
-    "jsdoc": "~3.4.0",
-    "lunr": "^0.7.0"
+    "jsdoc": "^3.5.5",
+    "lunr": "^1.0.0"
   },
   "keywords": [
     "jsdoc",
