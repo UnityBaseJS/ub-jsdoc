@@ -12,7 +12,8 @@ var self = this;
     + (data.signature || '') ?>
 
     <?js if (data.attribsRaw) { 
-      data.attribsRaw.forEach(function(attr){  
+      data.attribsRaw.forEach(function(attr){
+        if (attr === 'published') attr = 'api'
     ?>
       <span class="member-attr <?js= attr ?>"><?js= attr ?></span>
     <?js }) } ?>

@@ -11,7 +11,7 @@ exports.handlers = {
     var doclet = e.doclet
     var memberof = doclet.memberof || ''
     var memberOfModule
-    if (doclet.tags && doclet.tags.find(function (tag) {return tag.title === 'memberofmodule'})) debugger	
+
     if (doclet.tags && !memberof.startsWith('module:')) {
       memberOfModule = doclet.tags.find(function (tag) {return tag.title === 'memberofmodule'})
       if (memberOfModule) {

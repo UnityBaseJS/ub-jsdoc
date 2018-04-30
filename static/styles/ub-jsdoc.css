@@ -66,6 +66,7 @@ nav input[type=checkbox]:checked + label:before {
     border-style: groove;
     width: 100%;
     font-size: 1em;
+    margin-top: .5em;
 }
 
 #search-result-inner {
@@ -123,13 +124,9 @@ nav {
 }
 
 nav h3 {
-    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-weight: 700;
-    line-height: 24px;
-    margin-top: 0;
-    padding-top: 0;
+    margin: 0;
 }
 
 nav ul {
@@ -628,4 +625,13 @@ dl.param-type {
   footer {
     margin-left: 0;
   }
+}
+
+.api {
+  padding: 1px 4px;
+  font-size: .75em;
+  background-color: #5cb85c;
+  text-align: center;
+  white-space: nowrap;
+  border-radius: .25em;
 }
