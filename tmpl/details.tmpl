@@ -66,9 +66,9 @@ if (data.defaultvalue && (data.defaultvaluetype === 'object' || data.defaultvalu
     <?js if (data.mixes && data.mixes.length) { ?>
         <dt class="mixes">Mixes In:</dt>
 
-        <dd class="mixes"><ul>
+        <dd class="mixes">
         <?js data.mixes.forEach(function(a) { ?>
-            <li><?js= self.linkto(a, a) ?></li>
+            <?js= self.linkto(a, a) ?>&nbsp
         <?js }); ?>
         </ul></dd>
     <?js } ?>
