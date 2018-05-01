@@ -19,6 +19,8 @@ Live sample is a [UnityBase framework documentation](https://unitybase.info/api/
 - Click on member name will navigate to source
 - Compact layout on members
 - Responsive design
+- modules marked as @package (or @access package) do not appear in navigation panel.
+
 
 ## Uses
 

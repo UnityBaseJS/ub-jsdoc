@@ -366,26 +366,27 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
         } else if ( !hasOwnProp.call(itemsSeen, item.longname) ) {
             itemsSeen[item.longname] = true;
             if (itemHeading !== 'Tutorials') {
-                var methods = find({kind: 'function', memberof: item.longname});
-                var classes = find({kind: 'class', memberof: item.longname});
-                var members = find({kind: 'member', memberof: item.longname});
+                if (!item.ancestors.length) { // not a member of any other module
+                  var methods = find({kind: 'function', memberof: item.longname});
+                  var classes = find({kind: 'class', memberof: item.longname});
+                  var members = find({kind: 'member', memberof: item.longname});
 
-                id = getNavID();
-                childCount = methods.length + classes.length + members.length;
+                  id = getNavID();
+                  childCount = methods.length + classes.length + members.length;
 
-                if (childCount) {
+                  if (childCount) {
                     containerHTML += '<input type="checkbox" id="' + id + '"/>';
-                }
-                containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>';
-                addToSearch(item, itemHeading);
-                if (childCount) {
+                  }
+                  containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>';
+                  if (childCount) {
                     containerHTML += '<section>';
                     containerHTML += generateChildByType(methods);
                     containerHTML += generateChildByType(members);
                     for (var cIdx = 0, cLen = classes.length; cIdx < cLen; cIdx++) {
-                        containerHTML += '<ul>' + addContainer(classes[cIdx]) + '</ul>';
+                      containerHTML += '<ul>' + addContainer(classes[cIdx]) + '</ul>';
                     }
                     containerHTML += '</section>'
+                  }
                 }
             } else {
                 id = getNavID();
@@ -394,7 +395,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                     containerHTML += '<input type="checkbox" id="' + id + '"/>';
                 }
                 containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>';
-                addToSearch(item, itemHeading);
+                //addToSearch(item, itemHeading);
                 if (childCount) {
                     containerHTML += '<section>';
                     for (var cIdx = 0, cLen = item.children.length; cIdx < cLen; cIdx++) {
@@ -414,16 +415,39 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                 itemsHTML += '<li>';
                 itemsHTML += linktoFn(member.longname, member.name, 'member-kind-' + member.kind + (member.deprecated ? ' deprecated' : ''));
                 itemsHTML += "</li>";
-                addToSearch(member, itemHeading);
             });
             itemsHTML += "</ul>";
         }
         return itemsHTML;
     }
-
+    function buildSearchIndex (item) {
+      addToSearch(item, itemHeading);
+      if (itemHeading !== 'Tutorials') {
+        let classes = find({kind: 'class', memberof: item.longname});
+        classes.forEach(function (member) {
+          buildSearchIndex(member);
+        });
+        var methods = find({kind: 'function', memberof: item.longname});
+        methods.forEach(function (member) {
+          addToSearch(member, itemHeading);
+        });
+        var members = find({kind: 'member', memberof: item.longname});
+        members.forEach(function (member) {
+          addToSearch(member, itemHeading);
+        });
+      } else {
+        for (let cIdx = 0, cLen = item.children.length; cIdx < cLen; cIdx++) {
+          buildSearchIndex(item.children[cIdx]);
+        }
+      }
+    }
     if (items && items.length) {
         items.forEach(function(item) {
             itemsNav += addContainer(item);
+        });
+
+        items.forEach(function(item) {
+          buildSearchIndex(item);
         });
 
         if (itemsNav !== '') {
@@ -737,40 +761,40 @@ exports.publish = function(taffyData, opts, tutorials) {
 
     Object.keys(helper.longnameToUrl).forEach(function(longname) {
         var myModules = helper.find(modules, {longname: longname});
-    	myModules.sort((a, b) => a.longname > b.longname)
+    	  myModules.sort((a, b) => a.longname > b.longname)
         if (myModules.length) {
             generate('Module', myModules[0].name, myModules, helper.longnameToUrl[longname]);
-			generatePartial('Module', myModules[0].name, myModules, helper.longnameToUrl[longname]);
+			      generatePartial('Module', myModules[0].name, myModules, helper.longnameToUrl[longname]);
         }
 
         var myClasses = helper.find(classes, {longname: longname});
         if (myClasses.length) {
             generate('Class', myClasses[0].name, myClasses, helper.longnameToUrl[longname]);
-			generatePartial('Class', myClasses[0].name, myClasses, helper.longnameToUrl[longname]);
+			      generatePartial('Class', myClasses[0].name, myClasses, helper.longnameToUrl[longname]);
         }
 
         var myNamespaces = helper.find(namespaces, {longname: longname});
         if (myNamespaces.length) {
             generate('Namespace', myNamespaces[0].name, myNamespaces, helper.longnameToUrl[longname]);
-			generatePartial('Namespace', myNamespaces[0].name, myNamespaces, helper.longnameToUrl[longname]);
+			      generatePartial('Namespace', myNamespaces[0].name, myNamespaces, helper.longnameToUrl[longname]);
         }
 
         var myMixins = helper.find(mixins, {longname: longname});
         if (myMixins.length) {
             generate('Mixin', myMixins[0].name, myMixins, helper.longnameToUrl[longname]);
-			generatePartial('Mixin', myMixins[0].name, myMixins, helper.longnameToUrl[longname]);
+			      generatePartial('Mixin', myMixins[0].name, myMixins, helper.longnameToUrl[longname]);
         }
 
         var myExternals = helper.find(externals, {longname: longname});
         if (myExternals.length) {
             generate('External', myExternals[0].name, myExternals, helper.longnameToUrl[longname]);
-			generatePartial('External', myExternals[0].name, myExternals, helper.longnameToUrl[longname]);
+			      generatePartial('External', myExternals[0].name, myExternals, helper.longnameToUrl[longname]);
         }
 
         var myInterfaces = helper.find(interfaces, {longname: longname});
         if (myInterfaces.length) {
             generate('Interface', myInterfaces[0].name, myInterfaces, helper.longnameToUrl[longname]);
-			generatePartial('Interface', myInterfaces[0].name, myInterfaces, helper.longnameToUrl[longname]);
+			      generatePartial('Interface', myInterfaces[0].name, myInterfaces, helper.longnameToUrl[longname]);
         }
     });
 
