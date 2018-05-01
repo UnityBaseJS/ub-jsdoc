@@ -372,7 +372,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                   var submodules = find({kind: 'module', memberof: item.longname});
 
                   id = getNavID();
-                  childCount = methods.length + classes.length + members.length;
+                  childCount = methods.length + classes.length + members.length + submodules.length;
 
                   if (childCount) {
                     containerHTML += '<input type="checkbox" id="' + id + '"/>';
