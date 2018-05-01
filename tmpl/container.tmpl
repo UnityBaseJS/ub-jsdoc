@@ -84,9 +84,21 @@
         var classes = self.find({kind: 'class', memberof: doc.longname});
         if (!isGlobalPage && classes && classes.length) {
     ?>
-        <h3 class="subsection-title">Classes</h3>
+        <h2 class="subsection-title">Classes</h3>
 
         <dl><?js classes.forEach(function(c) { ?>
+            <dt><?js= self.linkto(c.longname, c.name) ?></dt>
+            <dd><?js if (c.summary) { ?><?js= c.summary ?><?js } ?></dd>
+        <?js }); ?></dl>
+    <?js } ?>
+
+    <?js
+        var submodules = self.find({kind: 'module', memberof: doc.longname});
+        if (!isGlobalPage && submodules && submodules.length) {
+    ?>
+        <h2 class="subsection-title">Submodules</h3>
+
+        <dl><?js submodules.forEach(function(c) { ?>
             <dt><?js= self.linkto(c.longname, c.name) ?></dt>
             <dd><?js if (c.summary) { ?><?js= c.summary ?><?js } ?></dd>
         <?js }); ?></dl>

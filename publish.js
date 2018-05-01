@@ -217,7 +217,6 @@ function generate(type, title, docs, filename, resolveLinks) {
 
     var outpath = path.join(outdir, filename),
         html = view.render('container.tmpl', docData);
-
     if (resolveLinks) {
         html = helper.resolveLinks(html); // turn {@link foo} into <a href="foodoc.html">foo</a>
     }
@@ -447,7 +446,6 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
     if (items && items.length) {
         items.forEach(function(item) {
             itemsNav += addContainer(item);
-            console.log(item)
         });
 
         items.forEach(function(item) {
