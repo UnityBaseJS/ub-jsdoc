@@ -370,6 +370,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                   var methods = find({kind: 'function', memberof: item.longname});
                   var classes = find({kind: 'class', memberof: item.longname});
                   var members = find({kind: 'member', memberof: item.longname});
+                  var submodules = find({kind: 'module', memberof: item.longname});
 
                   id = getNavID();
                   childCount = methods.length + classes.length + members.length;
@@ -382,6 +383,8 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                     containerHTML += '<section>';
                     containerHTML += generateChildByType(methods);
                     containerHTML += generateChildByType(members);
+                    containerHTML += generateChildByType(submodules);
+
                     for (var cIdx = 0, cLen = classes.length; cIdx < cLen; cIdx++) {
                       containerHTML += '<ul>' + addContainer(classes[cIdx]) + '</ul>';
                     }
@@ -444,6 +447,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
     if (items && items.length) {
         items.forEach(function(item) {
             itemsNav += addContainer(item);
+            console.log(item)
         });
 
         items.forEach(function(item) {
