@@ -98,10 +98,12 @@
     ?>
         <h2 class="subsection-title">Submodules</h3>
 
-        <dl><?js submodules.forEach(function(c) { ?>
-            <dt><?js= self.linkto(c.longname, c.name) ?></dt>
-            <dd><?js if (c.summary) { ?><?js= c.summary ?><?js } ?></dd>
-        <?js }); ?></dl>
+        <dd class="mixes">
+            <?js submodules.forEach(function(c) { ?>
+                <?js= self.linkto(c.longname, c.name) ?>&nbsp&nbsp&nbsp
+            <?js }); ?>
+        </dd>
+
     <?js } ?>
 
      <?js
