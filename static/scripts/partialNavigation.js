@@ -142,24 +142,25 @@ function fullTextSearch(textToSearch){
             allData = data.ftsData,
             res = {},
             pathSplitRe = /[:~#\.]/,
-            member, memberPath, currentNode, i, j, l, jl, resHTML;
+            member, memberPath, currentNode, curPath, i, j, l, jl, resHTML;
         for(i= 0, l=search.length; i<l && search[i].score > 0.001; i++){
             member = allData[search[i].ref];
             memberPath = member.path.split(pathSplitRe);
-            if (memberPath[0] === 'module'){ // almost all element are inside module, so let's remove a `module` keyword
-                memberPath.shift();
-            }
+            // almost all element are inside module, so let's remove a `module` keyword
+            memberPath = memberPath.filter(function(p) { return p !== 'module'})
             if (memberPath.length<2){ // add a grouping
                 memberPath.unshift(member.group);
             }
             currentNode = res;
             for(j=0, jl = memberPath.length; j < jl-1; j++){ // without leaf
-                if (!currentNode[memberPath[j]]){
-                    currentNode[memberPath[j]] = {}
+                curPath = memberPath[j]
+                if (!currentNode.hasOwnProperty(curPath) ){
+                    currentNode[curPath] = {}
                 }
-                currentNode = currentNode[memberPath[j]];
+                if (!currentNode[curPath]) debugger
+                currentNode = currentNode[curPath];
             }
-            currentNode[memberPath[j]] = '<a href="' + member.href + '" style="opacity:' +  Math.max(search[i].score*100, 0.3)+ '">' + memberPath[j] + '</a>';
+            currentNode[curPath] = '<a href="' + member.href + '" style="opacity:' +  Math.max(search[i].score*100, 0.3)+ '">' + memberPath[j] + '</a>';
         }
         if (search.length) {
             resHTML = buildSearchResultHTML(res, 2)
@@ -171,6 +172,9 @@ function fullTextSearch(textToSearch){
         var trigger = document.getElementById('search-trigger');
         trigger.checked = true;
     }).then(function(){
+        searchInProgress = false;
+    }, function(e){
+        console.error(e);
         searchInProgress = false;
     })
 }
