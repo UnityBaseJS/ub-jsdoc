@@ -27,7 +27,6 @@ exports.handlers = {
     if (doclet.kind === "module" && !doclet.memberof && (doclet.readme === undefined) && doclet.meta.path) {
       let readmePath = path.join(doclet.meta.path, 'README.md')
       if (fs.existsSync(readmePath)) {
-        console.log('add readme', readmePath, 'to module', doclet.name)
         doclet.readme = parse(fs.readFileSync(readmePath, 'utf-8'))
         delete doclet.description
       }
