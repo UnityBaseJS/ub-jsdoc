@@ -39,7 +39,8 @@
 		if (res) res = (href.indexOf('.js.html') === -1) 
 			&& (href.indexOf('http://') === -1)
 			&& (href.indexOf('https://') === -1)
-			&& (href.charAt(0) !== '/');
+			&& (href.charAt(0) !== '/')
+      && (href.charAt(0) !== '.');
 		return res;
 	}
 	var needUpdateURL = false;
