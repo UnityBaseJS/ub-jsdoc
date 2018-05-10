@@ -40,6 +40,12 @@
     <?js } ?>
 </header>
 
+<?js if (doc.readme) { ?>
+    <section class="readme">
+        <article><?js= doc.readme ?></article>
+    </section>
+<?js } ?>
+
 <article>
     <div class="container-overview">
     <?js if (doc.kind === 'module' && doc.modules) { ?>
