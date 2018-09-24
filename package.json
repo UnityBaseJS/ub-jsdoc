@@ -1,6 +1,6 @@
 {
   "name": "ub-jsdoc",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "JSDoc 3 Template / Theme",
   "main": "publish.js",
   "scripts": {
