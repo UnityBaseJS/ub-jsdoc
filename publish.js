@@ -328,19 +328,20 @@ function buildMemberNav (items, itemHeading, itemsSeen, linktoFn) {
   var itemsNav = ''
 
   function addContainer (item) {
-    var containerHTML = '<li>', childCount, id
+    let containerHTML = '<li>'
+    let childCount
     if (!hasOwnProp.call(item, 'longname')) {
       containerHTML += linktoFn('', item.name)
     } else if (!hasOwnProp.call(itemsSeen, item.longname)) {
       itemsSeen[item.longname] = true
       if (itemHeading !== 'Tutorials') {
         if (!item.ancestors.length) { // not a member of any other module
-          var methods = find({kind: 'function', memberof: item.longname})
-          var classes = find({kind: 'class', memberof: item.longname})
-          var members = find({kind: 'member', memberof: item.longname})
-          var submodules = find({kind: 'module', memberof: item.longname})
+          let methods = find({kind: 'function', memberof: item.longname})
+          let classes = find({kind: 'class', memberof: item.longname})
+          let members = find({kind: 'member', memberof: item.longname})
+          let submodules = find({kind: 'module', memberof: item.longname})
 
-          id = getNavID()
+          let id = getNavID()
           childCount = methods.length + classes.length + members.length + submodules.length
 
           if (childCount) {
@@ -353,20 +354,20 @@ function buildMemberNav (items, itemHeading, itemsSeen, linktoFn) {
             containerHTML += generateChildByType(members)
             containerHTML += generateChildByType(submodules)
 
-            for (var cIdx = 0, cLen = classes.length; cIdx < cLen; cIdx++) {
+            for (let cIdx = 0, cLen = classes.length; cIdx < cLen; cIdx++) {
               containerHTML += '<ul>' + addContainer(classes[cIdx]) + '</ul>'
             }
             containerHTML += '</section>'
           }
         }
       } else {
-        id = getNavID()
+        let id = getNavID()
         childCount = item.children.length
         if (childCount) {
           containerHTML += '<input type="checkbox" id="' + id + '"/>'
         }
         containerHTML += '<label for="' + id + '">' + linktoFn(item.longname, item.name.replace(/^module:/, ''), 'member-kind-' + item.kind + (item.deprecated ? ' deprecated' : '')) + '</label>'
-        //addToSearch(item, itemHeading);
+        // addToSearch(item, itemHeading);
         if (childCount) {
           containerHTML += '<section>'
           for (let cIdx = 0, cLen = item.children.length; cIdx < cLen; cIdx++) {
