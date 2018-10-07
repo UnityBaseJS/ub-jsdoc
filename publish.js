@@ -340,6 +340,7 @@ function buildMemberNav (items, itemHeading, itemsSeen, linktoFn) {
           let classes = find({kind: 'class', memberof: item.longname})
           let members = find({kind: 'member', memberof: item.longname})
           let submodules = find({kind: 'module', memberof: item.longname})
+          let events = find({kind: 'event', memberof: item.longname})
 
           let id = getNavID()
           childCount = methods.length + classes.length + members.length + submodules.length
@@ -353,6 +354,7 @@ function buildMemberNav (items, itemHeading, itemsSeen, linktoFn) {
             containerHTML += generateChildByType(methods)
             containerHTML += generateChildByType(members)
             containerHTML += generateChildByType(submodules)
+            containerHTML += generateChildByType(events)
 
             for (let cIdx = 0, cLen = classes.length; cIdx < cLen; cIdx++) {
               containerHTML += '<ul>' + addContainer(classes[cIdx]) + '</ul>'
