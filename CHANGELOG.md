@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.3]
+### Fixed
+ - link to live sample in REDAME
+
 ## [1.7.2]
 ### Added
  - this changelog
