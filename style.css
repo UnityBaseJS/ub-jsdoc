@@ -1,0 +1,46 @@
+:root {
+    --main-bg-color: coral;
+    --main-txt-color: blue;
+    --main-padding: 15px;
+}
+
+.bd-sidebar {
+    border-right: 1px solid rgba(0, 0, 0, .1);
+}
+
+.nav {
+    padding-left: 0;
+}
+
+.nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav ul.subnav {
+    padding: 1rem;
+}
+
+.bd-sidebar, .bd-toc {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+    height: 100vh;
+}
+
+/*Small devices (landscape phones, 576px and up)*/
+@media (min-width: 576px) {
+}
+
+/*// Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) {
+}
+
+/*// Large devices (desktops, 992px and up)*/
+@media (min-width: 992px) {
+}
+
+/*// Extra large devices (large desktops, 1200px and up)*/
+@media (min-width: 1200px) {
+}

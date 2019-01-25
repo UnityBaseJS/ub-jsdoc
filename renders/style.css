@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto');
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 1rem;
+}
+
+:root {
+    --nav-padding: 1rem;
+    /*--main-padding: 15px;*/
+    --nav-item-current-color: #202020;
+    --nav-item-main-color: #10154e;
+    --nav-item-not-current-color: #7b7b7b;
+    --navbar-height: 50px;
+}
+
+.logo {
+    width: 30px;
+}
+
+.bd-sidebar, .bd-toc {
+    position: sticky;
+    position: -webkit-sticky;
+    top: var(--navbar-height);
+    height: calc(100vh - 2 * var(--navbar-height));
+    overflow-y: auto;
+
+}
+
+.bd-sidebar {
+    border-right: 1px solid rgba(0, 0, 0, .1);
+}
+
+.nav {
+    padding-left: 0;
+}
+
+.nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav .main-nav > li {
+    margin-top: 5px;
+}
+
+.nav .main-nav > li > a {
+    color: var(--nav-item-main-color);
+    font-weight: 600;
+    font-size: 95%;
+}
+
+.nav ul.sub-nav {
+    padding-left: var(--nav-padding);
+}
+
+.nav ul.sub-nav a {
+    color: var(--nav-item-not-current-color)
+}
+
+.nav ul.sub-nav a.current {
+    color: var(--nav-item-current-color);
+    font-weight: bold;
+
+}
+
+.nav ul.sub-nav a:hover {
+    color: rgba(0, 0, 0, .75);
+    text-decoration: none;
+}
+
+.nav a {
+    color: #000;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 80%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.nav li {
+    /*margin-top: 5px;*/
+}
+
+
+main {
+    font-family: 'Roboto', sans-serif;
+    top: var(--navbar-height);
+}
+
+main .page-title {
+    font-size: 2rem;
+}
+
+main .subsection-title {
+    margin-top: 50px;
+    font-size: 1.5rem;
+}
+
+main .subclasses, main .submodules {
+    list-style-type: none;
+}
+
+main .item {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+
+/*Small devices (landscape phones, 576px and up)*/
+@media (min-width: 576px) {
+}
+
+/*// Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) {
+}
+
+/*// Large devices (desktops, 992px and up)*/
+@media (min-width: 992px) {
+}
+
+/*// Extra large devices (large desktops, 1200px and up)*/
+@media (min-width: 1200px) {
+}
