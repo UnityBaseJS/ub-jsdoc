@@ -1,7 +1,13 @@
-<div>
-    <h5 v-bind:id="type.name">{{type.name}}</h5>
+<div class="item" :id="type.name">
+    <div class="anchor-wrapper">
+        <h5 class="item-title" v-bind:id="type.name">{{type.name}}</h5>
+        <span class="anchor" :data-id="type.name">#</span>
+    </div>
+    <div class="fromMD">
+        <p v-html="type.description"></p>
+    </div>
+
     <!--<p>{{func.return}}</p>-->
-    <p v-html="type.description"></p>
     <template v-if="type.deprecated">
         <p>Deprecated!</p>
         <p>{{type.deprecated}}</p>

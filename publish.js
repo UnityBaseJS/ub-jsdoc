@@ -2,7 +2,6 @@ const helper = require('jsdoc/util/templateHelper')
 const fs = require('fs')
 const vueRender = require('vue-server-renderer')
 const _ = require('lodash')
-
 exports.publish = function (taffyData, opts, tutorials) {
   let data = taffyData
 
@@ -50,6 +49,10 @@ exports.publish = function (taffyData, opts, tutorials) {
     props: ['event'],
     template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/event.vue', 'utf-8')
   })
+  Vue.component('example', {
+    props: ['example'],
+    template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/example.vue', 'utf-8')
+  })
   Vue.component('sidebar', {
     props: ['navigation'],
     template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/sidebar.vue', 'utf-8')
@@ -77,21 +80,20 @@ exports.publish = function (taffyData, opts, tutorials) {
   }
 
   const linkParser = href => {
-    if (href === 'BlobStoreItem') {
+    if (href === 'Worker') {
       debugger
     }
     let type, name, anchor
     // if look like module:... or class:...
     if (/(.*):(.*)/.test(href)) {
       [type, name] = href.match(/[^:]+/g)
-    // else trying to find by name in all items
+      // else trying to find by name in all items
     } else if (allData.filter(({ name }) => name === href).length > 0) {
-      const [item] = allData.filter(({ name }) => name === href)
-      if (item.scope === 'global') {
+      const [item] = allData.filter(({ name }) => name === href).sort((a, b) => a.scope === 'global' ? -1 : 1)
+      if (item.scope === 'global' || ['module', 'class'].includes(item.kind)) {
         name = href
         type = item.kind
-      }
-      if (item.memberof !== undefined) {
+      } else if (item.memberof !== undefined) {
         return linkParser(item.longname)
       }
     } else {
@@ -125,8 +127,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     }
     return { type, name, anchor }
   }
-  debugger
-  linkParser('DBConnection')
+
 // return text
   const linkReplacer = (_, link) => {
     //       if one world => linkText = href
@@ -216,16 +217,14 @@ exports.publish = function (taffyData, opts, tutorials) {
     '/home/andrey/dev/ub-jsdoc/renders/index.html')
 
   const parseType = typeObj => {
-    debugger
     const { names } = typeObj
     return names.map(typeName => {
       const { type, name, anchor } = linkParser(typeName)
       return {
-        text: typeName,
+        text: name,
         href: createItemLink(type, name, anchor)
       }
     })
-
   }
 
   const filterGroupByMemberOf = (groupedItems, memberName) => groupedItems.filter(({ memberof }) => memberof === memberName)
@@ -425,21 +424,34 @@ exports.publish = function (taffyData, opts, tutorials) {
 //       `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(namespace.kind, namespace.name)}`)
 //   }
 //   rootGroupedItems.namespace.forEach(namespace => renderNamespace(namespace))
-  const renderType = (type, itemNameF) => {
+  const renderType = (type, generateName) => {
     const renderItem = (item, parent) => {
-      const itemName = itemNameF(item.name, parent)
+      const itemName = generateName(item.name, parent ? parent.name : undefined)
       // const moduleName = parent ? `${parent}.module:${module.name}` : `module:${module.name}`
-
+      item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
+        name: item.name,
+        link: createItemLink(item.kind, item.name)
+      }]
       item.readme = item.readme ? replaceAllLinks(item.readme) : undefined
       item.description = item.description ? replaceAllLinks(item.description) : undefined
+      item.classdesc = item.classdesc ? replaceAllLinks(item.classdesc).replace('<pre class="prettyprint source"><code>', '<pre class="prettyprint source"><code class="language-javascript">') : undefined
       const subclasses = filterGroupByMemberOf(groupedItems.class, itemName)
       subclasses.forEach(clazz => clazz.link = createItemLink(clazz.kind, clazz.name))
-      subclasses.forEach(clazz => renderItem(clazz, itemName))
+
+      subclasses.forEach(clazz => renderItem(clazz, {
+        name: itemName,
+        kind: item.kind,
+        breadcrumbs: item.breadcrumbs
+      }))
 
       const submodules = filterGroupByMemberOf(groupedItems.module, itemName)
       submodules.forEach(submodule => submodule.link = createItemLink(submodule.kind, submodule.name))
       // render submodules. maybe better move from renderModule to up?
-      submodules.forEach(submodule => renderItem(submodule, itemName))
+      submodules.forEach(submodule => renderItem(submodule, {
+        name: itemName,
+        kind: item.kind,
+        breadcrumbs: item.breadcrumbs
+      }))
 
       const members = filterGroupByMemberOf(groupedItems.member, itemName)
 
@@ -475,19 +487,17 @@ exports.publish = function (taffyData, opts, tutorials) {
           }))
         }
       ]
-
       const memberWithLinks = members
         .map(member =>
           (member.description ? {
             ...member,
             description: replaceAllLinks(member.description)
           } : member))
-      // .map(member =>
-      //   (member.type ? {
-      //     ...member,
-      //     type: parseType(member.type)
-      //   } : member))
-
+        .map(member =>
+          (member.type ? {
+            ...member,
+            type: parseType(member.type)
+          } : member))
       const funcsWithLinks = funcs
         .map(func =>
           (func.deprecated ? {
@@ -516,9 +526,10 @@ exports.publish = function (taffyData, opts, tutorials) {
     }
     rootGroupedItems[type].forEach(item => renderItem(item))
   }
-
-  renderType('class', (clazzName, parent) => parent ? `${parent}~${clazzName}` : clazzName)
-  renderType('module', (moduleName, parent) => parent ? `${parent}.module:${moduleName}` : `module:${moduleName}`)
+  debugger
+  renderType('class', (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName)
+  debugger
+  renderType('module', (moduleName, parentName) => parentName ? `${parentName}.module:${moduleName}` : `module:${moduleName}`)
   renderType('namespace', namespaceName => namespaceName)
   renderType('mixin', mixinName => mixinName)
   renderType('interface', interfaceName => interfaceName)

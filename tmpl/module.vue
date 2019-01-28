@@ -1,22 +1,29 @@
 <div class="row flex-xl-nowrap">
-    <sidebar v-bind:navigation="navigation"></sidebar>
+    <sidebar :navigation="navigation"></sidebar>
     <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" role="main">
-        <h2 class="page-title">{{ module.name }}</h2>
-        <p v-html=module.readme></p>
-        <p v-if="module.description" v-html="module.description"></p>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" v-for="breadcrumb in module.breadcrumbs">
+                    <a :href="breadcrumb.link">{{ breadcrumb.name }}</a>
+                </li>
+            </ol>
+        </nav>
+        <h1 class="page-title">{{ module.name }}</h1>
+        <div class="fromMD">
+            <p v-html=module.readme></p>
+            <p v-if="module.description" v-html="module.description"></p>
+        </div>
         <template v-if="module.examples">
             <p class="subsection-title" id="examples">Examples</p>
-            <ul>
-                <li v-for="example in module.examples">
-                    <code>
-                        <pre>{{example}}</pre>
-                    </code>
-                </li>
-            </ul>
+            <example
+                    v-for="example in module.examples"
+                    :key="1"
+                    :example="example"
+            ></example>
         </template>
 
         <template v-if="subclasses.length > 0">
-            <h4 class="subsection-title" id="classes">Classes</h4>
+            <h3 class="subsection-title" id="Classes">Classes</h3>
             <ul class="subclasses">
                 <li v-for="clazz in subclasses">
                     <a :href="clazz.link">{{ clazz.name }}</a>
@@ -25,7 +32,7 @@
         </template>
 
         <template v-if="submodules.length > 0">
-            <h4 class="subsection-title" id="submodules">Submodules</h4>
+            <h3 class="subsection-title" id="Submodules">Submodules</h3>
             <ul class="submodules">
                 <li v-for="submodule in submodules">
                     <a :href="submodule.link">{{ submodule.name }}</a>
@@ -34,34 +41,34 @@
         </template>
 
         <template v-if="members.length > 0">
-            <h4 class="subsection-title" id="members">Members</h4>
+            <h3 class="subsection-title" id="Members">Members</h3>
             <member
                     v-for="member in members"
-                    v-bind:key="member.___id"
-                    v-bind:member="member"
+                    :key="member.___id"
+                    :member="member"
             ></member>
         </template>
 
         <template v-if="funcs.length > 0">
-            <h4 class="subsection-title" id="methods">Methods</h4>
+            <h3 class="subsection-title" id="Methods">Methods</h3>
             <func
                     v-for="func in funcs"
-                    v-bind:key="func.___id"
-                    v-bind:func="func"
+                    :key="func.___id"
+                    :func="func"
             ></func>
         </template>
 
         <template v-if="types.length > 0">
-            <h4 class="subsection-title" id="types">Types</h4>
+            <h3 class="subsection-title" id="Types">Types</h3>
             <type
                     v-for="type in types"
-                    v-bind:key="type.___id"
-                    v-bind:type="type"
+                    :key="type.___id"
+                    :type="type"
             ></type>
         </template>
 
     </main>
     <t-o-content
-            v-bind:tableOfContent="tableOfContent"
+            :tableOfContent="tableOfContent"
     ></t-o-content>
 </div>

@@ -1,13 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto');
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-size: 1rem;
-}
 
 :root {
     --nav-padding: 1rem;
@@ -16,6 +8,10 @@ h6 {
     --nav-item-main-color: #10154e;
     --nav-item-not-current-color: #7b7b7b;
     --navbar-height: 50px;
+}
+
+.container-fluid {
+    margin-top: var(--navbar-height);
 }
 
 .logo {
@@ -55,11 +51,11 @@ h6 {
     font-size: 95%;
 }
 
-.nav ul.sub-nav {
+.nav ul.sub-nav, .bd-toc ul {
     padding-left: var(--nav-padding);
 }
 
-.nav ul.sub-nav a {
+.nav ul.sub-nav a, .bd-toc ul a {
     color: var(--nav-item-not-current-color)
 }
 
@@ -69,12 +65,12 @@ h6 {
 
 }
 
-.nav ul.sub-nav a:hover {
+.nav ul.sub-nav a:hover, .bd-toc ul a:hover {
     color: rgba(0, 0, 0, .75);
     text-decoration: none;
 }
 
-.nav a {
+.nav a, .bd-toc a {
     color: #000;
     font-family: 'Open Sans', sans-serif;
     font-size: 80%;
@@ -89,11 +85,10 @@ h6 {
 
 main {
     font-family: 'Roboto', sans-serif;
-    top: var(--navbar-height);
 }
 
 main .page-title {
-    font-size: 2rem;
+    font-size: 3rem;
 }
 
 main .subsection-title {
@@ -105,10 +100,47 @@ main .subclasses, main .submodules {
     list-style-type: none;
 }
 
-main .item {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    font-size: 1.2rem;
+main .item-title {
+    margin-top: 40px;
+    margin-bottom: 15px;
+    font-size: 2rem;
+}
+
+
+.bd-content .item[id]::before {
+    display: block;
+    height: var(--navbar-height);
+    margin-top: calc(-1 * var(--navbar-height));
+    content: "";
+}
+
+/*.member > :not(.item-title) {*/
+/*margin-left: 20px;*/
+/*}*/
+
+.anchor-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.anchor {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.anchor:hover {
+    background-color: #de935f;
+    border-radius: 2px;
+}
+
+.fromMD h1, .fromMD h2, .fromMD h3, .fromMD h4, .fromMD h5, .fromMD h6 {
+    font-size: 1rem;
+}
+
+.bd-toc li {
+    list-style-type: none;
+
 }
 
 

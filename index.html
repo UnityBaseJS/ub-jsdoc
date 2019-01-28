@@ -9,11 +9,12 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
           integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+    <link href="prism.css" rel="stylesheet"/>
     <title>Doc</title>
 </head>
 <body>
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light py-1">
-    <a class="navbar-brand" href="https://unitybase.info">
+    <a class="navbar-brand" href="/">
         <img src="https://unitybase.info/img/UB-logo.png" class="d-inline-block align-middle logo mr2" alt="logo">
         UB documentation
     </a>
@@ -30,6 +31,7 @@
     <!--vue-ssr-outlet-->
 </div>
 <!-- Optional JavaScript -->
+
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -40,5 +42,26 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
+<script>
+  $('.anchor').click(e => {
+    copyToClipboard(`${window.location.href}#${e.currentTarget.dataset.id}`)
+  })
+
+  const copyToClipboard = str => new Promise(function (resolve, reject) {
+    let success = false
+
+    const listener = e => {
+      e.clipboardData.setData('text/plain', str)
+      e.preventDefault()
+      success = true
+    }
+
+    document.addEventListener('copy', listener)
+    document.execCommand('copy')
+    document.removeEventListener('copy', listener)
+    success ? resolve() : reject()
+  })
+</script>
+<script src="prism.js"></script>
 </body>
 </html>
