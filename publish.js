@@ -79,11 +79,34 @@ exports.publish = function (taffyData, opts, tutorials) {
     })
   }
 
+  const itemTypes = {
+    module: {
+      generateName: (moduleName, parentName) => parentName ? `${parentName}.module:${moduleName}` : `module:${moduleName}`
+    },
+    class: {
+      generateName: (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName,
+    },
+    namespace: {
+      generateName: namespaceName => namespaceName,
+    },
+    mixin: {
+      generateName: mixinName => mixinName,
+    },
+    interface: {
+      generateName: interfaceName => interfaceName
+    },
+    // function: {
+    //   generateName: 'Global',
+    // }
+  }
+
   const linkParser = href => {
-    if (href === 'Worker') {
+    if (href === 'TubDataStore#run') {
       debugger
     }
     let type, name, anchor
+    // if has substring 'module:' two times
+    href = href.includes('module:') ? href.substring(href.lastIndexOf('module:')) : href
     // if look like module:... or class:...
     if (/(.*):(.*)/.test(href)) {
       [type, name] = href.match(/[^:]+/g)
@@ -185,7 +208,7 @@ exports.publish = function (taffyData, opts, tutorials) {
       name: navigation[type].name,
       link: createItemLink(type, rootGroupedItems[type][0].name),
       // submenu present only render same type
-      submenu: type === currentType ? rootGroupedItems[type].map(item => ({
+      submenu: type === currentType ? _.uniqBy(rootGroupedItems[type], 'name').map(item => ({
         link: createItemLink(item.kind, item.name),
         name: item.name,
         isCurrent: item.name === currentItem
@@ -424,20 +447,15 @@ exports.publish = function (taffyData, opts, tutorials) {
 //       `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(namespace.kind, namespace.name)}`)
 //   }
 //   rootGroupedItems.namespace.forEach(namespace => renderNamespace(namespace))
-  const renderType = (type, generateName) => {
+  const renderType = (type) => {
     const renderItem = (item, parent) => {
-      const itemName = generateName(item.name, parent ? parent.name : undefined)
-      // const moduleName = parent ? `${parent}.module:${module.name}` : `module:${module.name}`
+      const itemName = itemTypes[item.kind].generateName(item.name, parent ? parent.name : undefined)
       item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
         name: item.name,
         link: createItemLink(item.kind, item.name)
       }]
-      item.readme = item.readme ? replaceAllLinks(item.readme) : undefined
-      item.description = item.description ? replaceAllLinks(item.description) : undefined
-      item.classdesc = item.classdesc ? replaceAllLinks(item.classdesc).replace('<pre class="prettyprint source"><code>', '<pre class="prettyprint source"><code class="language-javascript">') : undefined
       const subclasses = filterGroupByMemberOf(groupedItems.class, itemName)
       subclasses.forEach(clazz => clazz.link = createItemLink(clazz.kind, clazz.name))
-
       subclasses.forEach(clazz => renderItem(clazz, {
         name: itemName,
         kind: item.kind,
@@ -446,7 +464,6 @@ exports.publish = function (taffyData, opts, tutorials) {
 
       const submodules = filterGroupByMemberOf(groupedItems.module, itemName)
       submodules.forEach(submodule => submodule.link = createItemLink(submodule.kind, submodule.name))
-      // render submodules. maybe better move from renderModule to up?
       submodules.forEach(submodule => renderItem(submodule, {
         name: itemName,
         kind: item.kind,
@@ -487,6 +504,11 @@ exports.publish = function (taffyData, opts, tutorials) {
           }))
         }
       ]
+
+      // parse links
+      item.readme = item.readme ? replaceAllLinks(item.readme) : undefined
+      item.description = item.description ? replaceAllLinks(item.description) : undefined
+      item.classdesc = item.classdesc ? replaceAllLinks(item.classdesc).replace('<pre class="prettyprint source"><code>', '<pre class="prettyprint source"><code class="language-javascript">') : undefined
       const memberWithLinks = members
         .map(member =>
           (member.description ? {
@@ -509,27 +531,35 @@ exports.publish = function (taffyData, opts, tutorials) {
             ...func,
             description: replaceAllLinks(func.description)
           } : func))
-      render({
-          navigation: createNavigation(type, item.name),
-          [type === 'class' ? 'clazz' : type]: item,
-          subclasses,
-          submodules,
-          members: memberWithLinks,
-          funcs: funcsWithLinks,
-          types,
-          events,
-          tableOfContent
-        },
-        `/home/andrey/dev/ub-jsdoc/tmpl/${type}.vue`,
-        '/home/andrey/dev/ub-jsdoc/index.html',
-        `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(item.kind, item.name)}`)
+        // for params in parentheses in methods
+        .map(func =>
+          (func.params ? {
+            ...func,
+            paramsForMethods: func.params
+            // if complex parameter like options.encoding in getContent
+              .filter(({ name }) => !name.includes('.'))
+          } : func))
+
+        render({
+            navigation: createNavigation(type, item.name),
+            [type === 'class' ? 'clazz' : type]: item,
+            subclasses,
+            submodules,
+            members: memberWithLinks,
+            funcs: funcsWithLinks,
+            types,
+            events,
+            tableOfContent
+          },
+          `/home/andrey/dev/ub-jsdoc/tmpl/${type}.vue`,
+          '/home/andrey/dev/ub-jsdoc/index.html',
+          `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(item.kind, item.name)}`)
     }
     rootGroupedItems[type].forEach(item => renderItem(item))
   }
-  debugger
-  renderType('class', (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName)
-  debugger
+  // todo itemTypes iterate
   renderType('module', (moduleName, parentName) => parentName ? `${parentName}.module:${moduleName}` : `module:${moduleName}`)
+  renderType('class', (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName)
   renderType('namespace', namespaceName => namespaceName)
   renderType('mixin', mixinName => mixinName)
   renderType('interface', interfaceName => interfaceName)

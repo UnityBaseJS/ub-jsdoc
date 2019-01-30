@@ -43,6 +43,7 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
 <script>
+  // copy link on click on anchor
   $('.anchor').click(e => {
     copyToClipboard(`${window.location.href}#${e.currentTarget.dataset.id}`)
   })
@@ -61,6 +62,15 @@
     document.removeEventListener('copy', listener)
     success ? resolve() : reject()
   })
+</script>
+
+<script>
+  //fix intend for code tag
+  document.querySelectorAll('pre').forEach(node => {
+    if (node.childNodes[0].nodeName === '#text')
+      node.childNodes[0].parentNode.removeChild(node.childNodes[0])
+  })
+  document.querySelectorAll('code').forEach(node => node.textContent = node.textContent.trim())
 </script>
 <script src="prism.js"></script>
 </body>

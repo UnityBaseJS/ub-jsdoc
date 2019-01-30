@@ -88,22 +88,38 @@ main {
 }
 
 main .page-title {
-    font-size: 3rem;
+    /*font-size: 3rem;*/
 }
 
 main .subsection-title {
     margin-top: 50px;
-    font-size: 1.5rem;
+    font-weight: 600;
+    /*font-size: 1.1rem;*/
 }
 
 main .subclasses, main .submodules {
     list-style-type: none;
 }
 
-main .item-title {
+main .item-title-wrapper {
+    display: flex;
     margin-top: 40px;
     margin-bottom: 15px;
-    font-size: 2rem;
+    /*font-size: 1.8rem;*/
+}
+
+main .item-name, main .item-type {
+    position: relative;
+    padding: .75rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+}
+main .item-type {
+    margin-left: -14px;
+}
+
+main .item {
+    margin-bottom: 10px;
 }
 
 

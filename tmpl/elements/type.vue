@@ -1,6 +1,6 @@
 <div class="item" :id="type.name">
     <div class="anchor-wrapper">
-        <h5 class="item-title" v-bind:id="type.name">{{type.name}}</h5>
+        <h5 class="item-title-wrapper" v-bind:id="type.name">{{type.name}}</h5>
         <span class="anchor" :data-id="type.name">#</span>
     </div>
     <div class="fromMD">

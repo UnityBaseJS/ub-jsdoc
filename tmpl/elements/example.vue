@@ -1,6 +1,5 @@
-<pre>
-    <code >
-        {{'lol'+example.toString().trim()+'lol'}}
+<pre class="prettyprint source lang-javascript">
+    <code>
+        {{example}}
     </code>
 </pre>
-

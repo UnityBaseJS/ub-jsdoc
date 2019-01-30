@@ -1,6 +1,6 @@
 <div class="item" :id="event.name">
     <div class="anchor-wrapper">
-        <h5 class="item-title" v-bind:class="{ deprecated: event.deprecated}" :id="event.name">{{event.name}}</h5>
+        <h5 class="item-title-wrapper" v-bind:class="{ deprecated: event.deprecated}" :id="event.name">{{event.name}}</h5>
         <span class="anchor" :data-id="event.name">#</span>
     </div>
     <div class="fromMD" v-if="event.deprecated">

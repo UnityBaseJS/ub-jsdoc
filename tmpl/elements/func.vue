@@ -1,7 +1,12 @@
-<div class="item" :id="func.name">
+<div class="item border-bottom" :id="func.name">
     <div class="anchor-wrapper">
-        <h5 class="item-title" v-bind:class="{ deprecated: func.deprecated}" v-bind:id="func.name">
-            {{`${func.name}(${func.params?func.params.map(param => param.name).join(', '):''})`}}
+        <h5 class="item-title-wrapper" v-bind:class="{ deprecated: func.deprecated}" v-bind:id="func.name">
+            {{func.name}}
+            (
+            <i v-for="param in func.paramsForMethods">
+                {{`${param.name}, `}}
+            </i>
+            )
         </h5>
         <span class="anchor" :data-id="func.name">#</span>
     </div>
