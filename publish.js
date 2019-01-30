@@ -62,6 +62,33 @@ exports.publish = function (taffyData, opts, tutorials) {
     template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/t-o-content.vue', 'utf-8')
   })
 
+  const standartObjects = {
+    object: {
+      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object'
+    },
+    boolean: {
+      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean'
+    },
+    number: {
+      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number'
+    },
+    string: {
+      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String'
+    },
+    array: {
+      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array'
+    },
+    arraybuffer: {
+      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer'
+    },
+    null: {
+      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null'
+    },
+    function: {
+      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function'
+    }
+  }
+
   const render = (data, vueTemplPath, htmlTemplPath, outputPath) => {
     const app = new Vue({
       data,
@@ -242,10 +269,17 @@ exports.publish = function (taffyData, opts, tutorials) {
   const parseType = typeObj => {
     const { names } = typeObj
     return names.map(typeName => {
+      //if standard js type
+      if (Object.keys(standartObjects).includes(typeName.toLowerCase())) {
+        return {
+          text: typeName,
+          link: standartObjects[typeName.toLowerCase()].link
+        }
+      }
       const { type, name, anchor } = linkParser(typeName)
       return {
         text: name,
-        href: createItemLink(type, name, anchor)
+        link: createItemLink(type, name, anchor)
       }
     })
   }
@@ -538,22 +572,34 @@ exports.publish = function (taffyData, opts, tutorials) {
             paramsForMethods: func.params
             // if complex parameter like options.encoding in getContent
               .filter(({ name }) => !name.includes('.'))
+              .map(param => {
+                return {
+                  name: param.name,
+                  type: param.type ? parseType(param.type) : [{ text: 'lolsdfsfs', href: '#' }]
+                }
+              })
+          } : func))
+        // for returns in method header
+        .map(func =>
+          (func.returns ? {
+            ...func,
+            returns: parseType(func.returns[0].type)
           } : func))
 
-        render({
-            navigation: createNavigation(type, item.name),
-            [type === 'class' ? 'clazz' : type]: item,
-            subclasses,
-            submodules,
-            members: memberWithLinks,
-            funcs: funcsWithLinks,
-            types,
-            events,
-            tableOfContent
-          },
-          `/home/andrey/dev/ub-jsdoc/tmpl/${type}.vue`,
-          '/home/andrey/dev/ub-jsdoc/index.html',
-          `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(item.kind, item.name)}`)
+      render({
+          navigation: createNavigation(type, item.name),
+          [type === 'class' ? 'clazz' : type]: item,
+          subclasses,
+          submodules,
+          members: memberWithLinks,
+          funcs: funcsWithLinks,
+          types,
+          events,
+          tableOfContent
+        },
+        `/home/andrey/dev/ub-jsdoc/tmpl/${type}.vue`,
+        '/home/andrey/dev/ub-jsdoc/index.html',
+        `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(item.kind, item.name)}`)
     }
     rootGroupedItems[type].forEach(item => renderItem(item))
   }
