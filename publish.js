@@ -267,6 +267,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     '/home/andrey/dev/ub-jsdoc/renders/index.html')
 
   const parseType = typeObj => {
+    if (typeObj === undefined) return undefined
     const { names } = typeObj
     return names.map(typeName => {
       //if standard js type
@@ -483,6 +484,7 @@ exports.publish = function (taffyData, opts, tutorials) {
 //   rootGroupedItems.namespace.forEach(namespace => renderNamespace(namespace))
   const renderType = (type) => {
     const renderItem = (item, parent) => {
+      if (item.name === 'argv') debugger
       const itemName = itemTypes[item.kind].generateName(item.name, parent ? parent.name : undefined)
       item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
         name: item.name,
@@ -544,6 +546,11 @@ exports.publish = function (taffyData, opts, tutorials) {
       item.description = item.description ? replaceAllLinks(item.description) : undefined
       item.classdesc = item.classdesc ? replaceAllLinks(item.classdesc).replace('<pre class="prettyprint source"><code>', '<pre class="prettyprint source"><code class="language-javascript">') : undefined
       const memberWithLinks = members
+      // .map(member =>
+      //   (member.deprecated ? {
+      //     ...member,                    // jsdoc dont parse ` in @deprecated for some reason
+      //     deprecated: replaceAllLinks(member.deprecated).replace(/`(.*)`/, '<code>$1</code>')
+      //   } : member))
         .map(member =>
           (member.description ? {
             ...member,
@@ -554,6 +561,22 @@ exports.publish = function (taffyData, opts, tutorials) {
             ...member,
             type: parseType(member.type)
           } : member))
+      // types in properties
+      memberWithLinks.forEach(member => {
+        if (member.properties) {
+          member.properties.forEach(properties => {
+            properties.type = parseType(properties.type)
+          })
+        }
+      })
+      // .map(member =>
+      //   (member.properties ? {
+      //     ...member,
+      //     properties: {
+      //       ...member.properties,
+      //       // type: parseType(member.properties.type)
+      //     }
+      //   } : member))
       const funcsWithLinks = funcs
         .map(func =>
           (func.deprecated ? {
@@ -575,7 +598,8 @@ exports.publish = function (taffyData, opts, tutorials) {
               .map(param => {
                 return {
                   name: param.name,
-                  type: param.type ? parseType(param.type) : [{ text: 'lolsdfsfs', href: '#' }]
+                  optional: param.optional,
+                  type: param.type ? parseType(param.type) : [{ text: 'lolsdfsf!!!!!!!!!!!!!!!s', href: '#' }]
                 }
               })
           } : func))
@@ -585,6 +609,22 @@ exports.publish = function (taffyData, opts, tutorials) {
             ...func,
             returns: parseType(func.returns[0].type)
           } : func))
+      funcsWithLinks.forEach(func => {
+        if (func.params) {
+          const arguments = func.params.filter(({ name }) => func.params.some(({ name: innerName }) => innerName.includes(`${name}.`)))
+
+          // const prop = _.uniq(func.params.filter(({ name }) => name.includes('.')).map(({ name }) => name.match(/[^.]+/g)))
+          arguments.forEach(arg => {
+            if (arg.params) arg.params.forEach(param => param.type = parseType(param.type))
+            arg.props = func.params.filter(({ name }) => name.includes(`${arg.name}.`)).map(param => ({
+              ...param,
+              name: param.name.match(/\.([^.]+)/)[1],
+              type: parseType(param.type)
+            }))
+          })
+          func.params = [...arguments, ...func.params.filter(param => param.description && !param.name.includes('.'))]
+        }
+      })
 
       render({
           navigation: createNavigation(type, item.name),

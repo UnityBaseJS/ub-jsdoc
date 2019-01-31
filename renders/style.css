@@ -119,9 +119,12 @@ main .item-type {
 }
 
 main .item {
-    margin-bottom: 10px;
+    margin-bottom: 2rem;
 }
 
+.deprecated {
+    text-decoration: line-through
+}
 
 .bd-content .item[id]::before {
     display: block;

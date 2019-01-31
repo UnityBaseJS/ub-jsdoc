@@ -1,37 +1,36 @@
 <div class="item border-bottom" :id="member.name">
-    <div class="anchor-wrapper">
-        <div>
-            <h5 class="item-title-wrapper">
-                <div class="item-name alert-primary">
-                    {{member.name}}
-                </div>
-                <template v-if="member.type && member.type.length > 0">
-                    <div v-for="type in member.type" class="item-type">
-                        :
-                        <a :href="type.href">{{type.text}}</a>
-                    </div>
-                </template>
-            </h5>
-        </div>
+    <h5 class="alert alert-primary">
+        <span :class="{ deprecated: !!member.deprecated }">{{member.name}}</span>
+        <template v-if="member.type && member.type.length > 0"> : <a
+                :href="member.type[0].link">{{member.type[0].text}}</a></template>
+        <span v-if="member.deprecated" class="badge badge-danger">deprecated</span>
+        <span v-if="member.scope" class="badge badge-light">{{member.scope}}</span>
         <span class="anchor" :data-id="member.name">#</span>
-    </div>
-
+    </h5>
     <div class="fromMD">
         <p v-html="member.description"></p>
     </div>
     <template v-if="member.deprecated">
-        <p>Deprecated!</p>
         <p>{{member.deprecated}}</p>
     </template>
     <template v-if="member.properties && member.properties.length > 0">
-        <p>Properties</p>
-        <ul>
-            <li v-for="property in member.properties">
-                <p>{{property.name}}</p>
-                <p>{{property.type}}</p>
-                <p>{{property.description}}</p>
-            </li>
-        </ul>
+        <table class="table table-striped table-sm">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="property in member.properties">
+                <td>{{property.name}}</td>
+                <td v-if="property.type"><a v-if="property.type" :href="property.type[0].link"></a>{{property.type[0].text}}
+                </td>
+                <td>{{property.description}}</td>
+            </tr>
+            </tbody>
+        </table>
     </template>
 
 
