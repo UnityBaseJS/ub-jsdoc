@@ -15,6 +15,7 @@
 }
 
 .logo {
+    margin-right: 10px;
     width: 30px;
 }
 
@@ -97,7 +98,7 @@ main .subsection-title {
     /*font-size: 1.1rem;*/
 }
 
-main .subclasses, main .submodules {
+main .subclasses, main .submodules, main .mixins {
     list-style-type: none;
 }
 
@@ -114,6 +115,7 @@ main .item-name, main .item-type {
     border: 1px solid transparent;
     border-radius: .25rem;
 }
+
 main .item-type {
     margin-left: -14px;
 }
@@ -122,8 +124,14 @@ main .item {
     margin-bottom: 2rem;
 }
 
-.deprecated {
+main .deprecated {
     text-decoration: line-through
+}
+
+main .arguments-title {
+    font-size: 70%;
+    font-weight: 600;
+    margin-bottom: 0;
 }
 
 .bd-content .item[id]::before {
@@ -158,9 +166,12 @@ main .item {
     font-size: 1rem;
 }
 
+.fromMD p {
+    margin-bottom: 0;
+}
+
 .bd-toc li {
     list-style-type: none;
-
 }
 
 

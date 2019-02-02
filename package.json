@@ -19,6 +19,7 @@
   "homepage": "https://github.com/UnityBaseJS/ub-jsdoc",
   "dependencies": {
     "jsdoc": "^3.5.5",
+    "jsdoctypeparser": "^2.0.0-alpha-8",
     "lodash": "^4.17.11",
     "lunr": "^1.0.0",
     "vue": "^2.5.21",

@@ -2,9 +2,10 @@ const helper = require('jsdoc/util/templateHelper')
 const fs = require('fs')
 const vueRender = require('vue-server-renderer')
 const _ = require('lodash')
+const jsdoctypeparse = require('jsdoctypeparser').parse
 exports.publish = function (taffyData, opts, tutorials) {
   let data = taffyData
-
+  debugger
   // var conf = env.conf.templates || {}
   // conf.default = conf.default || {}
   //
@@ -62,33 +63,6 @@ exports.publish = function (taffyData, opts, tutorials) {
     template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/t-o-content.vue', 'utf-8')
   })
 
-  const standartObjects = {
-    object: {
-      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object'
-    },
-    boolean: {
-      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean'
-    },
-    number: {
-      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number'
-    },
-    string: {
-      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String'
-    },
-    array: {
-      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array'
-    },
-    arraybuffer: {
-      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer'
-    },
-    null: {
-      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null'
-    },
-    function: {
-      link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function'
-    }
-  }
-
   const render = (data, vueTemplPath, htmlTemplPath, outputPath) => {
     const app = new Vue({
       data,
@@ -129,7 +103,7 @@ exports.publish = function (taffyData, opts, tutorials) {
 
   const linkParser = href => {
     if (href === 'TubDataStore#run') {
-      debugger
+      // debugger
     }
     let type, name, anchor
     // if has substring 'module:' two times
@@ -170,7 +144,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     }
 
     // change Class[.|~]method to Class#method
-    name = name.replace(/\.|~/, '#')
+    name = name.replace(/[.~]/, '#')
     // parse anchor
     if (name.includes('#')) {
       [name, anchor] = name.match(/[^#]+/g)
@@ -189,9 +163,179 @@ exports.publish = function (taffyData, opts, tutorials) {
     return text.replace(/{@link (.*?)}/g, linkReplacer)
   }
 
-  const groupedItems = _.groupBy(allData, 'kind')
+  const createItemFileName = (itemType, itemName) => `${itemType}-${itemName.replace('/', '%')}.html`
+  const createItemLink = (itemType, itemName, anchor) => {
+    const link = anchor ? `${createItemFileName(itemType, itemName)}#${anchor}` : createItemFileName(itemType, itemName)
+    return encodeURI(link)
+  }
+  const filterGroupByMemberOf = (groupedItems, memberName) => groupedItems.filter(({ memberof }) => memberof === memberName)
 
-  /// index page
+  const parseType = (typeObj) => {
+    const buildInJSObjects = {
+      object: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object'
+      },
+      boolean: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean'
+      },
+      number: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number'
+      },
+      string: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String'
+      },
+      array: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array'
+      },
+      arraybuffer: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer'
+      },
+      null: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null'
+      },
+      function: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function'
+      },
+      undefined: {
+        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined'
+      },
+      '*': {
+        link: ''
+      }
+    }
+    if (typeObj === undefined) return undefined
+    const { names } = typeObj
+    return names.map(typeName => {
+      const parsedType = jsdoctypeparse(typeName)
+      if (parsedType.type === 'NAME') {
+        typeName = parsedType.name
+      }
+      //if standard js type
+      if (Object.keys(buildInJSObjects).includes(typeName.toLowerCase())) {
+        return {
+          text: typeName,
+          link: buildInJSObjects[typeName.toLowerCase()].link
+        }
+      }
+      const { type, name, anchor } = linkParser(typeName)
+      return {
+        text: anchor ? anchor : name,
+        link: createItemLink(type, name, anchor)
+      }
+    })
+  }
+
+  // replace all links in data
+  allData.forEach(item => {
+    item.readme = item.readme ? replaceAllLinks(item.readme) : undefined
+    item.description = item.description ? replaceAllLinks(item.description) : undefined
+    item.classdesc = item.classdesc ? replaceAllLinks(item.classdesc) : undefined
+    item.deprecated = typeof (item.deprecated) === 'string' ? replaceAllLinks(item.deprecated) : undefined
+  })
+  // parse and replace with {text:..., link:...}  all types
+  allData.forEach(item => {
+    // if (item.name === 'serverConfig') debugger
+    item.type = item.type ? parseType(item.type, item.name) : undefined
+    item.returns = item.returns ? parseType(item.returns[0].type) : undefined
+
+    if (item.properties) {
+      item.properties.forEach(property => {
+        if (property.___id === undefined)
+          property.type = parseType(property.type, property.name)
+      })
+    }
+    if (item.params) {
+      item.params.forEach(param => {
+        if (param.___id === undefined)
+          param.type = parseType(param.type)
+      })
+    }
+  })
+
+  // parse params and grouping subparams
+  allData.forEach(item => {
+    // if complex parameter like options.encoding in getContent
+    if (item.params) {
+      item.paramsForMethods = item.params.filter(({ name }) => !name.includes('.'))
+      const arguments = item.params.filter(({ name }) => item.params.some(({ name: innerName }) => innerName.includes(`${name}.`)))
+      arguments.forEach(arg => {
+        arg.props = item.params.filter(({ name }) => name.includes(`${arg.name}.`)).map(param => ({
+          ...param,
+          name: param.name.match(/\.([^.]+)/)[1]
+        }))
+      })
+      item.params = [...arguments, ...item.params.filter(param => param.description && !param.name.includes('.'))]
+    }
+  })
+
+  //add links for mixin
+  allData.forEach(item => {
+    if (item.mixes) {
+      debugger
+      item.mixes = item.mixes.map(mixinName => {
+        const { type, name, anchor } = linkParser(mixinName)
+        return {
+          text: anchor ? anchor : name,
+          link: createItemLink(type, name, anchor)
+        }
+      })
+    }
+  })
+
+  //need for highlight syntax in class
+  allData.forEach(item => {
+    item.classdesc = item.classdesc ? item.classdesc.replace(/<pre class="prettyprint source"><code>/g, '<pre class="prettyprint source"><code class="language-javascript">', 'g') : undefined
+    item.description = item.description ? item.description.replace(/<pre class="prettyprint source"><code>/g, '<pre class="prettyprint source"><code class="language-javascript">', 'g') : undefined
+  })
+
+  // const funcsWithParams = funcs
+  // // for params in parentheses in methods
+  //   .map(func =>
+  //     (func.params ? {
+  //       ...func,
+  //       paramsForMethods: func.params
+  //       // if complex parameter like options.encoding in getContent
+  //         .filter(({ name }) => !name.includes('.'))
+  //     } : func))
+  // funcsWithParams.forEach(func => {
+  //   if (func.params) {
+  //     const arguments = func.params.filter(({ name }) => func.params.some(({ name: innerName }) => innerName.includes(`${name}.`)))
+  //     arguments.forEach(arg => {
+  //       arg.props = func.params.filter(({ name }) => name.includes(`${arg.name}.`)).map(param => ({
+  //         ...param,
+  //         name: param.name.match(/\.([^.]+)/)[1]
+  //       }))
+  //     })
+  //     func.params = [...arguments, ...func.params.filter(param => param.description && !param.name.includes('.'))]
+  //   }
+  // })
+  // if (item.properties) {
+  //   item.properties.forEach(properties => {
+  //     properties.type = parseType(properties.type,properties.name)
+  //   })
+  // }
+  // if (item.params) {
+  //   item.params.forEach(params => {
+  //     params.type = parseType(params.type, params.name)
+  //   })
+  // }
+  // parse and replace with {text:..., link:...} | undefined  all types
+  // allData.forEach(item => {
+  //   item.type = item.type ? parseType(item.type) : undefined
+  //   if (item.properties) {
+  //     item.properties.forEach(properties => {
+  //       properties.type = parseType(properties.type)
+  //     })
+  //   }
+  //   if (item.params) {
+  //     item.params.forEach(params => {
+  //       params.type = parseType(params.type)
+  //     })
+  //   }
+  //   item.returns = item.returns ? parseType(item.returns[0].type) : undefined
+  // })
+
+  const groupedItems = _.groupBy(allData, 'kind')
   const rootGroupedItems = {} //Object.keys(groups).map(group => groups[group].filter(({ memberof }) => memberof === undefined))
   for (let [key, value] of Object.entries(groupedItems)) {
     rootGroupedItems[key] = value.filter(({ memberof }) => memberof === undefined)
@@ -217,24 +361,12 @@ exports.publish = function (taffyData, opts, tutorials) {
       name: 'Global',
     }
   }
-  debugger
+  // debugger
   const createNavigation = (currentType, currentItem) => {
-
-    // const classes = rootGroupedItems.class
-    // const classNavigation = classes.map(clazz => ({
-    //   link: createItemLink(clazz.kind, clazz.name),
-    //   name: clazz.name,
-    //   isCurrent: clazz.name === className
-    // }))
-    //
-    // mixins.forEach(({ property, value }) => {
-    //   navigation[property] = value
-    // })
-
     return Object.keys(navigation).map(type => ({
       name: navigation[type].name,
       link: createItemLink(type, rootGroupedItems[type][0].name),
-      // submenu present only render same type
+      // submenu present only for current type
       submenu: type === currentType ? _.uniqBy(rootGroupedItems[type], 'name').map(item => ({
         link: createItemLink(item.kind, item.name),
         name: item.name,
@@ -242,21 +374,12 @@ exports.publish = function (taffyData, opts, tutorials) {
       })) : undefined
     }))
   }
-  const createItemFileName = (itemType, itemName) => `${itemType}-${itemName.replace('/', '%')}.html`
-  const createItemLink = (itemType, itemName, anchor) => {
-    const link = anchor ? `${createItemFileName(itemType, itemName)}#${anchor}` : createItemFileName(itemType, itemName)
-    return encodeURI(link)
-  }
+
+  /// index page
   const indexNavigation = Object.keys(navigation).map(type => ({
     name: navigation[type].name,
     link: createItemLink(type, rootGroupedItems[type][0].name)
   }))
-
-  // const indexNavigation = navigation.map(({ name, type }) => ({
-  //   name,
-  //   link: createItemLink(type, rootGroupedItems[type][0].name)
-  // }))
-
   render({
       readme: replaceAllLinks(opts.readme),
       navigation: indexNavigation,
@@ -266,26 +389,110 @@ exports.publish = function (taffyData, opts, tutorials) {
     '/home/andrey/dev/ub-jsdoc/index.html',
     '/home/andrey/dev/ub-jsdoc/renders/index.html')
 
-  const parseType = typeObj => {
-    if (typeObj === undefined) return undefined
-    const { names } = typeObj
-    return names.map(typeName => {
-      //if standard js type
-      if (Object.keys(standartObjects).includes(typeName.toLowerCase())) {
-        return {
-          text: typeName,
-          link: standartObjects[typeName.toLowerCase()].link
-        }
-      }
-      const { type, name, anchor } = linkParser(typeName)
-      return {
-        text: name,
-        link: createItemLink(type, name, anchor)
-      }
-    })
-  }
+  const renderType = (type) => {
+    const renderItem = (item, parent) => {
+      if (item.name === 'FileBasedStoreLoader') debugger
+      const itemName = itemTypes[item.kind].generateName(item.name, parent ? parent.name : undefined)
+      item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
+        name: item.name,
+        link: createItemLink(item.kind, item.name)
+      }]
+      const subclasses = filterGroupByMemberOf(groupedItems.class, itemName)
+      subclasses.forEach(clazz => clazz.link = createItemLink(clazz.kind, clazz.name))
+      subclasses.forEach(clazz => renderItem(clazz, {
+        name: itemName,
+        kind: item.kind,
+        breadcrumbs: item.breadcrumbs
+      }))
 
-  const filterGroupByMemberOf = (groupedItems, memberName) => groupedItems.filter(({ memberof }) => memberof === memberName)
+      const submodules = filterGroupByMemberOf(groupedItems.module, itemName)
+      submodules.forEach(submodule => submodule.link = createItemLink(submodule.kind, submodule.name))
+      submodules.forEach(submodule => renderItem(submodule, {
+        name: itemName,
+        kind: item.kind,
+        breadcrumbs: item.breadcrumbs
+      }))
+
+      const mixins = filterGroupByMemberOf(groupedItems.mixin, itemName)
+      mixins.forEach(mixin => mixin.link = createItemLink(mixin.kind, mixin.name))
+      mixins.forEach(mixin => renderItem(mixin, {
+        name: itemName,
+        kind: item.kind,
+        breadcrumbs: item.breadcrumbs
+      }))
+
+      const members = filterGroupByMemberOf(groupedItems.member, itemName)
+
+      const funcs = filterGroupByMemberOf(groupedItems.function, itemName)
+
+      const types = filterGroupByMemberOf(groupedItems.typedef, itemName)
+
+      const events = filterGroupByMemberOf(groupedItems.event, itemName)
+
+      const tableOfContent = [
+        {
+          name: 'Members',
+          props: members.map(member => ({
+            name: member.name
+          }))
+        },
+        {
+          name: 'Methods',
+          props: funcs.map(func => ({
+            name: func.name
+          }))
+        },
+        {
+          name: 'Types',
+          props: types.map(type => ({
+            name: type.name
+          }))
+        },
+        {
+          name: 'Events',
+          props: events.map(event => ({
+            name: event.name
+          }))
+        }
+      ]
+
+      render({
+          navigation: createNavigation(type, item.name),
+          [type === 'class' ? 'clazz' : type]: item,
+          subclasses,
+          submodules,
+          mixins,
+          members,
+          funcs,
+          types,
+          events,
+          tableOfContent
+        },
+        `/home/andrey/dev/ub-jsdoc/tmpl/${type}.vue`,
+        '/home/andrey/dev/ub-jsdoc/index.html',
+        `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(item.kind, item.name)}`)
+    }
+    rootGroupedItems[type].forEach(item => renderItem(item))
+  }
+  // todo itemTypes iterate
+  debugger
+  renderType('module', (moduleName, parentName) => parentName ? `${parentName}.module:${moduleName}` : `module:${moduleName}`)
+  renderType('class', (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName)
+  renderType('namespace', namespaceName => namespaceName)
+  renderType('mixin', mixinName => mixinName)
+  renderType('interface', interfaceName => interfaceName)
+
+  // renderType('function', functionName => functionName)
+  //render global
+  // const renderGlobal = () => {
+  //   debugger
+  //   const globalItems = allData.filter(({ scope, kind }) => scope === 'global' && ['member', 'function'].includes(kind))
+  //
+  // }
+  //
+  // renderGlobal()
+}
+
 //   const renderClass = (clazz, parent) => {
 //     const className = parent ? `${parent}~${clazz.name}` : clazz.name
 //     const members = filterGroupByMemberOf(groupedItems.member, className)
@@ -482,181 +689,3 @@ exports.publish = function (taffyData, opts, tutorials) {
 //       `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(namespace.kind, namespace.name)}`)
 //   }
 //   rootGroupedItems.namespace.forEach(namespace => renderNamespace(namespace))
-  const renderType = (type) => {
-    const renderItem = (item, parent) => {
-      if (item.name === 'argv') debugger
-      const itemName = itemTypes[item.kind].generateName(item.name, parent ? parent.name : undefined)
-      item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
-        name: item.name,
-        link: createItemLink(item.kind, item.name)
-      }]
-      const subclasses = filterGroupByMemberOf(groupedItems.class, itemName)
-      subclasses.forEach(clazz => clazz.link = createItemLink(clazz.kind, clazz.name))
-      subclasses.forEach(clazz => renderItem(clazz, {
-        name: itemName,
-        kind: item.kind,
-        breadcrumbs: item.breadcrumbs
-      }))
-
-      const submodules = filterGroupByMemberOf(groupedItems.module, itemName)
-      submodules.forEach(submodule => submodule.link = createItemLink(submodule.kind, submodule.name))
-      submodules.forEach(submodule => renderItem(submodule, {
-        name: itemName,
-        kind: item.kind,
-        breadcrumbs: item.breadcrumbs
-      }))
-
-      const members = filterGroupByMemberOf(groupedItems.member, itemName)
-
-      const funcs = filterGroupByMemberOf(groupedItems.function, itemName)
-
-      const types = filterGroupByMemberOf(groupedItems.typedef, itemName)
-
-      const events = filterGroupByMemberOf(groupedItems.event, itemName)
-
-      const tableOfContent = [
-        {
-          name: 'Members',
-          props: members.map(member => ({
-            name: member.name
-          }))
-        },
-        {
-          name: 'Methods',
-          props: funcs.map(func => ({
-            name: func.name
-          }))
-        },
-        {
-          name: 'Types',
-          props: types.map(type => ({
-            name: type.name
-          }))
-        },
-        {
-          name: 'Events',
-          props: events.map(event => ({
-            name: event.name
-          }))
-        }
-      ]
-
-      // parse links
-      item.readme = item.readme ? replaceAllLinks(item.readme) : undefined
-      item.description = item.description ? replaceAllLinks(item.description) : undefined
-      item.classdesc = item.classdesc ? replaceAllLinks(item.classdesc).replace('<pre class="prettyprint source"><code>', '<pre class="prettyprint source"><code class="language-javascript">') : undefined
-      const memberWithLinks = members
-      // .map(member =>
-      //   (member.deprecated ? {
-      //     ...member,                    // jsdoc dont parse ` in @deprecated for some reason
-      //     deprecated: replaceAllLinks(member.deprecated).replace(/`(.*)`/, '<code>$1</code>')
-      //   } : member))
-        .map(member =>
-          (member.description ? {
-            ...member,
-            description: replaceAllLinks(member.description)
-          } : member))
-        .map(member =>
-          (member.type ? {
-            ...member,
-            type: parseType(member.type)
-          } : member))
-      // types in properties
-      memberWithLinks.forEach(member => {
-        if (member.properties) {
-          member.properties.forEach(properties => {
-            properties.type = parseType(properties.type)
-          })
-        }
-      })
-      // .map(member =>
-      //   (member.properties ? {
-      //     ...member,
-      //     properties: {
-      //       ...member.properties,
-      //       // type: parseType(member.properties.type)
-      //     }
-      //   } : member))
-      const funcsWithLinks = funcs
-        .map(func =>
-          (func.deprecated ? {
-            ...func,
-            deprecated: replaceAllLinks(func.deprecated)
-          } : func))
-        .map(func =>
-          (func.description ? {
-            ...func,
-            description: replaceAllLinks(func.description)
-          } : func))
-        // for params in parentheses in methods
-        .map(func =>
-          (func.params ? {
-            ...func,
-            paramsForMethods: func.params
-            // if complex parameter like options.encoding in getContent
-              .filter(({ name }) => !name.includes('.'))
-              .map(param => {
-                return {
-                  name: param.name,
-                  optional: param.optional,
-                  type: param.type ? parseType(param.type) : [{ text: 'lolsdfsf!!!!!!!!!!!!!!!s', href: '#' }]
-                }
-              })
-          } : func))
-        // for returns in method header
-        .map(func =>
-          (func.returns ? {
-            ...func,
-            returns: parseType(func.returns[0].type)
-          } : func))
-      funcsWithLinks.forEach(func => {
-        if (func.params) {
-          const arguments = func.params.filter(({ name }) => func.params.some(({ name: innerName }) => innerName.includes(`${name}.`)))
-
-          // const prop = _.uniq(func.params.filter(({ name }) => name.includes('.')).map(({ name }) => name.match(/[^.]+/g)))
-          arguments.forEach(arg => {
-            if (arg.params) arg.params.forEach(param => param.type = parseType(param.type))
-            arg.props = func.params.filter(({ name }) => name.includes(`${arg.name}.`)).map(param => ({
-              ...param,
-              name: param.name.match(/\.([^.]+)/)[1],
-              type: parseType(param.type)
-            }))
-          })
-          func.params = [...arguments, ...func.params.filter(param => param.description && !param.name.includes('.'))]
-        }
-      })
-
-      render({
-          navigation: createNavigation(type, item.name),
-          [type === 'class' ? 'clazz' : type]: item,
-          subclasses,
-          submodules,
-          members: memberWithLinks,
-          funcs: funcsWithLinks,
-          types,
-          events,
-          tableOfContent
-        },
-        `/home/andrey/dev/ub-jsdoc/tmpl/${type}.vue`,
-        '/home/andrey/dev/ub-jsdoc/index.html',
-        `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(item.kind, item.name)}`)
-    }
-    rootGroupedItems[type].forEach(item => renderItem(item))
-  }
-  // todo itemTypes iterate
-  renderType('module', (moduleName, parentName) => parentName ? `${parentName}.module:${moduleName}` : `module:${moduleName}`)
-  renderType('class', (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName)
-  renderType('namespace', namespaceName => namespaceName)
-  renderType('mixin', mixinName => mixinName)
-  renderType('interface', interfaceName => interfaceName)
-
-  // renderType('function', functionName => functionName)
-  //render global
-  // const renderGlobal = () => {
-  //   debugger
-  //   const globalItems = allData.filter(({ scope, kind }) => scope === 'global' && ['member', 'function'].includes(kind))
-  //
-  // }
-  //
-  // renderGlobal()
-}

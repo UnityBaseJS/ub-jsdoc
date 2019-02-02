@@ -12,6 +12,30 @@
         <div class="fromMD">
             <p v-html=clazz.classdesc></p>
         </div>
+        <div class="item border-bottom" :id="clazz.name">
+            <h5 class="alert alert-primary">
+                new {{clazz.name}}(
+                <template v-if="clazz.paramsForMethods && clazz.paramsForMethods.length > 0">
+                    <template v-for="param in clazz.paramsForMethods.slice(0, -1)">{{param.name}}
+                        <span v-if="param.optional" class="badge badge-pill badge-light">opt</span>
+                        <span v-if="param.type && param.type.length > 0">:<a
+                                :href="param.type[0].link">{{param.type[0].text}}</a></span>
+                        <span>, </span>
+                    </template>
+                    {{clazz.paramsForMethods.slice(-1)[0].name}}
+                    <span v-if="clazz.paramsForMethods.slice(-1)[0].optional"
+                          class="badge badge-pill badge-light">opt</span>
+                    <span v-if="clazz.paramsForMethods.slice(-1)[0].type && clazz.paramsForMethods.slice(-1)[0].type.length > 0">:<a
+                            :href="clazz.paramsForMethods.slice(-1)[0].type[0].link">{{clazz.paramsForMethods.slice(-1)[0].type[0].text}}</a></span>
+                </template>
+                )
+                <span class="anchor" :data-id="clazz.name">#</span>
+            </h5>
+            <div v-if="clazz.mixes && clazz.mixes.length > 0">
+                Mixes In:
+                <a v-for="mixin in clazz.mixes" :href="mixin.link">{{mixin.text}}</a>
+            </div>
+        </div>
         <template v-if="members.length > 0">
             <h3 class="subsection-title" id="Members">Members</h3>
             <member

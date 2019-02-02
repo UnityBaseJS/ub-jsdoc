@@ -25,9 +25,9 @@
             <tbody>
             <tr v-for="property in member.properties">
                 <td>{{property.name}}</td>
-                <td v-if="property.type"><a v-if="property.type" :href="property.type[0].link"></a>{{property.type[0].text}}
+                <td><a v-if="property.type && property.type.length > 0" :href="property.type[0].link">{{property.type[0].text}}</a>
                 </td>
-                <td>{{property.description}}</td>
+                <td><span v-html="property.description"></span></td>
             </tr>
             </tbody>
         </table>

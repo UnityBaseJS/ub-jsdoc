@@ -40,6 +40,15 @@
             </ul>
         </template>
 
+        <template v-if="mixins.length > 0">
+            <h3 class="subsection-title" id="Mixins">Mixins</h3>
+            <ul class="mixins">
+                <li v-for="mixin in mixins">
+                    <a :href="mixin.link">{{ mixin.name }}</a>
+                </li>
+            </ul>
+        </template>
+
         <template v-if="members.length > 0">
             <h3 class="subsection-title" id="Members">Members</h3>
             <member

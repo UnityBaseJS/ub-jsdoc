@@ -1,13 +1,13 @@
 <div class="row flex-xl-nowrap">
     <sidebar v-bind:navigation="navigation"></sidebar>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item" v-for="breadcrumb in interface.breadcrumbs">
-                <a :href="breadcrumb.link">{{ breadcrumb.name }}</a>
-            </li>
-        </ol>
-    </nav>
     <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" role="main">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item" v-for="breadcrumb in interface.breadcrumbs">
+                    <a :href="breadcrumb.link">{{ breadcrumb.name }}</a>
+                </li>
+            </ol>
+        </nav>
         <h1 class="page-title">{{ interface.name }}</h1>
         <div class="fromMD">
             <p v-html=interface.description></p>
