@@ -9,9 +9,6 @@
             </ol>
         </nav>
         <h1 class="page-title">{{ clazz.name }}</h1>
-        <div class="fromMD">
-            <p v-html=clazz.classdesc></p>
-        </div>
         <div class="item border-bottom" :id="clazz.name">
             <h5 class="alert alert-primary">
                 new {{clazz.name}}(
@@ -34,6 +31,10 @@
             <div v-if="clazz.mixes && clazz.mixes.length > 0">
                 Mixes In:
                 <a v-for="mixin in clazz.mixes" :href="mixin.link">{{mixin.text}}</a>
+            </div>
+            <p></p>
+            <div class="fromMD">
+                <p v-html=clazz.classdesc></p>
             </div>
         </div>
         <template v-if="members.length > 0">

@@ -12,7 +12,6 @@
             <span v-if="func.paramsForMethods.slice(-1)[0].optional" class="badge badge-pill badge-light">opt</span>
             <span v-if="func.paramsForMethods.slice(-1)[0].type && func.paramsForMethods.slice(-1)[0].type.length > 0">:<a
                     :href="func.paramsForMethods.slice(-1)[0].type[0].link">{{func.paramsForMethods.slice(-1)[0].type[0].text}}</a></span>
-
         </template>
         )
         <template v-if="func.returns">

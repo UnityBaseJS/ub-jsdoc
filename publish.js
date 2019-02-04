@@ -383,7 +383,7 @@ exports.publish = function (taffyData, opts, tutorials) {
   render({
       readme: replaceAllLinks(opts.readme),
       navigation: indexNavigation,
-      contents: {}
+      contents: []
     },
     '/home/andrey/dev/ub-jsdoc/tmpl/index.vue',
     '/home/andrey/dev/ub-jsdoc/index.html',
@@ -481,6 +481,53 @@ exports.publish = function (taffyData, opts, tutorials) {
   renderType('namespace', namespaceName => namespaceName)
   renderType('mixin', mixinName => mixinName)
   renderType('interface', interfaceName => interfaceName)
+
+  function idGeneratorFabric (prefix) {
+    let id = 1
+    return function () {
+      return prefix + (id++)
+    }
+  }
+
+  let getNavID = idGeneratorFabric('n')
+  let getFTSid = idGeneratorFabric('f')
+
+  const lunr = require('lunr')
+  const ftsIndex = lunr(function () {
+    this.ref('id')
+    this.field('name', { boost: 5 })
+    this.field('description', { boost: 1 })
+  })
+  let ftsData = {}
+
+  function addToSearch (member, group) {
+    let id = getFTSid()
+    // if (group === 'Tutorials') {
+    //   ftsIndex.add({
+    //     id: id,
+    //     name: member.title,
+    //     description: member.content /* for tutorials */
+    //   })
+    //   ftsData[id] = {
+    //     href: helper.tutorialToUrl(member.name),
+    //     path: member.title,
+    //     group: group,
+    //     name: member.title
+    //   }
+    // } else {
+      ftsIndex.add({
+        id: id,
+        name: member.name,
+        description: member.classdesc || member.description || member.content /* for tutorials */
+      })
+      ftsData[id] = {
+        href: helper.longnameToUrl[member.longname],
+        path: member.longname,
+        group: group,
+        name: member.name
+      }
+    // }
+  }
 
   // renderType('function', functionName => functionName)
   //render global

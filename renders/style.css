@@ -19,14 +19,6 @@
     width: 30px;
 }
 
-.bd-sidebar, .bd-toc {
-    position: sticky;
-    position: -webkit-sticky;
-    top: var(--navbar-height);
-    height: calc(100vh - 2 * var(--navbar-height));
-    overflow-y: auto;
-
-}
 
 .bd-sidebar {
     border-right: 1px solid rgba(0, 0, 0, .1);
@@ -181,6 +173,21 @@ main .arguments-title {
 
 /*// Medium devices (tablets, 768px and up)*/
 @media (min-width: 768px) {
+
+    .bd-sidebar, .bd-toc {
+        position: sticky;
+        position: -webkit-sticky;
+        top: var(--navbar-height);
+        height: calc(100vh - 2 * var(--navbar-height));
+        overflow-y: auto;
+
+    }
+    .bd-sidebar {
+        display: block!important;
+    }
+    .navbar-expand-lg .navbar-toggler {
+        display: none;
+    }
 }
 
 /*// Large devices (desktops, 992px and up)*/

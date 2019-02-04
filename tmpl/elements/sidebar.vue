@@ -1,4 +1,4 @@
-<div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+<div class="col-12 col-md-3 col-xl-2 bd-sidebar collapse navbar-collapse" id="nav">
     <form class="bd-search d-flex align-items-center">
     </form>
     <div class="nav">
