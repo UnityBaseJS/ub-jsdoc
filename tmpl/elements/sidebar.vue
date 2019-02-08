@@ -1,6 +1,8 @@
 <div class="col-12 col-md-3 col-xl-2 bd-sidebar collapse navbar-collapse" id="nav">
-    <form class="bd-search d-flex align-items-center">
+    <form class="bd-search align-items-center my-2">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="search">
     </form>
+
     <div class="nav">
         <ul class="main-nav">
             <li v-for="nav in navigation">

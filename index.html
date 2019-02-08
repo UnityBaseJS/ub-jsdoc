@@ -13,6 +13,10 @@
     <title>Doc</title>
 </head>
 <body>
+<div class="dropdown">
+    <div class="dropdown-menu" id="search-result">
+    </div>
+</div>
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light py-1">
     <a class="navbar-brand" href="/">
         <img src="https://unitybase.info/img/UB-logo.png" class="d-inline-block align-middle logo mr2" alt="logo">
@@ -28,6 +32,67 @@
     <!--vue-ssr-outlet-->
 </div>
 <!-- Optional JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/lunr@2/lunr.min.js"></script>
+<script>
+  const getFTSData = () => {
+    window.FTSData = window.FTSData ? Promise.resolve(window.FTSData) : Promise.all([
+      window.fetch('ftsIndex.json'),
+      window.fetch('ftsData.json')
+    ]).then(values => Promise.all([values[0].json(), values[1].json()]))
+      .then(valuesInJSON => {
+        return {
+          ftsIndex: lunr.Index.load(valuesInJSON[0]),
+          ftsData: valuesInJSON[1]
+        }
+      })
+    return window.FTSData
+  }
+  const fullTextSearch = textToSearch => {
+    getFTSData().then(searchData => {
+      const result = searchData.ftsIndex.search(textToSearch)
+      console.log(result)
+      const dataToDisplay = result.slice(0, 10).map(el => searchData.ftsData[el.ref])
+      console.log(dataToDisplay)
+      debugger
+      document.querySelector('#search-result').classList.add('show')
+      document.querySelector('#search-result').innerHTML = dataToDisplay.length > 0 ? dataToDisplay
+        .map(el => `<a href="${el.link}" class="dropdown-item search-item">
+    <h5><b>${el.parent}</b></h5>
+    ${el.name}
+</a>`).join('<div class="dropdown-divider"></div>') : '<div class="dropdown-item">Нічого не знайдено</div>'
+    })
+  }
+
+  document.querySelector('#search').addEventListener('input', (event) => {
+    if (event.target.value) {
+      fullTextSearch(event.target.value)
+    }
+  })
+  document.querySelector('#search').addEventListener('search', (event) => {
+    if (event.target.value) {
+      fullTextSearch(event.target.value)
+    } else {
+      document.querySelector('#search-result').classList.remove('show')
+    }
+  })
+  document.querySelector('#search').addEventListener('focus', (event) => {
+    if (event.target.value) {
+      fullTextSearch(event.target.value)
+    }
+  })
+  document.querySelector('#search').addEventListener('blur', (event) => {
+    document.addEventListener('click')
+    document.querySelector('#search-result').classList.remove('show')
+  })
+  document.querySelector('#search').addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      document.querySelector('#search-result').classList.remove('show')
+    }
+  })
+
+</script>
+
+
 <script src="prism.js"></script>
 <script>
   // copy link on click on anchor

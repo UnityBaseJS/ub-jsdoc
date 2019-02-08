@@ -75,7 +75,6 @@
                     :type="type"
             ></type>
         </template>
-
     </main>
     <t-o-content
             :tableOfContent="tableOfContent"

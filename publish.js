@@ -3,6 +3,8 @@ const fs = require('fs')
 const vueRender = require('vue-server-renderer')
 const _ = require('lodash')
 const jsdoctypeparse = require('jsdoctypeparser').parse
+const lunr = require('lunr')
+
 exports.publish = function (taffyData, opts, tutorials) {
   let data = taffyData
   debugger
@@ -82,21 +84,27 @@ exports.publish = function (taffyData, opts, tutorials) {
 
   const itemTypes = {
     module: {
+      name: 'Modules',
       generateName: (moduleName, parentName) => parentName ? `${parentName}.module:${moduleName}` : `module:${moduleName}`
     },
     class: {
+      name: 'Classes',
       generateName: (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName,
     },
     namespace: {
+      name: 'Namespaces',
       generateName: namespaceName => namespaceName,
     },
     mixin: {
+      name: 'Mixins',
       generateName: mixinName => mixinName,
     },
     interface: {
+      name: 'Interfaces',
       generateName: interfaceName => interfaceName
     },
     // function: {
+    // name: 'Global',
     //   generateName: 'Global',
     // }
   }
@@ -231,6 +239,9 @@ exports.publish = function (taffyData, opts, tutorials) {
     item.description = item.description ? replaceAllLinks(item.description) : undefined
     item.classdesc = item.classdesc ? replaceAllLinks(item.classdesc) : undefined
     item.deprecated = typeof (item.deprecated) === 'string' ? replaceAllLinks(item.deprecated) : undefined
+    if (item.params) item.params.forEach(param => {
+      param.description = param.description ? replaceAllLinks(param.description) : undefined
+    })
   })
   // parse and replace with {text:..., link:...}  all types
   allData.forEach(item => {
@@ -271,7 +282,6 @@ exports.publish = function (taffyData, opts, tutorials) {
   //add links for mixin
   allData.forEach(item => {
     if (item.mixes) {
-      debugger
       item.mixes = item.mixes.map(mixinName => {
         const { type, name, anchor } = linkParser(mixinName)
         return {
@@ -341,30 +351,9 @@ exports.publish = function (taffyData, opts, tutorials) {
     rootGroupedItems[key] = value.filter(({ memberof }) => memberof === undefined)
   }
 
-  const navigation = {
-    module: {
-      name: 'Modules'
-    },
-    class: {
-      name: 'Classes',
-    },
-    namespace: {
-      name: 'Namespaces',
-    },
-    mixin: {
-      name: 'Mixins',
-    },
-    interface: {
-      name: 'Interfaces'
-    },
-    function: {
-      name: 'Global',
-    }
-  }
-  // debugger
   const createNavigation = (currentType, currentItem) => {
-    return Object.keys(navigation).map(type => ({
-      name: navigation[type].name,
+    return Object.keys(itemTypes).filter(type => rootGroupedItems[type] && rootGroupedItems[type][0]).map(type => ({
+      name: itemTypes[type].name,
       link: createItemLink(type, rootGroupedItems[type][0].name),
       // submenu present only for current type
       submenu: type === currentType ? _.uniqBy(rootGroupedItems[type], 'name').map(item => ({
@@ -376,8 +365,8 @@ exports.publish = function (taffyData, opts, tutorials) {
   }
 
   /// index page
-  const indexNavigation = Object.keys(navigation).map(type => ({
-    name: navigation[type].name,
+  const indexNavigation = Object.keys(itemTypes).filter(type => rootGroupedItems[type] && rootGroupedItems[type][0]).map(type => ({
+    name: itemTypes[type].name,
     link: createItemLink(type, rootGroupedItems[type][0].name)
   }))
   render({
@@ -391,35 +380,41 @@ exports.publish = function (taffyData, opts, tutorials) {
 
   const renderType = (type) => {
     const renderItem = (item, parent) => {
-      if (item.name === 'FileBasedStoreLoader') debugger
+      // if (item.name === 'uba_prevPasswordsHash_ns') debugger
       const itemName = itemTypes[item.kind].generateName(item.name, parent ? parent.name : undefined)
       item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
         name: item.name,
         link: createItemLink(item.kind, item.name)
       }]
       const subclasses = filterGroupByMemberOf(groupedItems.class, itemName)
-      subclasses.forEach(clazz => clazz.link = createItemLink(clazz.kind, clazz.name))
-      subclasses.forEach(clazz => renderItem(clazz, {
-        name: itemName,
-        kind: item.kind,
-        breadcrumbs: item.breadcrumbs
-      }))
+      subclasses.forEach(clazz => {
+        clazz.link = createItemLink(clazz.kind, clazz.name)
+        renderItem(clazz, {
+          name: itemName,
+          kind: item.kind,
+          breadcrumbs: item.breadcrumbs
+        })
+      })
 
       const submodules = filterGroupByMemberOf(groupedItems.module, itemName)
-      submodules.forEach(submodule => submodule.link = createItemLink(submodule.kind, submodule.name))
-      submodules.forEach(submodule => renderItem(submodule, {
-        name: itemName,
-        kind: item.kind,
-        breadcrumbs: item.breadcrumbs
-      }))
+      submodules.forEach(submodule => {
+        submodule.link = createItemLink(submodule.kind, submodule.name)
+        renderItem(submodule, {
+          name: itemName,
+          kind: item.kind,
+          breadcrumbs: item.breadcrumbs
+        })
+      })
 
       const mixins = filterGroupByMemberOf(groupedItems.mixin, itemName)
-      mixins.forEach(mixin => mixin.link = createItemLink(mixin.kind, mixin.name))
-      mixins.forEach(mixin => renderItem(mixin, {
-        name: itemName,
-        kind: item.kind,
-        breadcrumbs: item.breadcrumbs
-      }))
+      mixins.forEach(mixin => {
+        mixin.link = createItemLink(mixin.kind, mixin.name)
+        renderItem(mixin, {
+          name: itemName,
+          kind: item.kind,
+          breadcrumbs: item.breadcrumbs
+        })
+      })
 
       const members = filterGroupByMemberOf(groupedItems.member, itemName)
 
@@ -457,8 +452,8 @@ exports.publish = function (taffyData, opts, tutorials) {
       ]
 
       render({
-          navigation: createNavigation(type, item.name),
-          [type === 'class' ? 'clazz' : type]: item,
+          navigation: createNavigation(item.kind, item.name),
+          [item.kind === 'class' ? 'clazz' : item.kind]: item,
           subclasses,
           submodules,
           mixins,
@@ -468,66 +463,120 @@ exports.publish = function (taffyData, opts, tutorials) {
           events,
           tableOfContent
         },
-        `/home/andrey/dev/ub-jsdoc/tmpl/${type}.vue`,
+        `/home/andrey/dev/ub-jsdoc/tmpl/${item.kind}.vue`,
         '/home/andrey/dev/ub-jsdoc/index.html',
         `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(item.kind, item.name)}`)
     }
-    rootGroupedItems[type].forEach(item => renderItem(item))
+    if (rootGroupedItems[type]) {
+      rootGroupedItems[type].forEach(item => renderItem(item))
+    }
   }
   // todo itemTypes iterate
   debugger
-  renderType('module', (moduleName, parentName) => parentName ? `${parentName}.module:${moduleName}` : `module:${moduleName}`)
-  renderType('class', (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName)
-  renderType('namespace', namespaceName => namespaceName)
-  renderType('mixin', mixinName => mixinName)
-  renderType('interface', interfaceName => interfaceName)
+  renderType('module')
+  renderType('class')
+  renderType('namespace')
+  renderType('mixin')
+  renderType('interface')
 
-  function idGeneratorFabric (prefix) {
+  const idGeneratorFabric = prefix => {
     let id = 1
-    return function () {
-      return prefix + (id++)
-    }
+    return () => prefix + (id++)
   }
 
-  let getNavID = idGeneratorFabric('n')
+  // let getNavID = idGeneratorFabric('n')
   let getFTSid = idGeneratorFabric('f')
 
-  const lunr = require('lunr')
+  let ftsData = {}
+
   const ftsIndex = lunr(function () {
+    const addToSearch = (item, parent, link) => {
+      const id = getFTSid()
+
+      this.add({
+        id: id,
+        name: item.name,
+        description: item.readme ? item.readme.replace(/<.*?>/g, ' ') : undefined || item.classdesc ? item.classdesc.replace(/<.*?>/g, ' ') : undefined || item.description ? item.description.replace(/<.*?>/g, ' ') : undefined || item.content /* for tutorials */
+      })
+      ftsData[id] = {
+        link,
+        // path: item.longname,
+        kind: item.kind,
+        name: item.name,
+        parent: parent || item.name
+      }
+    }
+
     this.ref('id')
     this.field('name', { boost: 5 })
     this.field('description', { boost: 1 })
-  })
-  let ftsData = {}
 
-  function addToSearch (member, group) {
-    let id = getFTSid()
-    // if (group === 'Tutorials') {
-    //   ftsIndex.add({
-    //     id: id,
-    //     name: member.title,
-    //     description: member.content /* for tutorials */
-    //   })
-    //   ftsData[id] = {
-    //     href: helper.tutorialToUrl(member.name),
-    //     path: member.title,
-    //     group: group,
-    //     name: member.title
-    //   }
-    // } else {
-      ftsIndex.add({
-        id: id,
-        name: member.name,
-        description: member.classdesc || member.description || member.content /* for tutorials */
-      })
-      ftsData[id] = {
-        href: helper.longnameToUrl[member.longname],
-        path: member.longname,
-        group: group,
-        name: member.name
+    Object.keys(itemTypes).map(type => {
+      const renderItem = (item, parent) => {
+        if (item.name === '@unitybase/uba') debugger
+        const itemName = itemTypes[item.kind].generateName(item.name, parent ? parent.name : undefined)
+
+        item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
+          name: item.name,
+          link: createItemLink(item.kind, item.name)
+        }]
+        addToSearch(item, parent ? parent.name : undefined, createItemLink(item.kind, item.name))
+
+        const subclasses = filterGroupByMemberOf(groupedItems.class, itemName)
+        subclasses.forEach(clazz => {
+          clazz.link = createItemLink(clazz.kind, clazz.name)
+          renderItem(clazz, {
+            name: itemName,
+            kind: item.kind,
+            breadcrumbs: item.breadcrumbs
+          })
+        })
+
+        const submodules = filterGroupByMemberOf(groupedItems.module, itemName)
+        submodules.forEach(submodule => {
+          submodule.link = createItemLink(submodule.kind, submodule.name)
+          renderItem(submodule, {
+            name: itemName,
+            kind: item.kind,
+            breadcrumbs: item.breadcrumbs
+          })
+        })
+
+        const mixins = filterGroupByMemberOf(groupedItems.mixin, itemName)
+        mixins.forEach(mixin => {
+          mixin.link = createItemLink(mixin.kind, mixin.name)
+          renderItem(mixin, {
+            name: itemName,
+            kind: item.kind,
+            breadcrumbs: item.breadcrumbs
+          })
+        })
+
+        const members = filterGroupByMemberOf(groupedItems.member, itemName)
+        members.forEach(member => {
+          addToSearch(member, item.name, createItemLink(item.kind, item.name, member.name))
+        })
+        const funcs = filterGroupByMemberOf(groupedItems.function, itemName)
+        funcs.forEach(func => {
+          addToSearch(func, item.name, createItemLink(item.kind, item.name, func.name))
+        })
+        const types = filterGroupByMemberOf(groupedItems.typedef, itemName)
+        types.forEach(type => {
+          addToSearch(type, item.name, createItemLink(item.kind, item.name, type.name))
+        })
+        const events = filterGroupByMemberOf(groupedItems.event, itemName)
+        events.forEach(event => {
+          addToSearch(event, item.name, createItemLink(item.kind, item.name, event.name))
+        })
       }
-    // }
-  }
+      if (rootGroupedItems[type]) {
+        rootGroupedItems[type].forEach(item => renderItem(item))
+      }
+    })
+  })
+
+  fs.writeFileSync('/home/andrey/dev/ub-jsdoc/renders/ftsIndex.json', JSON.stringify(ftsIndex))
+  fs.writeFileSync('/home/andrey/dev/ub-jsdoc/renders/ftsData.json', JSON.stringify(ftsData))
 
   // renderType('function', functionName => functionName)
   //render global

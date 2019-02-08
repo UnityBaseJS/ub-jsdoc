@@ -35,21 +35,19 @@
         </table>
     </template>
 
-    <p class="arguments-title">Properties</p>
-    <ul>
-        <li v-for="property in type.properties">
-            <code>{{property.name}}</code>
-            <span v-if="property.optional" class="badge badge-pill badge-light">opt</span>
-            <span
-                v-if="property.defaultvalue !== undefined"> = {{property.defaultvalue}} </span>: <a v-if="property.type"
-                                                                                                    :href="property.type[0].link">{{property.type[0].text}}</a>
-            <div class="fromMD">
-                <p v-if="property.description" v-html="property.description"></p>
-            </div>
-            <!--<p>{{property.name}}</p>-->
-            <!--<p>{{property.type}}</p>-->
-            <!--<p>{{property.description}}</p>-->
-            <!--<p>{{property.optional}}</p>-->
-        </li>
-    </ul>
+    <template v-if="type.properties && type.properties.length > 0">
+        <p class="arguments-title">Properties</p>
+        <ul>
+            <li v-for="property in type.properties">
+                <code>{{property.name}}</code>
+                <span v-if="property.optional" class="badge badge-pill badge-light">opt</span>
+                <span
+                        v-if="property.defaultvalue !== undefined"> = {{property.defaultvalue}} </span>: <a
+                    v-if="property.type" :href="property.type[0].link">{{property.type[0].text}}</a>
+                <div class="fromMD">
+                    <p v-if="property.description" v-html="property.description"></p>
+                </div>
+            </li>
+        </ul>
+    </template>
 </div>

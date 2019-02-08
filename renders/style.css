@@ -75,6 +75,16 @@
     /*margin-top: 5px;*/
 }
 
+#search-result {
+    position: fixed;
+    top: 100px;
+    width: 35%;
+    z-index: 5000;
+    margin-left: 15px;
+}
+.search-item{
+    background: #fff;
+}
 
 main {
     font-family: 'Roboto', sans-serif;
@@ -179,12 +189,14 @@ main .arguments-title {
         position: -webkit-sticky;
         top: var(--navbar-height);
         height: calc(100vh - 2 * var(--navbar-height));
-        overflow-y: auto;
+        /*overflow-y: auto;*/
 
     }
+
     .bd-sidebar {
-        display: block!important;
+        display: block !important;
     }
+
     .navbar-expand-lg .navbar-toggler {
         display: none;
     }
