@@ -1,14 +1,14 @@
-<div class="item" :id="event.name">
-    <div class="anchor-wrapper">
-        <h5 class="item-title-wrapper" v-bind:class="{ deprecated: event.deprecated}" :id="event.name">{{event.name}}</h5>
+<div class="item border-bottom" :id="event.name">
+    <h5 class="alert alert-primary">
+        <span :class="{ deprecated: !!event.deprecated }">{{event.name}}</span>
+        <span v-if="event.scope" class="badge badge-light">{{event.scope}}</span>
         <span class="anchor" :data-id="event.name">#</span>
-    </div>
+    </h5>
     <div class="fromMD" v-if="event.deprecated">
         <p v-html="event.deprecated"></p>
     </div>
     <!--<p>{{event.return}}</p>-->
     <div v-else>
-        <p v-if="event.scope">{{event.scope}}</p>
         <div class="fromMD">
             <p v-html="event.description"></p>
         </div>

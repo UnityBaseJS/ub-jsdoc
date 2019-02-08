@@ -1,10 +1,12 @@
 const helper = require('jsdoc/util/templateHelper')
 const fs = require('fs')
+const path = require('path')
+const env = require('jsdoc/env')
 const vueRender = require('vue-server-renderer')
 const _ = require('lodash')
 const jsdoctypeparse = require('jsdoctypeparser').parse
 const lunr = require('lunr')
-
+const md = require('markdown-it')()
 exports.publish = function (taffyData, opts, tutorials) {
   let data = taffyData
   debugger
@@ -26,11 +28,14 @@ exports.publish = function (taffyData, opts, tutorials) {
   //   : 'layout.tmpl'
   // set up tutorials for helper
   // helper.setTutorials(tutorials)
-
+  const outdir = path.normalize(env.opts.destination)
+  // for node >= 10
+  fs.mkdirSync(outdir, { recursive: true })
   // fs.writeFileSync('/home/andrey/dev/ub-jsdoc/data', JSON.stringify(data().get(), null, 2))
   data = helper.prune(data)
   data.sort('longname, version, since')
   const allData = data().get()
+  console.log(outdir)
 
   // fs.writeFileSync('/home/andrey/dev/ub-jsdoc/alldata', JSON.stringify(allData, null, 2))
 
@@ -38,31 +43,31 @@ exports.publish = function (taffyData, opts, tutorials) {
 
   Vue.component('func', {
     props: ['func'],
-    template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/func.vue', 'utf-8')
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/func.vue'), 'utf-8')
   })
   Vue.component('member', {
     props: ['member'],
-    template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/member.vue', 'utf-8')
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/member.vue'), 'utf-8')
   })
   Vue.component('type', {
     props: ['type'],
-    template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/type.vue', 'utf-8')
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/type.vue'), 'utf-8')
   })
   Vue.component('event', {
     props: ['event'],
-    template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/event.vue', 'utf-8')
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/event.vue'), 'utf-8')
   })
   Vue.component('example', {
     props: ['example'],
-    template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/example.vue', 'utf-8')
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/example.vue'), 'utf-8')
   })
   Vue.component('sidebar', {
     props: ['navigation'],
-    template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/sidebar.vue', 'utf-8')
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/sidebar.vue'), 'utf-8')
   })
   Vue.component('t-o-content', {
     props: ['tableOfContent'],
-    template: fs.readFileSync('/home/andrey/dev/ub-jsdoc/tmpl/elements/t-o-content.vue', 'utf-8')
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/t-o-content.vue'), 'utf-8')
   })
 
   const render = (data, vueTemplPath, htmlTemplPath, outputPath) => {
@@ -110,9 +115,9 @@ exports.publish = function (taffyData, opts, tutorials) {
   }
 
   const linkParser = href => {
-    if (href === 'TubDataStore#run') {
-      // debugger
-    }
+    // if (href === 'class:UBConnection#domain') {
+    //   debugger
+    // }
     let type, name, anchor
     // if has substring 'module:' two times
     href = href.includes('module:') ? href.substring(href.lastIndexOf('module:')) : href
@@ -279,6 +284,21 @@ exports.publish = function (taffyData, opts, tutorials) {
     }
   })
 
+  // // grouping properties
+  // allData.forEach(item => {
+  //   // if complex parameter like options.encoding in getContent
+  //   if (item.properties) {
+  //     const arguments = item.properties.filter(({ name }) => item.properties.some(({ name: innerName }) => innerName.includes(`${name}.`)))
+  //     arguments.forEach(arg => {
+  //       arg.props = item.properties.filter(({ name }) => name.includes(`${arg.name}.`)).map(param => ({
+  //         ...param,
+  //         name: param.name.match(/\.([^.]+)/)[1]
+  //       }))
+  //     })
+  //     item.properties = [...arguments, ...item.properties.filter(param => param.description && !param.name.includes('.'))]
+  //   }
+  // })
+
   //add links for mixin
   allData.forEach(item => {
     if (item.mixes) {
@@ -374,9 +394,9 @@ exports.publish = function (taffyData, opts, tutorials) {
       navigation: indexNavigation,
       contents: []
     },
-    '/home/andrey/dev/ub-jsdoc/tmpl/index.vue',
-    '/home/andrey/dev/ub-jsdoc/index.html',
-    '/home/andrey/dev/ub-jsdoc/renders/index.html')
+    path.resolve(__dirname, 'tmpl/index.vue'),
+    path.resolve(__dirname, 'tmpl/index.html'),
+    path.resolve(outdir, 'index.html'))
 
   const renderType = (type) => {
     const renderItem = (item, parent) => {
@@ -463,16 +483,15 @@ exports.publish = function (taffyData, opts, tutorials) {
           events,
           tableOfContent
         },
-        `/home/andrey/dev/ub-jsdoc/tmpl/${item.kind}.vue`,
-        '/home/andrey/dev/ub-jsdoc/index.html',
-        `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(item.kind, item.name)}`)
+        path.resolve(__dirname, `tmpl/${item.kind}.vue`),
+        path.resolve(__dirname, 'tmpl/index.html'),
+        path.resolve(outdir, createItemFileName(item.kind, item.name)))
     }
     if (rootGroupedItems[type]) {
       rootGroupedItems[type].forEach(item => renderItem(item))
     }
   }
   // todo itemTypes iterate
-  debugger
   renderType('module')
   renderType('class')
   renderType('namespace')
@@ -575,8 +594,46 @@ exports.publish = function (taffyData, opts, tutorials) {
     })
   })
 
-  fs.writeFileSync('/home/andrey/dev/ub-jsdoc/renders/ftsIndex.json', JSON.stringify(ftsIndex))
-  fs.writeFileSync('/home/andrey/dev/ub-jsdoc/renders/ftsData.json', JSON.stringify(ftsData))
+  fs.writeFileSync(path.resolve(outdir, 'ftsIndex.json'), JSON.stringify(ftsIndex))
+  fs.writeFileSync(path.resolve(outdir, 'ftsData.json'), JSON.stringify(ftsData))
+
+  const staticPath = path.resolve(opts.template, 'static')
+  const copyFiles = (from, to) => {
+    fs.readdirSync(from, { withFileTypes: true })
+      .filter(item => !item.isDirectory())
+      .map(item => item.name)
+      .forEach(fileName => {
+        fs.copyFileSync(path.resolve(from, fileName), path.resolve(to, fileName))
+      })
+  }
+
+  copyFiles(path.resolve(staticPath, 'styles'), outdir)
+  copyFiles(path.resolve(staticPath, 'scripts'), outdir)
+
+  // tutorials
+  debugger
+  if (tutorials.children.length > 0) {
+    // navigation
+    // todo navigation for tutor
+
+
+    fs.mkdirSync(path.resolve(outdir, '../tutorials'))
+    copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../tutorials'))
+    copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../tutorials'))
+    const renderTutorial = tutorial => {
+      const html = md.render(tutorial.content)
+
+      render({
+          html
+        },
+        path.resolve(__dirname, 'tmpl/tutorial.vue'),
+        path.resolve(__dirname, 'tmpl/index.html'),
+        path.resolve(outdir, '../tutorials', createItemFileName('tutorial', tutorial.name))
+      )
+      tutorial.children.forEach(renderTutorial)
+    }
+    tutorials.children.forEach(renderTutorial)
+  }
 
   // renderType('function', functionName => functionName)
   //render global

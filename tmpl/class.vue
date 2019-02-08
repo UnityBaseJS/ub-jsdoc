@@ -30,7 +30,11 @@
             </h5>
             <div v-if="clazz.mixes && clazz.mixes.length > 0">
                 Mixes In:
-                <a v-for="mixin in clazz.mixes" :href="mixin.link">{{mixin.text}}</a>
+                <ul>
+                    <li v-for="mixin in clazz.mixes">
+                        <a :href="mixin.link">{{mixin.text}}</a>
+                    </li>
+                </ul>
             </div>
             <p></p>
             <div class="fromMD">

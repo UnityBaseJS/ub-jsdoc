@@ -32,11 +32,4 @@
             </tbody>
         </table>
     </template>
-
-
-    <!--<ul>-->
-    <!--<li v-for="argument in arguments">-->
-    <!--{{ argument }}-->
-    <!--</li>-->
-    <!--</ul>-->
 </div>

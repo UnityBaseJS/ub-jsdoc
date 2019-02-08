@@ -52,7 +52,8 @@
                             <li v-for="prop in param.props">
                                 <code>{{prop.name}}</code><span v-if="prop.defaultvalue">={{prop.defaultvalue}}</span>:
                                 <a v-if="prop.type" :href="prop.type[0].link">{{prop.type[0].text}}</a>
-                                <p v-if="prop.description">{{prop.description}}</p>
+                                <!--<p v-if="prop.description">{{prop.description}}</p>-->
+                                <p v-html="prop.description"></p>
                             </li>
                         </ul>
                     </div>
