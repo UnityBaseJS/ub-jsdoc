@@ -17,7 +17,7 @@ const hasOwnProp = Object.prototype.hasOwnProperty
 var data
 var view
 
-var outdir = path.normalize(env.opts.destination)
+var outdir = path.normalize(process.env.opts.destination)
 
 function find (spec) {
   return helper.find(data, spec)
@@ -459,7 +459,7 @@ function linktoExternal (longName, name) {
  * @return {string} The HTML for the navigation sidebar.
  */
 function buildNav (members, conf) {
-  var nav = '<h3><a href="index.html">Home</a></h3>'
+  var nav = '<h3><a href="tmpl/index.html">Home</a></h3>'
   var seen = {}
   var seenTutorials = {}
 
@@ -528,7 +528,7 @@ exports.publish = function (taffyData, opts, tutorials) {
   //     path.basename(conf.default.layoutFile))
   //   : 'layout.tmpl'
   // set up tutorials for helper
-  // helper.setTutorials(tutorials)
+  helper.setTutorials(tutorials)
 
   data = helper.prune(data)
   data.sort('longname, version, since')

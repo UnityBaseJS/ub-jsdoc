@@ -377,8 +377,8 @@ exports.publish = function (taffyData, opts, tutorials) {
       link: createItemLink(type, rootGroupedItems[type][0].name),
       // submenu present only for current type
       submenu: type === currentType ? _.uniqBy(rootGroupedItems[type], 'name').map(item => ({
-        link: createItemLink(item.kind, item.name),
         name: item.name,
+        link: createItemLink(item.kind, item.name),
         isCurrent: item.name === currentItem
       })) : undefined
     }))
@@ -615,7 +615,14 @@ exports.publish = function (taffyData, opts, tutorials) {
   if (tutorials.children.length > 0) {
     // navigation
     // todo navigation for tutor
-
+    const navigation = tutorials.children.map(tutorial => ({
+      name: tutorial.name,
+      link: createItemFileName('tutorial', tutorial.name),
+      submenu: tutorial.children.length > 0 ? tutorial.children.map(tutor => ({
+        name: tutor.name,
+        link: createItemFileName('tutorial', tutor.name)
+      })) : undefined
+    }))
 
     fs.mkdirSync(path.resolve(outdir, '../tutorials'))
     copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../tutorials'))
@@ -624,6 +631,7 @@ exports.publish = function (taffyData, opts, tutorials) {
       const html = md.render(tutorial.content)
 
       render({
+        navigation,
           html
         },
         path.resolve(__dirname, 'tmpl/tutorial.vue'),
@@ -632,18 +640,19 @@ exports.publish = function (taffyData, opts, tutorials) {
       )
       tutorial.children.forEach(renderTutorial)
     }
+
     tutorials.children.forEach(renderTutorial)
   }
 
-  // renderType('function', functionName => functionName)
-  //render global
-  // const renderGlobal = () => {
-  //   debugger
-  //   const globalItems = allData.filter(({ scope, kind }) => scope === 'global' && ['member', 'function'].includes(kind))
-  //
-  // }
-  //
-  // renderGlobal()
+// renderType('function', functionName => functionName)
+//render global
+// const renderGlobal = () => {
+//   debugger
+//   const globalItems = allData.filter(({ scope, kind }) => scope === 'global' && ['member', 'function'].includes(kind))
+//
+// }
+//
+// renderGlobal()
 }
 
 //   const renderClass = (clazz, parent) => {
