@@ -1,7 +1,7 @@
 <div class="row flex-xl-nowrap">
     <sidebar :navigation="navigation"></sidebar>
     <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" role="main">
-        <nav aria-label="breadcrumb">
+        <nav aria-label="breadcrumb" >
             <ol class="breadcrumb">
                 <li class="breadcrumb-item" v-for="breadcrumb in clazz.breadcrumbs">
                     <a :href="breadcrumb.link">{{ breadcrumb.name }}</a>

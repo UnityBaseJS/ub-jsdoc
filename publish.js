@@ -29,6 +29,8 @@ exports.publish = function (taffyData, opts, tutorials) {
   // set up tutorials for helper
   // helper.setTutorials(tutorials)
   const outdir = path.normalize(env.opts.destination)
+  const staticPath = path.resolve(opts.template, 'static')
+
   // for node >= 10
   fs.mkdirSync(outdir, { recursive: true })
   // fs.writeFileSync('/home/andrey/dev/ub-jsdoc/data', JSON.stringify(data().get(), null, 2))
@@ -237,6 +239,31 @@ exports.publish = function (taffyData, opts, tutorials) {
       }
     })
   }
+  debugger
+  // generate source code
+
+  if (!fs.existsSync(path.resolve(outdir, 'source'))) {
+    fs.mkdirSync(path.resolve(outdir, 'source'))
+  }
+  copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, 'source'))
+  copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, 'source'))
+
+  const files = allData.map(item => item.meta ? {
+    path: item.meta.path,
+    name: item.meta.filename
+  } : undefined).filter(v => v)
+  const codeFiles = _.uniqBy(files, file => `${file.path}/${file.name}`)
+  codeFiles.forEach(file => {
+    const code = fs.readFileSync(`${file.path}/${file.name}`, 'utf-8')
+
+    render({
+        code
+      },
+      path.resolve(__dirname, 'tmpl/source.vue'),
+      path.resolve(__dirname, 'tmpl/index.html'),
+      path.resolve(outdir, 'source', createItemFileName('source', file.name))
+    )
+  })
 
   // replace all links in data
   allData.forEach(item => {
@@ -374,20 +401,34 @@ exports.publish = function (taffyData, opts, tutorials) {
   const createNavigation = (currentType, currentItem) => {
     return Object.keys(itemTypes).filter(type => rootGroupedItems[type] && rootGroupedItems[type][0]).map(type => ({
       name: itemTypes[type].name,
-      link: createItemLink(type, rootGroupedItems[type][0].name),
-      // submenu present only for current type
-      submenu: type === currentType ? _.uniqBy(rootGroupedItems[type], 'name').map(item => ({
+      // link: createItemLink(type, rootGroupedItems[type][0].name),
+      isCurrent: type === currentType,
+      // // submenu present only for current type
+      // submenu: type === currentType ? _.uniqBy(rootGroupedItems[type], 'name').map(item => ({
+      //   name: item.name,
+      //   link: createItemLink(item.kind, item.name),
+      //   isCurrent: item.name === currentItem
+      // })) : undefined
+
+      //submenu for all
+      submenu: _.uniqBy(rootGroupedItems[type], 'name').map(item => ({
         name: item.name,
         link: createItemLink(item.kind, item.name),
         isCurrent: item.name === currentItem
-      })) : undefined
+      }))
     }))
   }
 
   /// index page
   const indexNavigation = Object.keys(itemTypes).filter(type => rootGroupedItems[type] && rootGroupedItems[type][0]).map(type => ({
     name: itemTypes[type].name,
-    link: createItemLink(type, rootGroupedItems[type][0].name)
+    isCurrent: type === 'module',
+
+    // link: createItemLink(type, rootGroupedItems[type][0].name),
+    submenu: _.uniqBy(rootGroupedItems[type], 'name').map(item => ({
+      name: item.name,
+      link: createItemLink(item.kind, item.name)
+    }))
   }))
   render({
       readme: replaceAllLinks(opts.readme),
@@ -597,41 +638,34 @@ exports.publish = function (taffyData, opts, tutorials) {
   fs.writeFileSync(path.resolve(outdir, 'ftsIndex.json'), JSON.stringify(ftsIndex))
   fs.writeFileSync(path.resolve(outdir, 'ftsData.json'), JSON.stringify(ftsData))
 
-  const staticPath = path.resolve(opts.template, 'static')
-  const copyFiles = (from, to) => {
-    fs.readdirSync(from, { withFileTypes: true })
-      .filter(item => !item.isDirectory())
-      .map(item => item.name)
-      .forEach(fileName => {
-        fs.copyFileSync(path.resolve(from, fileName), path.resolve(to, fileName))
-      })
-  }
-
   copyFiles(path.resolve(staticPath, 'styles'), outdir)
   copyFiles(path.resolve(staticPath, 'scripts'), outdir)
 
   // tutorials
   debugger
   if (tutorials.children.length > 0) {
+    console.log('tutorials')
     // navigation
     // todo navigation for tutor
     const navigation = tutorials.children.map(tutorial => ({
       name: tutorial.name,
-      link: createItemFileName('tutorial', tutorial.name),
+      // link: createItemFileName('tutorial', tutorial.name),
       submenu: tutorial.children.length > 0 ? tutorial.children.map(tutor => ({
         name: tutor.name,
         link: createItemFileName('tutorial', tutor.name)
       })) : undefined
     }))
 
-    fs.mkdirSync(path.resolve(outdir, '../tutorials'))
+    if (!fs.existsSync(path.resolve(outdir, '../tutorials'))) {
+      fs.mkdirSync(path.resolve(outdir, '../tutorials'))
+    }
     copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../tutorials'))
     copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../tutorials'))
     const renderTutorial = tutorial => {
       const html = md.render(tutorial.content)
 
       render({
-        navigation,
+          navigation,
           html
         },
         path.resolve(__dirname, 'tmpl/tutorial.vue'),
@@ -653,6 +687,15 @@ exports.publish = function (taffyData, opts, tutorials) {
 // }
 //
 // renderGlobal()
+}
+
+const copyFiles = (from, to) => {
+  fs.readdirSync(from, { withFileTypes: true })
+    .filter(item => !item.isDirectory())
+    .map(item => item.name)
+    .forEach(fileName => {
+      fs.copyFileSync(path.resolve(from, fileName), path.resolve(to, fileName))
+    })
 }
 
 //   const renderClass = (clazz, parent) => {
