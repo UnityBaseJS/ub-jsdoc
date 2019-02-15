@@ -1,6 +1,6 @@
 <div class="item border-bottom" :id="member.name">
     <h5 class="alert alert-primary">
-        <span :class="{ deprecated: !!member.deprecated }">{{member.name}}</span>
+        <span :class="{ deprecated: !!member.deprecated }"><a :href="member.codeLink">{{member.name}}</a></span>
         <template v-if="member.type && member.type.length > 0"> : <a
                 :href="member.type[0].link">{{member.type[0].text}}</a></template>
         <span v-if="member.deprecated" class="badge badge-danger">deprecated</span>

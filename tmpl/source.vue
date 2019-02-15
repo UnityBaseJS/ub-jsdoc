@@ -1,7 +1,5 @@
-<div class="row flex-xl-nowrap">
-<pre class="prettyprint source lang-javascript">
-    <code>
-        {{code}}
-    </code>
+<pre data-line="0" class="prettyprint source lang-javascript" id="code">
+     <code>
+         {{code}}
+     </code>
 </pre>
-</div>

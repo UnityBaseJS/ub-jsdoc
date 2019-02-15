@@ -1,6 +1,6 @@
 <div class="item border-bottom" :id="func.name">
     <h5 class="alert alert-primary">
-        <span :class="{ deprecated: !!func.deprecated }">{{func.name}}</span>(
+        <span :class="{ deprecated: !!func.deprecated }"><a :href="func.codeLink">{{func.name}}</a></span>(
         <template v-if="func.paramsForMethods && func.paramsForMethods.length > 0">
             <template v-for="param in func.paramsForMethods.slice(0, -1)">{{param.name}}
                 <span v-if="param.optional" class="badge badge-pill badge-light">opt</span>

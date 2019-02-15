@@ -1,6 +1,6 @@
 <div class="item border-bottom" :id="type.name">
     <h5 class="alert alert-primary">
-        <span :class="{ deprecated: !!type.deprecated }">{{type.name}}</span>
+        <span :class="{ deprecated: !!type.deprecated }"><a :href="type.codeLink">{{type.name}}</a></span>
         <span v-if="type.deprecated" class="badge badge-danger">deprecated</span>
         <span v-if="type.scope" class="badge badge-light">{{type.scope}}</span>
         <span class="anchor" :data-id="type.name">#</span>

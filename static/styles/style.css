@@ -80,10 +80,10 @@
 }
 
 .sidebar button[aria-expanded="true"]:before{
-    content: '►';
+    content: '▼';
 }
 .sidebar button[aria-expanded="false"]:before{
-    content: '▼';
+    content: '►';
 }
 
 nav .navbar-nav {
@@ -167,13 +167,20 @@ main .breadcrumb {
     padding-top: 1px;
 }
 
-
+/* for right top intend on open anchor link*/
 .bd-content .item[id]::before {
     display: block;
     height: calc(1.5 * var(--navbar-height));
     margin-top: calc(-1.5 * var(--navbar-height));
     content: "";
 }
+
+/*.token::before {*/
+    /*display: block;*/
+    /*height: calc(1.5 * var(--navbar-height));*/
+    /*margin-top: calc(-1.5 * var(--navbar-height));*/
+    /*content: "";*/
+/*}*/
 
 /*.member > :not(.item-title) {*/
 /*margin-left: 20px;*/

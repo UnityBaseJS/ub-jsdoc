@@ -239,31 +239,7 @@ exports.publish = function (taffyData, opts, tutorials) {
       }
     })
   }
-  debugger
-  // generate source code
 
-  if (!fs.existsSync(path.resolve(outdir, 'source'))) {
-    fs.mkdirSync(path.resolve(outdir, 'source'))
-  }
-  copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, 'source'))
-  copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, 'source'))
-
-  const files = allData.map(item => item.meta ? {
-    path: item.meta.path,
-    name: item.meta.filename
-  } : undefined).filter(v => v)
-  const codeFiles = _.uniqBy(files, file => `${file.path}/${file.name}`)
-  codeFiles.forEach(file => {
-    const code = fs.readFileSync(`${file.path}/${file.name}`, 'utf-8')
-
-    render({
-        code
-      },
-      path.resolve(__dirname, 'tmpl/source.vue'),
-      path.resolve(__dirname, 'tmpl/index.html'),
-      path.resolve(outdir, 'source', createItemFileName('source', file.name))
-    )
-  })
 
   // replace all links in data
   allData.forEach(item => {
@@ -338,6 +314,19 @@ exports.publish = function (taffyData, opts, tutorials) {
       })
     }
   })
+
+
+
+  //add link to source code
+  allData.forEach(item => {
+      if (item.meta) {
+        const filePath = item.meta.path
+        const fileName = item.meta.filename
+        const line = item.meta.lineno
+        item.codeLink = 'source/' + createItemLink('source', path.basename(filePath) + '/' + fileName, 'code.' + line)
+      }
+    }
+  )
 
   //need for highlight syntax in class
   allData.forEach(item => {
@@ -419,7 +408,8 @@ exports.publish = function (taffyData, opts, tutorials) {
     }))
   }
 
-  /// index page
+
+  // for index page
   const indexNavigation = Object.keys(itemTypes).filter(type => rootGroupedItems[type] && rootGroupedItems[type][0]).map(type => ({
     name: itemTypes[type].name,
     isCurrent: type === 'module',
@@ -430,6 +420,7 @@ exports.publish = function (taffyData, opts, tutorials) {
       link: createItemLink(item.kind, item.name)
     }))
   }))
+
   render({
       readme: replaceAllLinks(opts.readme),
       navigation: indexNavigation,
@@ -438,6 +429,34 @@ exports.publish = function (taffyData, opts, tutorials) {
     path.resolve(__dirname, 'tmpl/index.vue'),
     path.resolve(__dirname, 'tmpl/index.html'),
     path.resolve(outdir, 'index.html'))
+
+
+  debugger
+  // generate source code
+
+  if (!fs.existsSync(path.resolve(outdir, 'source'))) {
+    fs.mkdirSync(path.resolve(outdir, 'source'))
+  }
+  copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, 'source'))
+  copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, 'source'))
+
+  const files = allData.map(item => item.meta ? {
+    path: item.meta.path,
+    name: item.meta.filename
+  } : undefined).filter(v => v)
+  const codeFiles = _.uniqBy(files, file => `${file.path}/${file.name}`)
+  codeFiles.forEach(file => {
+    const code = fs.readFileSync(`${file.path}/${file.name}`, 'utf-8')
+
+    render({
+        navigation:indexNavigation,
+        code
+      },
+      path.resolve(__dirname, 'tmpl/source.vue'),
+      path.resolve(__dirname, 'tmpl/index.html'),
+      path.resolve(outdir, 'source', createItemFileName('source', path.basename(file.path) + '/' + file.name))
+    )
+  })
 
   const renderType = (type) => {
     const renderItem = (item, parent) => {
@@ -697,200 +716,3 @@ const copyFiles = (from, to) => {
       fs.copyFileSync(path.resolve(from, fileName), path.resolve(to, fileName))
     })
 }
-
-//   const renderClass = (clazz, parent) => {
-//     const className = parent ? `${parent}~${clazz.name}` : clazz.name
-//     const members = filterGroupByMemberOf(groupedItems.member, className)
-//     const funcs = filterGroupByMemberOf(groupedItems.function, className)
-//     const tableOfContent = [
-//       {
-//         name: 'Members',
-//         props: members.map(member => ({
-//           name: member.name
-//         }))
-//       },
-//       {
-//         name: 'Methods',
-//         props: funcs.map(func => ({
-//           name: func.name
-//         }))
-//       }
-//     ]
-//
-//     clazz.classdesc = clazz.classdesc ? replaceAllLinks(clazz.classdesc) : undefined
-//     const membersWithLinks = members.map(member =>
-//       (member.description ? {
-//         ...member,
-//         description: replaceAllLinks(member.description)
-//       } : member))
-//
-//     const funcsWithLinks = funcs
-//       .map(func =>
-//         (func.deprecated ? {
-//           ...func,
-//           deprecated: replaceAllLinks(func.deprecated)
-//         } : func))
-//       .map(func =>
-//         (func.description ? {
-//           ...func,
-//           description: replaceAllLinks(func.description)
-//         } : func))
-//
-// //     const classNavigation = classes.map(clazz => ({
-// //       link: createItemLink(clazz.kind, clazz.name),
-// //       name: clazz.name,
-// //       isCurrent: clazz.name === className
-// //     }))
-// // debugger
-//     render({
-//         navigation: createNavigation('class', clazz.name),
-//         clazz,
-//         members: membersWithLinks,
-//         funcs: funcsWithLinks,
-//         tableOfContent
-//       },
-//       '/home/andrey/dev/ub-jsdoc/tmpl/class.vue',
-//       '/home/andrey/dev/ub-jsdoc/index.html',
-//       `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(clazz.kind, clazz.name)}`)
-//   }
-//   rootGroupedItems.class.forEach(clazz => renderClass(clazz))
-//
-//   // modules
-//
-//   const renderModule = (module, parent) => {
-//     const moduleName = parent ? `${parent}.module:${module.name}` : `module:${module.name}`
-//
-//     module.readme = module.readme ? replaceAllLinks(module.readme) : undefined
-//     module.description = module.description ? replaceAllLinks(module.description) : undefined
-//     const subclasses = filterGroupByMemberOf(groupedItems.class, moduleName)
-//     subclasses.forEach(clazz => clazz.link = createItemLink(clazz.kind, clazz.name))
-//     subclasses.forEach(clazz => renderClass(clazz, moduleName))
-//
-//     const submodules = filterGroupByMemberOf(groupedItems.module, moduleName)
-//     submodules.forEach(submodule => submodule.link = createItemLink(submodule.kind, submodule.name))
-//     // render submodules. maybe better move from renderModule to up?
-//     submodules.forEach(submodule => renderModule(submodule, moduleName))
-//
-//     const members = filterGroupByMemberOf(groupedItems.member, moduleName)
-//
-//     const funcs = filterGroupByMemberOf(groupedItems.function, moduleName)
-//
-//     const types = filterGroupByMemberOf(groupedItems.typedef, moduleName)
-//
-//     const tableOfContent = [
-//       {
-//         name: 'Members',
-//         props: members.map(member => ({
-//           name: member.name
-//         }))
-//       },
-//       {
-//         name: 'Methods',
-//         props: funcs.map(func => ({
-//           name: func.name
-//         }))
-//       },
-//       {
-//         name: 'Types',
-//         props: types.map(type => ({
-//           name: type.name
-//         }))
-//       }
-//     ]
-//
-//     const memberWithLinks = members.map(member =>
-//       (member.description ? {
-//         ...member,
-//         description: replaceAllLinks(member.description)
-//       } : member))
-//
-//     // const moduleNavigation = modules.map(navModule => ({
-//     //   link: createItemLink(navModule.kind, navModule.name),
-//     //   name: navModule.name,
-//     //   isCurrent: navModule.name === module.name
-//     // }))
-//
-//     render({
-//         navigation: createNavigation('module', module.name),
-//         module,
-//         subclasses,
-//         submodules,
-//         members: memberWithLinks,
-//         funcs,
-//         types,
-//         tableOfContent
-//       },
-//       '/home/andrey/dev/ub-jsdoc/tmpl/module.vue',
-//       '/home/andrey/dev/ub-jsdoc/index.html',
-//       `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(module.kind, module.name)}`)
-//   }
-//   rootGroupedItems.module.forEach(module => renderModule(module))
-//
-//   // namespaces
-//
-//   const renderNamespace = (namespace) => {
-//     const namespaceName = namespace.name
-//
-//     namespace.readme = namespace.readme ? replaceAllLinks(namespace.readme) : undefined
-//     namespace.description = namespace.description ? replaceAllLinks(namespace.description) : undefined
-//
-//     const members = filterGroupByMemberOf(groupedItems.member, namespaceName)
-//
-//     const funcs = filterGroupByMemberOf(groupedItems.function, namespaceName)
-//
-//     const types = filterGroupByMemberOf(groupedItems.typedef, namespaceName)
-//
-//     const events = filterGroupByMemberOf(groupedItems.event, namespaceName)
-//     const tableOfContent = [
-//       {
-//         name: 'Members',
-//         props: members.map(member => ({
-//           name: member.name
-//         }))
-//       },
-//       {
-//         name: 'Methods',
-//         props: funcs.map(func => ({
-//           name: func.name
-//         }))
-//       },
-//       {
-//         name: 'Types',
-//         props: types.map(type => ({
-//           name: type.name
-//         }))
-//       },
-//       {
-//         name: 'Events',
-//         props: events.map(event => ({
-//           name: event.name
-//         }))
-//       }
-//     ]
-//
-//     const memberWithLinks = members.map(member =>
-//       (member.description ? {
-//         ...member,
-//         description: replaceAllLinks(member.description)
-//       } : member))
-//
-//     // const namespaceNavigation = namespaces.map(navNamespace => ({
-//     //   link: createItemLink(navNamespace.kind, navNamespace.name),
-//     //   name: navNamespace.name,
-//     //   isCurrent: navNamespace.name === namespace.name
-//     // }))
-//
-//     render({
-//         navigation: createNavigation('namespace', namespace.name),
-//         namespace,
-//         members: memberWithLinks,
-//         funcs,
-//         types,
-//         events,
-//         tableOfContent
-//       },
-//       '/home/andrey/dev/ub-jsdoc/tmpl/namespace.vue',
-//       '/home/andrey/dev/ub-jsdoc/index.html',
-//       `/home/andrey/dev/ub-jsdoc/renders/${createItemFileName(namespace.kind, namespace.name)}`)
-//   }
-//   rootGroupedItems.namespace.forEach(namespace => renderNamespace(namespace))
