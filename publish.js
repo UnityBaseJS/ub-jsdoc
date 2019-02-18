@@ -7,6 +7,8 @@ const _ = require('lodash')
 const jsdoctypeparse = require('jsdoctypeparser').parse
 const lunr = require('lunr')
 const md = require('markdown-it')()
+// not work for Windows
+const shell = require('child_process').execSync
 exports.publish = function (taffyData, opts, tutorials) {
   let data = taffyData
   debugger
@@ -66,6 +68,10 @@ exports.publish = function (taffyData, opts, tutorials) {
   Vue.component('sidebar', {
     props: ['navigation'],
     template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/sidebar.vue'), 'utf-8')
+  })
+  Vue.component('tutor-sidebar', {
+    props: ['navigation'],
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/tutor-sidebar.vue'), 'utf-8')
   })
   Vue.component('t-o-content', {
     props: ['tableOfContent'],
@@ -178,7 +184,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     return text.replace(/{@link (.*?)}/g, linkReplacer)
   }
 
-  const createItemFileName = (itemType, itemName) => `${itemType}-${itemName.replace('/', '%')}.html`
+  const createItemFileName = (itemType, itemName) => `${itemType}-${itemName.replace('/', '-')}.html`
   const createItemLink = (itemType, itemName, anchor) => {
     const link = anchor ? `${createItemFileName(itemType, itemName)}#${anchor}` : createItemFileName(itemType, itemName)
     return encodeURI(link)
@@ -239,7 +245,6 @@ exports.publish = function (taffyData, opts, tutorials) {
       }
     })
   }
-
 
   // replace all links in data
   allData.forEach(item => {
@@ -314,8 +319,6 @@ exports.publish = function (taffyData, opts, tutorials) {
       })
     }
   })
-
-
 
   //add link to source code
   allData.forEach(item => {
@@ -408,7 +411,6 @@ exports.publish = function (taffyData, opts, tutorials) {
     }))
   }
 
-
   // for index page
   const indexNavigation = Object.keys(itemTypes).filter(type => rootGroupedItems[type] && rootGroupedItems[type][0]).map(type => ({
     name: itemTypes[type].name,
@@ -430,7 +432,6 @@ exports.publish = function (taffyData, opts, tutorials) {
     path.resolve(__dirname, 'tmpl/index.html'),
     path.resolve(outdir, 'index.html'))
 
-
   debugger
   // generate source code
 
@@ -449,11 +450,11 @@ exports.publish = function (taffyData, opts, tutorials) {
     const code = fs.readFileSync(`${file.path}/${file.name}`, 'utf-8')
 
     render({
-        navigation:indexNavigation,
+        navigation: indexNavigation,
         code
       },
       path.resolve(__dirname, 'tmpl/source.vue'),
-      path.resolve(__dirname, 'tmpl/index.html'),
+      path.resolve(__dirname, 'tmpl/source.html'),
       path.resolve(outdir, 'source', createItemFileName('source', path.basename(file.path) + '/' + file.name))
     )
   })
@@ -664,16 +665,32 @@ exports.publish = function (taffyData, opts, tutorials) {
   debugger
   if (tutorials.children.length > 0) {
     console.log('tutorials')
-    // navigation
-    // todo navigation for tutor
-    const navigation = tutorials.children.map(tutorial => ({
-      name: tutorial.name,
-      // link: createItemFileName('tutorial', tutorial.name),
-      submenu: tutorial.children.length > 0 ? tutorial.children.map(tutor => ({
-        name: tutor.name,
-        link: createItemFileName('tutorial', tutor.name)
-      })) : undefined
-    }))
+    // tutorialNavigation
+    // todo tutorialNavigation for tutor
+    const createTutorialNavigation = current => tutorials.children
+      .sort(({ title: a }, { title: b }) => a.localeCompare(b))
+      .map(tutorial => ({
+        name: tutorial.title,
+        link: createItemFileName('tutorial', tutorial.name),
+        submenu: [{
+          name: 'Introduction',
+          isCurrent: current === tutorial.name,
+          link: createItemFileName('tutorial', tutorial.name)
+        }, ...tutorial.children.map(tutor => ({
+          name: tutor.title,
+          isCurrent: current === tutor.name,
+          link: createItemFileName('tutorial', tutor.name)
+        }))]
+      }))
+
+    // render index
+    render({
+        navigation: createTutorialNavigation('')
+      },
+      path.resolve(__dirname, 'tmpl/tutorialIndex.vue'),
+      path.resolve(__dirname, 'tmpl/index.html'),
+      path.resolve(outdir, '../tutorials', 'index.html')
+    )
 
     if (!fs.existsSync(path.resolve(outdir, '../tutorials'))) {
       fs.mkdirSync(path.resolve(outdir, '../tutorials'))
@@ -682,9 +699,8 @@ exports.publish = function (taffyData, opts, tutorials) {
     copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../tutorials'))
     const renderTutorial = tutorial => {
       const html = md.render(tutorial.content)
-
       render({
-          navigation,
+          navigation: createTutorialNavigation(tutorial.name),
           html
         },
         path.resolve(__dirname, 'tmpl/tutorial.vue'),
@@ -695,6 +711,61 @@ exports.publish = function (taffyData, opts, tutorials) {
     }
 
     tutorials.children.forEach(renderTutorial)
+
+    // getting started in tutorials because they execute ones
+    console.log('getting started')
+    const tree = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'tutorial-v5/cityPortalTutorials-v5', 'tree.json'), 'utf-8'))
+    const createGSNavigation = current => Object.keys(tree).map(item => ({
+        name: tree[item].title,
+        isCurrent: true,
+        submenu: Object.keys(tree[item].children).map(i => ({
+          name: tree[item].children[i].title,
+          isCurrent: current === i,
+          link: createItemFileName('gs', i)
+        }))
+      }
+    ))
+
+    // index
+    render({
+        navigation: createGSNavigation(''),
+        html: md.render(fs.readFileSync(path.resolve(__dirname, 'tutorial-v5', 'README.md'), 'utf8'))
+      },
+      path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
+      path.resolve(__dirname, 'tmpl/index.html'),
+      path.resolve(outdir, '../gettingstarted', 'index.html')
+    )
+
+    if (!fs.existsSync(path.resolve(outdir, '../gettingstarted'))) {
+      fs.mkdirSync(path.resolve(outdir, '../gettingstarted'))
+    }
+    copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../gettingstarted'))
+    copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../gettingstarted'))
+
+    const src = path.resolve(opts.template, 'tutorial-v5/cityPortalTutorials-v5', 'img')
+    const dist = path.resolve(outdir, '../gettingstarted/img')
+
+    shell(`mkdir -p ${dist}`)
+    shell(`cp -r ${src}/* ${dist}`)
+
+    fs.readdirSync(path.resolve(__dirname, 'tutorial-v5/cityPortalTutorials-v5'), { withFileTypes: true })
+      .filter(item => !item.isDirectory())
+      .map(file => file.name)
+      .forEach(file => {
+          debugger
+          const content = fs.readFileSync(path.resolve(__dirname, 'tutorial-v5/cityPortalTutorials-v5', file), 'utf8')
+          const html = md.render(content)
+
+          render({
+              navigation: createGSNavigation(file.slice(0, file.indexOf('.'))),
+              html
+            },
+            path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
+            path.resolve(__dirname, 'tmpl/index.html'),
+            path.resolve(outdir, '../gettingstarted', createItemFileName('gs', file.slice(0, file.indexOf('.'))))
+          )
+        }
+      )
   }
 
 // renderType('function', functionName => functionName)

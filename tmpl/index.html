@@ -18,19 +18,22 @@
     </div>
 </div>
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light py-1">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand" href="../server-v5/index.html">
         <img src="https://unitybase.info/img/UB-logo.png" class="d-inline-block align-middle logo mr2" alt="logo">
         UB DOC
     </a>
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="/server-v5">Server docs</a>
+            <a class="nav-link" href="../server-v5/index.html">Server docs</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/ubpub-v5">Client docs</a>
+            <a class="nav-link" href="../ubpub-v5/index.html">Client docs</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/tutorials">Tutorials</a>
+            <a class="nav-link" href="../tutorials/index.html">Tutorials</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="../gettingstarted/index.html">Getting Started</a>
         </li>
     </ul>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav"
@@ -55,7 +58,6 @@
   // })
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/lunr@2/lunr.min.js"></script>
 <script>
   //search
   const getFTSData = () => {
@@ -82,7 +84,7 @@
         .map(el => `<a href="${el.link}" class="dropdown-item search-item">
     <h5><b>${el.parent}</b></h5>
     ${el.name}
-</a>`).join('<div class="dropdown-divider"></div>') : '<div class="dropdown-item">Нічого не знайдено</div>'
+</a>`).join('<div class="dropdown-divider"></div>') : '<div class="dropdown-item">No results found</div>'
     })
   }
 
@@ -136,6 +138,9 @@
     success ? resolve() : reject()
   })
 </script>
+<script defer src="https://use.fontawesome.com/releases/v5.7.2/js/all.js"
+        integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP"
+        crossorigin="anonymous"></script>
 
 <script>
   //fix intend for code tag
@@ -155,6 +160,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunr@2/lunr.min.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
