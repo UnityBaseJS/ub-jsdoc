@@ -182,7 +182,7 @@ main .breadcrumb {
 }
 
 /* for right top intend on open anchor link*/
-.bd-content .item[id]::before {
+.bd-content .item[id]::before, .bd-content h2[id]::before {
     display: block;
     height: calc(1.5 * var(--navbar-height));
     margin-top: calc(-1.5 * var(--navbar-height));

@@ -6,30 +6,12 @@ const vueRender = require('vue-server-renderer')
 const _ = require('lodash')
 const jsdoctypeparse = require('jsdoctypeparser').parse
 const lunr = require('lunr')
-const md = require('markdown-it')()
+const md = require('markdown-it')({ html: true }).use(require('markdown-it-anchor'), { slugify: (s) => encodeURIComponent(String(s).trim().toLowerCase().replace(/,?\s+,?/g, '-')) }).use(require('markdown-it-emoji'));
 // not work for Windows
 const shell = require('child_process').execSync
 exports.publish = function (taffyData, opts, tutorials) {
   let data = taffyData
   debugger
-  // var conf = env.conf.templates || {}
-  // conf.default = conf.default || {}
-  //
-  // var templatePath = path.normalize(opts.template)
-  // view = new template.Template(path.join(templatePath, 'tmpl'))
-  // claim some special filenames in advance, so the All-Powerful Overseer of Filename Uniqueness
-  // doesn't try to hand them out later
-  // var indexUrl = helper.getUniqueFilename('index')
-  // don't call registerLink() on this one! 'index' is also a valid longname
-  // var globalUrl = helper.getUniqueFilename('global')
-  // helper.registerLink('global', globalUrl)
-  // set up templating
-  // view.layout = conf.default.layoutFile
-  //   ? path.getResourcePath(path.dirname(conf.default.layoutFile),
-  //     path.basename(conf.default.layoutFile))
-  //   : 'layout.tmpl'
-  // set up tutorials for helper
-  // helper.setTutorials(tutorials)
   const outdir = path.normalize(env.opts.destination)
   const staticPath = path.resolve(opts.template, 'static')
 
@@ -174,7 +156,7 @@ exports.publish = function (taffyData, opts, tutorials) {
   }
 
 // return text
-  const linkReplacer = (_, link) => {
+  const linkReplacer = (__, link) => {
     //       if one world => linkText = href
     const [href, linkText = href] = link.match(/\S+/g)
     const { type, name, anchor } = linkParser(href)
@@ -183,8 +165,8 @@ exports.publish = function (taffyData, opts, tutorials) {
   const replaceAllLinks = text => {
     return text.replace(/{@link (.*?)}/g, linkReplacer)
   }
-
-  const createItemFileName = (itemType, itemName) => `${itemType}-${itemName.replace('/', '-')}.html`
+  //for compatibility with old jsdoc links
+  const createItemFileName = (itemType, itemName) => itemType === 'class' ? `${itemName.replace('/', '_')}.html` : `${itemType}-${itemName.replace('/', '_')}.html`
   const createItemLink = (itemType, itemName, anchor) => {
     const link = anchor ? `${createItemFileName(itemType, itemName)}#${anchor}` : createItemFileName(itemType, itemName)
     return encodeURI(link)
@@ -509,29 +491,34 @@ exports.publish = function (taffyData, opts, tutorials) {
         {
           name: 'Members',
           props: members.map(member => ({
-            name: member.name
+            name: member.name,
+            link: `#${member.name}`
           }))
         },
         {
           name: 'Methods',
           props: funcs.map(func => ({
-            name: func.name
+            name: func.name,
+            link: `#${func.name}`
+
           }))
         },
         {
           name: 'Types',
           props: types.map(type => ({
-            name: type.name
+            name: type.name,
+            link: `#${type.name}`
+
           }))
         },
         {
           name: 'Events',
           props: events.map(event => ({
-            name: event.name
+            name: event.name,
+            link: `#${event.name}`
           }))
         }
       ]
-
       render({
           navigation: createNavigation(item.kind, item.name),
           [item.kind === 'class' ? 'clazz' : item.kind]: item,
@@ -554,6 +541,7 @@ exports.publish = function (taffyData, opts, tutorials) {
   }
   // todo itemTypes iterate
   renderType('module')
+  debugger
   renderType('class')
   renderType('namespace')
   renderType('mixin')
@@ -593,7 +581,7 @@ exports.publish = function (taffyData, opts, tutorials) {
 
     Object.keys(itemTypes).map(type => {
       const renderItem = (item, parent) => {
-        if (item.name === '@unitybase/uba') debugger
+        // if (item.name === '@unitybase/uba') debugger
         const itemName = itemTypes[item.kind].generateName(item.name, parent ? parent.name : undefined)
 
         item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
@@ -666,7 +654,6 @@ exports.publish = function (taffyData, opts, tutorials) {
   if (tutorials.children.length > 0) {
     console.log('tutorials')
     // tutorialNavigation
-    // todo tutorialNavigation for tutor
     const createTutorialNavigation = current => tutorials.children
       .sort(({ title: a }, { title: b }) => a.localeCompare(b))
       .map(tutorial => ({
@@ -689,14 +676,18 @@ exports.publish = function (taffyData, opts, tutorials) {
       },
       path.resolve(__dirname, 'tmpl/tutorialIndex.vue'),
       path.resolve(__dirname, 'tmpl/index.html'),
-      path.resolve(outdir, '../tutorials', 'index.html')
+      path.resolve(outdir, 'tutorialIndex.html')
     )
 
-    if (!fs.existsSync(path.resolve(outdir, '../tutorials'))) {
-      fs.mkdirSync(path.resolve(outdir, '../tutorials'))
-    }
-    copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../tutorials'))
-    copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../tutorials'))
+    const imgTutorialFolderSrc = path.resolve(opts.template, '../../', opts.tutorials, 'img')
+    const imgTutorialFolderDist = path.resolve(outdir, 'img')
+    shell(`mkdir -p ${imgTutorialFolderSrc}`)
+    shell(`cp -r ${imgTutorialFolderSrc} ${imgTutorialFolderDist}`)
+    // if (!fs.existsSync(path.resolve(outdir, '../tutorials'))) {
+    //   fs.mkdirSync(path.resolve(outdir, '../tutorials'))
+    // }
+    // copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../tutorials'))
+    // copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../tutorials'))
     const renderTutorial = tutorial => {
       const html = md.render(tutorial.content)
       render({
@@ -705,16 +696,22 @@ exports.publish = function (taffyData, opts, tutorials) {
         },
         path.resolve(__dirname, 'tmpl/tutorial.vue'),
         path.resolve(__dirname, 'tmpl/index.html'),
-        path.resolve(outdir, '../tutorials', createItemFileName('tutorial', tutorial.name))
+        path.resolve(outdir, createItemFileName('tutorial', tutorial.name))
       )
       tutorial.children.forEach(renderTutorial)
     }
 
     tutorials.children.forEach(renderTutorial)
 
+    // ************
     // getting started in tutorials because they execute ones
+    // ************
     console.log('getting started')
-    const tree = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'tutorial-v5/cityPortalTutorials-v5', 'tree.json'), 'utf-8'))
+
+    //change links from /courses/tutorial-v5/... to relative
+    const replaceGitLabLinks = page => page.replace(/courses\/tutorial-v5\/cityPortalTutorials-v5\/(.*)\.md/g, (__, filename) => createItemFileName('gs', filename))
+
+    const tree = JSON.parse(fs.readFileSync(path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5/tree.json'), 'utf-8'))
     const createGSNavigation = current => Object.keys(tree).map(item => ({
         name: tree[item].title,
         isCurrent: true,
@@ -727,9 +724,11 @@ exports.publish = function (taffyData, opts, tutorials) {
     ))
 
     // index
+    const index = fs.readFileSync(path.resolve(opts.template, '../../gettingstarted/README.md'), 'utf8')
+    const indexWithLinks = replaceGitLabLinks(index)
     render({
         navigation: createGSNavigation(''),
-        html: md.render(fs.readFileSync(path.resolve(__dirname, 'tutorial-v5', 'README.md'), 'utf8'))
+        html: md.render(indexWithLinks)
       },
       path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
       path.resolve(__dirname, 'tmpl/index.html'),
@@ -742,23 +741,39 @@ exports.publish = function (taffyData, opts, tutorials) {
     copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../gettingstarted'))
     copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../gettingstarted'))
 
-    const src = path.resolve(opts.template, 'tutorial-v5/cityPortalTutorials-v5', 'img')
+    const src = path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5', 'img')
     const dist = path.resolve(outdir, '../gettingstarted/img')
 
     shell(`mkdir -p ${dist}`)
     shell(`cp -r ${src}/* ${dist}`)
 
-    fs.readdirSync(path.resolve(__dirname, 'tutorial-v5/cityPortalTutorials-v5'), { withFileTypes: true })
+    fs.readdirSync(path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5'), { withFileTypes: true })
       .filter(item => !item.isDirectory())
       .map(file => file.name)
+      .filter(file => file.endsWith('.md'))
       .forEach(file => {
           debugger
-          const content = fs.readFileSync(path.resolve(__dirname, 'tutorial-v5/cityPortalTutorials-v5', file), 'utf8')
-          const html = md.render(content)
+          const page = fs.readFileSync(path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5', file), 'utf8')
+          const html = md.render(replaceGitLabLinks(page))
+
+          const menu = page
+            .match(/<a name="menu"><\/a>(.*)<a name="endmenu"><\/a>/s)[1]
+            .trim()
+            .split('\n')
+
+          const newm = menu
+            .map(line => line.match(/\[(.*)]\(#(.*)\)/))
+            .map(([__, name, link]) => ({
+              name,
+              link
+            }))
+
+          const tableOfContent = [{ props: menu }]
 
           render({
               navigation: createGSNavigation(file.slice(0, file.indexOf('.'))),
-              html
+              html,
+              tableOfContent
             },
             path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
             path.resolve(__dirname, 'tmpl/index.html'),

@@ -2,10 +2,10 @@
     <div class="description"
          v-for="content in tableOfContent">
         <template v-if="content.props.length > 0">
-            <a :href="`#${content.name}`">{{content.name}}</a>
+            <a v-if="content.name" :href="`#${content.name}`">{{content.name}}</a>
             <ul>
                 <li v-for="prop in content.props">
-                    <a :href="`#${prop.name}`">{{prop.name}}</a>
+                    <a :href="prop.link">{{prop.name}}</a>
                 </li>
             </ul>
         </template>

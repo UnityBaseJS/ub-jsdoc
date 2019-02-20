@@ -1,11 +1,9 @@
 <div class="row flex-xl-nowrap">
-    <sidebar v-bind:navigation="navigation"></sidebar>
+    <sidebar :navigation="navigation"></sidebar>
     <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" role="main">
-        <div v-html="html">
-
-        </div>
+        <div v-html="html"></div>
     </main>
-    <!--<t-o-content-->
-            <!--v-bind:tableOfContent="tableOfContent"-->
-    <!--&gt;</t-o-content>-->
+    <t-o-content
+            :tableOfContent="tableOfContent"
+    ></t-o-content>
 </div>
