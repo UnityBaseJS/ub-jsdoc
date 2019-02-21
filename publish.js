@@ -27,6 +27,10 @@ exports.publish = function (taffyData, opts, tutorials) {
 
   const Vue = require('vue')
 
+  Vue.component('anchor', {
+    props: ['id'],
+    template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/anchor.vue'), 'utf-8')
+  })
   Vue.component('func', {
     props: ['func'],
     template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/func.vue'), 'utf-8')

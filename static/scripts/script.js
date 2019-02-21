@@ -8,3 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $(this).find('[data-fa-i2svg]').addClass('fa-caret-right').removeClass('fa-caret-down')
   })
 })
+
+$('.anchor').popover({
+  trigger: 'focus'
+})

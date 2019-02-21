@@ -2,7 +2,7 @@
     <h5 class="alert alert-primary">
         <span :class="{ deprecated: !!event.deprecated }"><a :href="event.codeLink">{{event.name}}</a></span>
         <span v-if="event.scope" class="badge badge-light">{{event.scope}}</span>
-        <span class="anchor" :data-id="event.name">#</span>
+        <anchor :id="event.name"></anchor>
     </h5>
     <div class="fromMD" v-if="event.deprecated">
         <p v-html="event.deprecated"></p>

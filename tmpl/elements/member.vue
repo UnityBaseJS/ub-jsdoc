@@ -5,7 +5,7 @@
                 :href="member.type[0].link">{{member.type[0].text}}</a></template>
         <span v-if="member.deprecated" class="badge badge-danger">deprecated</span>
         <span v-if="member.scope" class="badge badge-light">{{member.scope}}</span>
-        <span class="anchor" :data-id="member.name">#</span>
+        <anchor :id="member.name"></anchor>
     </h5>
     <div class="fromMD">
         <p v-html="member.description"></p>

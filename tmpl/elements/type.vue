@@ -3,7 +3,7 @@
         <span :class="{ deprecated: !!type.deprecated }"><a :href="type.codeLink">{{type.name}}</a></span>
         <span v-if="type.deprecated" class="badge badge-danger">deprecated</span>
         <span v-if="type.scope" class="badge badge-light">{{type.scope}}</span>
-        <span class="anchor" :data-id="type.name">#</span>
+        <anchor :id="type.name"></anchor>
     </h5>
     <div class="fromMD">
         <p v-html="type.description"></p>
