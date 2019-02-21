@@ -1,14 +1,15 @@
 <div class="row flex-xl-nowrap">
-    <sidebar v-bind:navigation="navigation"></sidebar>
+    <sidebar :navigation="navigation"></sidebar>
     <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" role="main">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item" v-for="breadcrumb in interface.breadcrumbs">
-                    <a :href="breadcrumb.link">{{ breadcrumb.name }}</a>
-                </li>
-            </ol>
-        </nav>
-        <h1 class="page-title">{{ interface.name }}</h1>
+        <h3 class="page-breadcrumb">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" v-for="breadcrumb in interface.breadcrumbs">
+                        <a :href="breadcrumb.link">{{ breadcrumb.name }}</a>
+                    </li>
+                </ol>
+            </nav>
+        </h3>
         <div class="fromMD">
             <p v-html=interface.description></p>
         </div>
@@ -16,12 +17,12 @@
             <h3 class="subsection-title" id="Methods">Methods</h3>
             <func
                     v-for="func in funcs"
-                    v-bind:key="func.___id"
-                    v-bind:func="func"
+                    :key="func.___id"
+                    :func="func"
             ></func>
         </template>
     </main>
     <t-o-content
-            v-bind:tableOfContent="tableOfContent"
+            :tableOfContent="tableOfContent"
     ></t-o-content>
 </div>

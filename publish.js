@@ -6,7 +6,7 @@ const vueRender = require('vue-server-renderer')
 const _ = require('lodash')
 const jsdoctypeparse = require('jsdoctypeparser').parse
 const lunr = require('lunr')
-const md = require('markdown-it')({ html: true }).use(require('markdown-it-anchor'), { slugify: (s) => encodeURIComponent(String(s).trim().toLowerCase().replace(/,?\s+,?/g, '-')) }).use(require('markdown-it-emoji'));
+const md = require('markdown-it')({ html: true }).use(require('markdown-it-anchor'), { slugify: (s) => encodeURIComponent(String(s).trim().toLowerCase().replace(/,?\s+,?/g, '-')) }).use(require('markdown-it-emoji'))
 // not work for Windows
 const shell = require('child_process').execSync
 exports.publish = function (taffyData, opts, tutorials) {
@@ -752,23 +752,24 @@ exports.publish = function (taffyData, opts, tutorials) {
       .map(file => file.name)
       .filter(file => file.endsWith('.md'))
       .forEach(file => {
-          debugger
           const page = fs.readFileSync(path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5', file), 'utf8')
-          const html = md.render(replaceGitLabLinks(page))
 
+          //move menu from page to table-of-content
+          // create table of content
           const menu = page
             .match(/<a name="menu"><\/a>(.*)<a name="endmenu"><\/a>/s)[1]
             .trim()
             .split('\n')
-
-          const newm = menu
-            .map(line => line.match(/\[(.*)]\(#(.*)\)/))
+            .map(line => line.match(/\[(.*)]\((#.*)\)/))
             .map(([__, name, link]) => ({
               name,
               link
             }))
+          const tableOfContent = [{ name: 'Menu', props: menu }]
+          //delete menu from page
+          const pageWithoutMenu = page.replace(/<a name="menu"><\/a>(.*)<a name="endmenu"><\/a>/s, '')
 
-          const tableOfContent = [{ props: menu }]
+          const html = md.render(replaceGitLabLinks(pageWithoutMenu))
 
           render({
               navigation: createGSNavigation(file.slice(0, file.indexOf('.'))),
@@ -794,6 +795,7 @@ exports.publish = function (taffyData, opts, tutorials) {
 // renderGlobal()
 }
 
+//todo replace with shell
 const copyFiles = (from, to) => {
   fs.readdirSync(from, { withFileTypes: true })
     .filter(item => !item.isDirectory())

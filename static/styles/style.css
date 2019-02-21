@@ -71,7 +71,7 @@
     text-decoration: none;
 }
 
-.sidebar a, .bd-toc a {
+.sidebar .sub-nav a, .bd-toc a {
     color: #000;
     font-family: 'Open Sans', sans-serif;
     font-size: 80%;
@@ -115,8 +115,15 @@ main {
     font-family: 'Roboto', sans-serif;
 }
 
-main .page-title {
+main .page-breadcrumb {
     /*font-size: 3rem;*/
+    position: sticky;
+    top: var(--navbar-height);
+    z-index: 1000;
+}
+
+main nav[aria-label="breadcrumb"] {
+
 }
 
 main .subsection-title {
@@ -170,22 +177,16 @@ main .arguments-title {
     margin-top: -1em !important
 }
 
-main nav[aria-label="breadcrumb"] {
-    position: sticky;
-    top: var(--navbar-height);
-    z-index: 1000;
-}
-
 main .breadcrumb {
-    padding-bottom: 1px;
-    padding-top: 1px;
+    padding-bottom: 5px;
+    padding-top: 5px;
 }
 
 /* for right top intend on open anchor link*/
 .bd-content .item[id]::before, .bd-content h2[id]::before {
     display: block;
-    height: calc(1.5 * var(--navbar-height));
-    margin-top: calc(-1.5 * var(--navbar-height));
+    height: calc(var(--navbar-height) + 43px);
+    margin-top: calc(-1 * var(--navbar-height) - 43px);
     content: "";
 }
 
