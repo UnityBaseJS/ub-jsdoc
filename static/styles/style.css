@@ -87,14 +87,6 @@
     box-shadow: none;
 }
 
-/*.sidebar button[aria-expanded="true"]:after {*/
-/*content: '▼';*/
-/*}*/
-
-/*.sidebar button[aria-expanded="false"]:after {*/
-/*content: '►';*/
-/*}*/
-
 nav .navbar-nav {
     flex-direction: row;
 }
@@ -186,7 +178,7 @@ main .breadcrumb {
     padding-top: 5px;
 }
 
-main img {
+main p > img {
     width: auto;
     height: auto;
     max-width: 100%;
