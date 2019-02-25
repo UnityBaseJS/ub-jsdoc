@@ -18,13 +18,13 @@ exports.handlers = {
     var memberOfModule
 
     if (doclet.tags && !memberof.startsWith('module:')) {
-      memberOfModule = doclet.tags.find(function (tag) {return tag.title === 'memberofmodule'})
+      memberOfModule = doclet.tags.find(function (tag) { return tag.title === 'memberofmodule' })
       if (memberOfModule) {
         doclet.memberof = 'module:' + memberOfModule.value + '~' + memberof
       }
     }
     // for a main module file attach readme
-    if (doclet.kind === "module" && !doclet.memberof && (doclet.readme === undefined) && doclet.meta.path) {
+    if (doclet.kind === 'module' && !doclet.memberof && (doclet.readme === undefined) && doclet.meta.path) {
       let readmePath = path.join(doclet.meta.path, 'README.md')
       if (fs.existsSync(readmePath)) {
         doclet.readme = parse(fs.readFileSync(readmePath, 'utf-8'))

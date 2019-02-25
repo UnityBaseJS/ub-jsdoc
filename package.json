@@ -1,6 +1,6 @@
 {
   "name": "ub-jsdoc",
-  "version": "1.7.3",
+  "version": "2.0.0",
   "description": "JSDoc 3 Template / Theme",
   "main": "publish.js",
   "scripts": {
@@ -19,12 +19,23 @@
   "homepage": "https://github.com/UnityBaseJS/ub-jsdoc",
   "dependencies": {
     "jsdoc": "^3.5.5",
-    "lunr": "^1.0.0"
+    "jsdoctypeparser": "^2.0.0-alpha-8",
+    "lodash": "^4.17.11",
+    "lunr": "^2.3.5",
+    "markdown-it": "^8.4.2",
+    "markdown-it-anchor": "^5.0.2",
+    "markdown-it-emoji": "^1.4.0",
+    "vue": "^2.5.21",
+    "vue-server-renderer": "^2.5.21"
   },
   "keywords": [
     "jsdoc",
     "documentation",
     "template",
     "theme"
-  ]
+  ],
+  "devDependencies": {
+    "eslint-plugin-vue": "^5.2.2",
+    "standard": "^12.0.1"
+  }
 }
