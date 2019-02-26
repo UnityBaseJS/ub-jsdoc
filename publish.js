@@ -112,9 +112,8 @@ exports.publish = function (taffyData, opts, tutorials) {
   const staticPath = path.resolve(opts.template, 'static')
   const outSourcePath = path.resolve(outdir, 'source')
 
-  // for node >= 10
-  fs.mkdirSync(outdir, { recursive: true })
-  fs.mkdirSync(outSourcePath)
+  shell(`mkdir -p ${outdir}`)
+  shell(`mkdir -p ${outSourcePath}`)
 
   // fs.writeFileSync('/home/andrey/dev/ub-jsdoc/data', JSON.stringify(taffyData().get(), null, 2))
   const data = helper.prune(taffyData)
