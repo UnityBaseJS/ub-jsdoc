@@ -111,6 +111,7 @@ exports.publish = function (taffyData, opts, tutorials) {
   const outdir = path.normalize(env.opts.destination)
   const staticPath = path.resolve(opts.template, 'static')
   const outSourcePath = path.resolve(outdir, 'source')
+  const gsPath = path.resolve(path.normalize(env.opts.destination), env.opts.gettingstarted)
 
   shell(`mkdir -p ${outdir}`)
   shell(`mkdir -p ${outSourcePath}`)
@@ -680,7 +681,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     // change links from /courses/tutorial-v5/... to relative
     const replaceGitLabLinks = page => page.replace(/courses\/tutorial-v5\/cityPortalTutorials-v5\/(.*)\.md/g, (__, filename) => createItemFileName('gs', filename))
 
-    const tree = JSON.parse(fs.readFileSync(path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5/tree.json'), 'utf-8'))
+    const tree = JSON.parse(fs.readFileSync(path.resolve(gsPath, 'tree.json'), 'utf-8'))
     const createGSNavigation = current => Object.keys(tree).map(item => ({
       name: tree[item].title,
       isCurrent: true,
@@ -693,7 +694,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     ))
 
     // index
-    const index = fs.readFileSync(path.resolve(opts.template, '../../gettingstarted/README.md'), 'utf8')
+    const index = fs.readFileSync(path.resolve(gsPath, '../README.md'), 'utf8')
     const indexWithLinks = replaceGitLabLinks(index)
     renderFile({
       navigation: createGSNavigation(''),
@@ -710,18 +711,18 @@ exports.publish = function (taffyData, opts, tutorials) {
     copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../gettingstarted'))
     copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../gettingstarted'))
 
-    const src = path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5', 'img')
+    const src = path.resolve(gsPath, 'img')
     const dist = path.resolve(outdir, '../gettingstarted/img')
 
     shell(`mkdir -p ${dist}`)
     shell(`cp -r ${src}/* ${dist}`)
 
-    fs.readdirSync(path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5'), { withFileTypes: true })
+    fs.readdirSync(gsPath, { withFileTypes: true })
       .filter(item => !item.isDirectory())
       .map(file => file.name)
       .filter(file => file.endsWith('.md'))
       .forEach(file => {
-        const page = fs.readFileSync(path.resolve(opts.template, '../../gettingstarted/cityPortalTutorials-v5', file), 'utf8')
+        const page = fs.readFileSync(path.resolve(gsPath, file), 'utf8')
 
         // move menu from page to table-of-content
         // create table of content
