@@ -85,13 +85,28 @@ Vue.component('example', {
   props: ['example'],
   template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/example.vue'), 'utf-8')
 })
-Vue.component('sidebar', {
+Vue.component('search', {
+  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/search.vue'), 'utf-8')
+})
+Vue.component('nav-collapse', {
   props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/sidebar.vue'), 'utf-8')
+  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/nav-collapse.vue'), 'utf-8')
+})
+Vue.component('nav-plain', {
+  props: ['navigation'],
+  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/nav-plain.vue'), 'utf-8')
 })
 Vue.component('tutor-sidebar', {
   props: ['navigation'],
   template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/tutor-sidebar.vue'), 'utf-8')
+})
+Vue.component('sidebar', {
+  props: ['navigation'],
+  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/sidebar.vue'), 'utf-8')
+})
+Vue.component('main-sidebar', {
+  props: ['navigation'],
+  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/main-sidebar.vue'), 'utf-8')
 })
 Vue.component('t-o-content', {
   props: ['tableOfContent'],
@@ -111,7 +126,7 @@ exports.publish = function (taffyData, opts, tutorials) {
   const outdir = path.normalize(env.opts.destination)
   const staticPath = path.resolve(opts.template, 'static')
   const outSourcePath = path.resolve(outdir, 'source')
-  const gsPath = path.resolve(path.normalize(env.opts.destination), env.opts.gettingstarted)
+  const gsPath = path.resolve(outdir, '../../getting-started/samples-master/courses/tutorial-v5/cityPortalTutorials-v5')
 
   shell(`mkdir -p ${outdir}`)
   shell(`mkdir -p ${outSourcePath}`)
@@ -241,7 +256,6 @@ exports.publish = function (taffyData, opts, tutorials) {
   }
 
   // replace links types etc
-
   preGenerate()
 
   const groupedItems = _.groupBy(allData, 'kind')
@@ -250,15 +264,105 @@ exports.publish = function (taffyData, opts, tutorials) {
     rootGroupedItems[key] = value.filter(({ memberof }) => memberof === undefined)
   }
 
+  function generateMainDocPage () {
+    const tree = {
+      currentAPI: {
+        title: 'Current API (UB V5.x)',
+        children: {
+          server: {
+            title: 'Server API',
+            link: 'server-v5/index.html'
+          },
+          adminUI: {
+            title: 'Admin UI API',
+            link: 'ubpub-v5/index.html'
+          },
+          tutorials: {
+            title: 'Tutorials',
+            link: 'server-v5/tutorialIndex.html'
+          },
+          gettingstarted: {
+            title: 'Getting Started',
+            link: 'gettingstarted/index.html'
+          }
+        }
+      },
+      configs: {
+        title: 'Configs',
+        children: {
+          server: {
+            title: 'Server (ubConfig)',
+            link: 'https://unitybase.info/docson/index.html#https://unitybase.info/models/UB/schemas/ubConfig.schema.json'
+          },
+          entity: {
+            title: 'Entity (*.meta)',
+            link: 'https://unitybase.info/docson/index.html#https://unitybase.info/models/UB/schemas/entity.schema.json'
+          },
+          scheduler: {
+            title: 'Scheduler (jobs)',
+            link: 'https://unitybase.info/docson/index.html#https://unitybase.info/models/UB/schemas/scheduler.config.schema.json'
+          }
+        }
+      },
+      docsV4: {
+        title: 'Old API (UB V4.x)',
+        children: {
+          server: {
+            title: 'Server API',
+            link: '/api/server-V41/index.html'
+          },
+          adminUI: {
+            title: 'Admin UI API',
+            link: '/api/adminUI/index.html'
+          }
+        }
+      },
+      docsV1: {
+        title: 'Old API (UB V1.x)',
+        children: {
+          server: {
+            title: 'Server API',
+            link: '/api/serverNew/index.html'
+          },
+          adminUI: {
+            title: 'Admin UI API',
+            link: '/api/adminUI/index.html'
+          }
+        }
+      }
+    }
+
+    const indexNavigation = Object.keys(tree).map(item => ({
+      name: tree[item].title,
+      submenu: Object.keys(tree[item].children).map(menuItem => ({
+        name: tree[item].children[menuItem].title,
+        isCurrent: false,
+        link: tree[item].children[menuItem].link
+      }))
+    }))
+    const html = md.render(fs.readFileSync(path.resolve(outdir, '../../DOC-MAIN-PAGE.md'), 'utf-8'))
+    copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../'))
+    copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../'))
+    renderFile({
+      readme: replaceAllLinks(html),
+      navigation: indexNavigation,
+      contents: []
+    },
+    path.resolve(__dirname, 'tmpl/mainDocIndex.vue'),
+    path.resolve(__dirname, 'tmpl/pageTemplate.html'),
+    path.resolve(outdir, '../index.html'))
+  }
+
   generateIndexPage()
   generateSourceCode()
   generateDoc()
   generateSearchIndex()
 
-  copyFiles(path.resolve(staticPath, 'styles'), outdir)
-  copyFiles(path.resolve(staticPath, 'scripts'), outdir)
+  // copyFiles(path.resolve(staticPath, 'styles'), outdir)
+  // copyFiles(path.resolve(staticPath, 'scripts'), outdir)
 
   if (tutorials.children.length > 0) {
+    generateMainDocPage()
     generateTutorials()
     generateGettingStarted()
   }
@@ -373,13 +477,13 @@ exports.publish = function (taffyData, opts, tutorials) {
       contents: []
     },
     path.resolve(__dirname, 'tmpl/index.vue'),
-    path.resolve(__dirname, 'tmpl/index.html'),
+    path.resolve(__dirname, 'tmpl/pageTemplate.html'),
     path.resolve(outdir, 'index.html'))
   }
 
   function generateSourceCode () {
-    copyFiles(path.resolve(staticPath, 'styles'), outSourcePath)
-    copyFiles(path.resolve(staticPath, 'scripts'), outSourcePath)
+    // copyFiles(path.resolve(staticPath, 'styles'), outSourcePath)
+    // copyFiles(path.resolve(staticPath, 'scripts'), outSourcePath)
 
     const files = allData.map(item => item.meta ? {
       path: item.meta.path,
@@ -511,7 +615,7 @@ exports.publish = function (taffyData, opts, tutorials) {
           tableOfContent
         },
         path.resolve(__dirname, `tmpl/${item.kind}.vue`),
-        path.resolve(__dirname, 'tmpl/index.html'),
+        path.resolve(__dirname, 'tmpl/pageTemplate.html'),
         path.resolve(outdir, createItemFileName(item.kind, item.name)))
       }
       if (rootGroupedItems[type]) {
@@ -643,7 +747,7 @@ exports.publish = function (taffyData, opts, tutorials) {
       navigation: createTutorialNavigation('')
     },
     path.resolve(__dirname, 'tmpl/tutorialIndex.vue'),
-    path.resolve(__dirname, 'tmpl/index.html'),
+    path.resolve(__dirname, 'tmpl/pageTemplate.html'),
     path.resolve(outdir, 'tutorialIndex.html')
     )
 
@@ -663,7 +767,7 @@ exports.publish = function (taffyData, opts, tutorials) {
         html
       },
       path.resolve(__dirname, 'tmpl/tutorial.vue'),
-      path.resolve(__dirname, 'tmpl/index.html'),
+      path.resolve(__dirname, 'tmpl/pageTemplate.html'),
       path.resolve(outdir, createItemFileName('tutorial', tutorial.name))
       )
       tutorial.children.forEach(renderTutorial)
@@ -701,15 +805,15 @@ exports.publish = function (taffyData, opts, tutorials) {
       html: md.render(indexWithLinks)
     },
     path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
-    path.resolve(__dirname, 'tmpl/index.html'),
+    path.resolve(__dirname, 'tmpl/pageTemplate.html'),
     path.resolve(outdir, '../gettingstarted', 'index.html')
     )
 
     if (!fs.existsSync(path.resolve(outdir, '../gettingstarted'))) {
       fs.mkdirSync(path.resolve(outdir, '../gettingstarted'))
     }
-    copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../gettingstarted'))
-    copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../gettingstarted'))
+    // copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../gettingstarted'))
+    // copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../gettingstarted'))
 
     const src = path.resolve(gsPath, 'img')
     const dist = path.resolve(outdir, '../gettingstarted/img')
@@ -747,7 +851,7 @@ exports.publish = function (taffyData, opts, tutorials) {
           tableOfContent
         },
         path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
-        path.resolve(__dirname, 'tmpl/index.html'),
+        path.resolve(__dirname, 'tmpl/pageTemplate.html'),
         path.resolve(outdir, '../gettingstarted', createItemFileName('gs', file.slice(0, file.indexOf('.'))))
         )
       }
