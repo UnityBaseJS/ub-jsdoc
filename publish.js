@@ -196,6 +196,11 @@ exports.publish = function (taffyData, opts, tutorials) {
     const { type, name, anchor } = linkParser(href)
     return `<a href="${createItemLink(type, name, anchor)}">${linkText}</a>`
   }
+  const tutorialReplacer = (__, name) => {
+    const link = createItemFileName('tutorial', name)
+    const title = getTutorialTitle(name)
+    return `<a href="${link}">${title}</a>`
+  }
   const replaceAllLinks = text => {
     return text.replace(/{@link (.*?)}/g, linkReplacer)
   }
@@ -349,7 +354,7 @@ exports.publish = function (taffyData, opts, tutorials) {
       contents: []
     },
     path.resolve(__dirname, 'tmpl/mainDocIndex.vue'),
-    path.resolve(__dirname, 'tmpl/pageTemplate.html'),
+    path.resolve(__dirname, 'tmpl/mainPageTemplate.html'),
     path.resolve(outdir, '../index.html'))
   }
 
@@ -472,7 +477,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     }))
 
     renderFile({
-      readme: replaceAllLinks(opts.readme),
+      readme: replaceAllLinks(opts.readme).replace(/{@tutorial (.*?)}/g, tutorialReplacer),
       navigation: indexNavigation,
       contents: []
     },
@@ -570,7 +575,41 @@ exports.publish = function (taffyData, opts, tutorials) {
 
         const events = filterGroupByMemberOf(groupedItems.event, itemName)
 
+        // replace tutorials link and add it to t-o-content
+        const tutorialsTable = { name: 'Tutorials', props: [] }
+        const tutorialReplacer = (__, name) => {
+          const link = createItemFileName('tutorial', name)
+          const title = getTutorialTitle(name)
+          // add tutorials to t-o-content
+          tutorialsTable.props.push({
+            name: title,
+            link
+          })
+          return `<a href="${link}">${title}</a>`
+        }
+
+        const replaceTutorialLinks = text => {
+          return text.replace(/{@tutorial (.*?)}/g, tutorialReplacer)
+        }
+
+        item.readme = item.readme ? replaceTutorialLinks(item.readme) : undefined
+        item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        item.classdesc = item.classdesc ? replaceTutorialLinks(item.classdesc) : undefined
+        members.forEach(item => {
+          item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        })
+        funcs.forEach(item => {
+          item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        })
+        types.forEach(item => {
+          item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        })
+        events.forEach(item => {
+          item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        })
+
         const tableOfContent = [
+          tutorialsTable,
           {
             name: 'Members',
             props: members.map(member => ({
@@ -583,7 +622,6 @@ exports.publish = function (taffyData, opts, tutorials) {
             props: funcs.map(func => ({
               name: func.name,
               link: `#${func.name}`
-
             }))
           },
           {
@@ -591,7 +629,6 @@ exports.publish = function (taffyData, opts, tutorials) {
             props: types.map(type => ({
               name: type.name,
               link: `#${type.name}`
-
             }))
           },
           {
@@ -612,7 +649,7 @@ exports.publish = function (taffyData, opts, tutorials) {
           funcs,
           types,
           events,
-          tableOfContent
+          tableOfContent: tableOfContent
         },
         path.resolve(__dirname, `tmpl/${item.kind}.vue`),
         path.resolve(__dirname, 'tmpl/pageTemplate.html'),
@@ -802,7 +839,8 @@ exports.publish = function (taffyData, opts, tutorials) {
     const indexWithLinks = replaceGitLabLinks(index)
     renderFile({
       navigation: createGSNavigation(''),
-      html: md.render(indexWithLinks)
+      html: md.render(indexWithLinks),
+      tableOfContent: []
     },
     path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
     path.resolve(__dirname, 'tmpl/pageTemplate.html'),
@@ -854,8 +892,17 @@ exports.publish = function (taffyData, opts, tutorials) {
         path.resolve(__dirname, 'tmpl/pageTemplate.html'),
         path.resolve(outdir, '../gettingstarted', createItemFileName('gs', file.slice(0, file.indexOf('.'))))
         )
-      }
-      )
+      })
+  }
+
+  function getTutorialTitle (name) {
+    const allTutorials = [...tutorials.children, ..._.flatten(tutorials.children.map(tutorial => tutorial.children))]
+    const tutorial = allTutorials.filter(tutorial => tutorial.name === name)[0]
+    if (tutorial === undefined) {
+      console.error(`Can't find ${name} tutorial. Please check and rename `)
+      return name
+    }
+    return tutorial.title
   }
 
 // renderType('function', functionName => functionName)
