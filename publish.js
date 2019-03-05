@@ -131,13 +131,13 @@ exports.publish = function (taffyData, opts, tutorials) {
   shell(`mkdir -p ${outdir}`)
   shell(`mkdir -p ${outSourcePath}`)
 
-  // fs.writeFileSync('/home/andrey/dev/ub-jsdoc/data', JSON.stringify(taffyData().get(), null, 2))
+  // fs.writeFileSync('/home/andrey/dev/ub-jsdoc-ubJS/data', JSON.stringify(taffyData().get(), null, 2))
   const data = helper.prune(taffyData)
   data.sort('longname, version, since')
   const allData = data().get()
   console.log(outdir)
 
-  // fs.writeFileSync('/home/andrey/dev/ub-jsdoc/alldata', JSON.stringify(allData, null, 2))
+  fs.writeFileSync('/home/andrey/dev/ub-jsdoc-ubJS/alldata', JSON.stringify(allData, null, 2))
 
   const linkParser = href => {
     // if (href === 'class:UBConnection#domain') {
