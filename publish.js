@@ -5,8 +5,8 @@ const env = require('jsdoc/env')
 const vueRender = require('vue-server-renderer')
 const _ = require('lodash')
 const jsdoctypeparse = require('jsdoctypeparser').parse
-const lunr = require('lunr')
 const Vue = require('vue')
+const FlexSearch = require('flexsearch')
 
 const md = require('markdown-it')({ html: true }) // for anchors in md <a name=...>
 // autocreate anchor from headers #...####
@@ -361,7 +361,6 @@ exports.publish = function (taffyData, opts, tutorials) {
   generateIndexPage()
   generateSourceCode()
   generateDoc()
-  generateSearchIndex()
 
   // copyFiles(path.resolve(staticPath, 'styles'), outdir)
   // copyFiles(path.resolve(staticPath, 'scripts'), outdir)
@@ -508,6 +507,38 @@ exports.publish = function (taffyData, opts, tutorials) {
   }
 
   function generateDoc () {
+    /// search
+    const index = new FlexSearch({
+      doc: {
+        id: 'id',
+        field: [
+          'name',
+          'description'
+        ]
+      }
+    }
+    )
+
+    const getFTSid = idGeneratorFabric('f')
+
+    let ftsData = {}
+    const addToSearch = (item, parent, link) => {
+      const id = getFTSid()
+
+      index.add({
+        id: id,
+        name: item.name,
+        description: item.readme ? item.readme.replace(/<.*?>/g, ' ') : undefined || item.classdesc ? item.classdesc.replace(/<.*?>/g, ' ') : undefined || item.description ? item.description.replace(/<.*?>/g, ' ') : undefined || item.content /* for tutorials */
+      })
+      ftsData[id] = {
+        link,
+        // path: item.longname,
+        kind: item.kind,
+        // name: item.name,
+        parent: parent || item.name
+      }
+    }
+
     const createNavigation = (currentType, currentItem) => {
       return Object.keys(itemTypes).filter(type => rootGroupedItems[type] && rootGroupedItems[type][0]).map(type => ({
         name: itemTypes[type].name,
@@ -537,6 +568,7 @@ exports.publish = function (taffyData, opts, tutorials) {
           name: item.name,
           link: createItemLink(item.kind, item.name)
         }]
+        addToSearch(item, parent ? parent.name : undefined, createItemLink(item.kind, item.name))
         const subclasses = filterGroupByMemberOf(groupedItems.class, itemName)
         subclasses.forEach(clazz => {
           clazz.link = createItemLink(clazz.kind, clazz.name)
@@ -595,17 +627,21 @@ exports.publish = function (taffyData, opts, tutorials) {
         item.readme = item.readme ? replaceTutorialLinks(item.readme) : undefined
         item.description = item.description ? replaceTutorialLinks(item.description) : undefined
         item.classdesc = item.classdesc ? replaceTutorialLinks(item.classdesc) : undefined
-        members.forEach(item => {
-          item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        members.forEach(member => {
+          member.description = member.description ? replaceTutorialLinks(member.description) : undefined
+          addToSearch(member, item.name, createItemLink(item.kind, item.name, member.name))
         })
-        funcs.forEach(item => {
-          item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        funcs.forEach(func => {
+          func.description = func.description ? replaceTutorialLinks(func.description) : undefined
+          addToSearch(func, item.name, createItemLink(item.kind, item.name, func.name))
         })
-        types.forEach(item => {
-          item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        types.forEach(type => {
+          type.description = type.description ? replaceTutorialLinks(type.description) : undefined
+          addToSearch(type, item.name, createItemLink(item.kind, item.name, type.name))
         })
-        events.forEach(item => {
-          item.description = item.description ? replaceTutorialLinks(item.description) : undefined
+        events.forEach(event => {
+          event.description = event.description ? replaceTutorialLinks(event.description) : undefined
+          addToSearch(event, item.name, createItemLink(item.kind, item.name, event.name))
         })
 
         const tableOfContent = [
@@ -664,99 +700,9 @@ exports.publish = function (taffyData, opts, tutorials) {
     renderType('namespace')
     renderType('mixin')
     renderType('interface')
-  }
 
-  function generateSearchIndex () {
-    const getFTSid = idGeneratorFabric('f')
-
-    let ftsData = {}
-
-    const ftsIndex = lunr(function () {
-      const addToSearch = (item, parent, link) => {
-        const id = getFTSid()
-        this.add({
-          id: id,
-          name: item.name,
-          description: item.readme ? item.readme.replace(/<.*?>/g, ' ') : undefined || item.classdesc ? item.classdesc.replace(/<.*?>/g, ' ') : undefined || item.description ? item.description.replace(/<.*?>/g, ' ') : undefined || item.content /* for tutorials */
-        })
-        ftsData[id] = {
-          link,
-          // path: item.longname,
-          kind: item.kind,
-          name: item.name,
-          parent: parent || item.name
-        }
-      }
-
-      this.ref('id')
-      this.field('name', { boost: 5 })
-      this.field('description', { boost: 1 })
-
-      Object.keys(itemTypes).map(type => {
-        const renderItem = (item, parent) => {
-          // if (item.name === '@unitybase/uba') debugger
-          const itemName = itemTypes[item.kind].generateName(item.name, parent ? parent.name : undefined)
-
-          item.breadcrumbs = [...parent ? parent.breadcrumbs : [], {
-            name: item.name,
-            link: createItemLink(item.kind, item.name)
-          }]
-          addToSearch(item, parent ? parent.name : undefined, createItemLink(item.kind, item.name))
-
-          const subclasses = filterGroupByMemberOf(groupedItems.class, itemName)
-          subclasses.forEach(clazz => {
-            clazz.link = createItemLink(clazz.kind, clazz.name)
-            renderItem(clazz, {
-              name: itemName,
-              kind: item.kind,
-              breadcrumbs: item.breadcrumbs
-            })
-          })
-
-          const submodules = filterGroupByMemberOf(groupedItems.module, itemName)
-          submodules.forEach(submodule => {
-            submodule.link = createItemLink(submodule.kind, submodule.name)
-            renderItem(submodule, {
-              name: itemName,
-              kind: item.kind,
-              breadcrumbs: item.breadcrumbs
-            })
-          })
-
-          const mixins = filterGroupByMemberOf(groupedItems.mixin, itemName)
-          mixins.forEach(mixin => {
-            mixin.link = createItemLink(mixin.kind, mixin.name)
-            renderItem(mixin, {
-              name: itemName,
-              kind: item.kind,
-              breadcrumbs: item.breadcrumbs
-            })
-          })
-
-          const members = filterGroupByMemberOf(groupedItems.member, itemName)
-          members.forEach(member => {
-            addToSearch(member, item.name, createItemLink(item.kind, item.name, member.name))
-          })
-          const funcs = filterGroupByMemberOf(groupedItems.function, itemName)
-          funcs.forEach(func => {
-            addToSearch(func, item.name, createItemLink(item.kind, item.name, func.name))
-          })
-          const types = filterGroupByMemberOf(groupedItems.typedef, itemName)
-          types.forEach(type => {
-            addToSearch(type, item.name, createItemLink(item.kind, item.name, type.name))
-          })
-          const events = filterGroupByMemberOf(groupedItems.event, itemName)
-          events.forEach(event => {
-            addToSearch(event, item.name, createItemLink(item.kind, item.name, event.name))
-          })
-        }
-        if (rootGroupedItems[type]) {
-          rootGroupedItems[type].forEach(item => renderItem(item))
-        }
-      })
-    })
-
-    fs.writeFileSync(path.resolve(outdir, 'ftsIndex.json'), JSON.stringify(ftsIndex))
+    // serialize
+    fs.writeFileSync(path.resolve(outdir, 'ftsIndex.json'), JSON.stringify(index.export()))
     fs.writeFileSync(path.resolve(outdir, 'ftsData.json'), JSON.stringify(ftsData))
   }
 

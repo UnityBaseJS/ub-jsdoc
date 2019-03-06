@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/UnityBaseJS/ub-jsdoc",
   "dependencies": {
+    "flexsearch": "^0.6.2",
     "jsdoc": "^3.5.5",
     "jsdoctypeparser": "^2.0.0-alpha-8",
     "lodash": "^4.17.11",
