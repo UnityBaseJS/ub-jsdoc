@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto:400,500,600');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto:400,500');
 
 
 :root {
@@ -43,7 +43,7 @@
 
 .sidebar .main-nav > li > button, .sidebar .main-nav > li > span, .sidebar .main-nav > li > a {
     color: var(--nav-item-main-color);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 95%;
 }
 
@@ -135,7 +135,7 @@ main .page-breadcrumb {
 
 main .subsection-title {
     margin-top: 50px;
-    font-weight: 600;
+    font-weight: 500;
     /*font-size: 1.1rem;*/
 }
 
@@ -171,7 +171,7 @@ main .deprecated {
 
 main .arguments-title {
     font-size: 70%;
-    font-weight: 600;
+    font-weight: 500;
     margin-bottom: 0;
 }
 
