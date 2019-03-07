@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto:400,500');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto');
 
 
 :root {
@@ -43,7 +43,7 @@
 
 .sidebar .main-nav > li > button, .sidebar .main-nav > li > span, .sidebar .main-nav > li > a {
     color: var(--nav-item-main-color);
-    font-weight: 500;
+    font-weight: 600;
     font-size: 95%;
 }
 
@@ -101,7 +101,7 @@ nav .navbar-nav {
 #search-result {
     position: fixed;
     top: 100px;
-    width: 35%;
+    width: 90%;
     z-index: 5000;
     margin-left: 15px;
 }
@@ -135,7 +135,7 @@ main .page-breadcrumb {
 
 main .subsection-title {
     margin-top: 50px;
-    font-weight: 500;
+    font-weight: 600;
     /*font-size: 1.1rem;*/
 }
 
@@ -260,9 +260,7 @@ main p > img {
 }
 
 @media (max-width: 768px) {
-    #search-result {
-        width: 90%;
-    }
+
 }
 
 
@@ -306,4 +304,7 @@ main p > img {
 
 /*// Extra large devices (large desktops, 1200px and up)*/
 @media (min-width: 1200px) {
+    #search-result {
+        width: 30%;
+    }
 }
