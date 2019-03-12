@@ -1,12 +1,9 @@
 const helper = require('jsdoc/util/templateHelper')
 const fs = require('fs')
 const path = require('path')
-const env = require('jsdoc/env')
-const vueRender = require('vue-server-renderer')
 const _ = require('lodash')
-const jsdoctypeparse = require('jsdoctypeparser').parse
-const Vue = require('vue')
 const FlexSearch = require('flexsearch')
+const env = require('jsdoc/env')
 
 const md = require('markdown-it')({ html: true }) // for anchors in md <a name=...>
 // autocreate anchor from headers #...####
@@ -14,120 +11,27 @@ md.use(require('markdown-it-anchor'), {
   slugify: (s) => encodeURIComponent(String(s).trim().toLowerCase().replace(/,?\s+,?/g, '-')) // change headers with comas
 }).use(require('markdown-it-emoji')) // for :!: emoji and not only
 
-// not work for Windows
+// not work on Windows
 const shell = require('child_process').execSync
 
-// render one file
-const renderFile = (data, vueTemplPath, htmlTemplPath, outputPath) => {
-  const app = new Vue({
-    data,
-    template: fs.readFileSync(vueTemplPath, 'utf-8')
-  })
-
-  const renderer = vueRender.createRenderer({
-    template: fs.readFileSync(htmlTemplPath, 'utf-8')
-  })
-
-  renderer.renderToString(app).then(html => {
-    fs.writeFileSync(outputPath, html)
-  }).catch(err => {
-    console.error(err)
-  })
-}
-
-const itemTypes = {
-  module: {
-    name: 'Modules',
-    generateName: (moduleName, parentName) => parentName ? `${parentName}.module:${moduleName}` : `module:${moduleName}`
-  },
-  class: {
-    name: 'Classes',
-    generateName: (clazzName, parentName) => parentName ? `${parentName}~${clazzName}` : clazzName
-  },
-  namespace: {
-    name: 'Namespaces',
-    generateName: namespaceName => namespaceName
-  },
-  mixin: {
-    name: 'Mixins',
-    generateName: mixinName => mixinName
-  },
-  interface: {
-    name: 'Interfaces',
-    generateName: interfaceName => interfaceName
-  }
-  // function: {
-  // name: 'Global',
-  //   generateName: 'Global',
-  // }
-}
-Vue.component('anchor', {
-  props: ['id'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/anchor.vue'), 'utf-8')
-})
-Vue.component('func', {
-  props: ['func'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/func.vue'), 'utf-8')
-})
-Vue.component('member', {
-  props: ['member'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/member.vue'), 'utf-8')
-})
-Vue.component('type', {
-  props: ['type'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/type.vue'), 'utf-8')
-})
-Vue.component('event', {
-  props: ['event'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/event.vue'), 'utf-8')
-})
-Vue.component('example', {
-  props: ['example'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/example.vue'), 'utf-8')
-})
-Vue.component('search', {
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/search.vue'), 'utf-8')
-})
-Vue.component('nav-collapse', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/nav-collapse.vue'), 'utf-8')
-})
-Vue.component('nav-plain', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/nav-plain.vue'), 'utf-8')
-})
-Vue.component('tutor-sidebar', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/tutor-sidebar.vue'), 'utf-8')
-})
-Vue.component('sidebar', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/sidebar.vue'), 'utf-8')
-})
-Vue.component('main-sidebar', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/main-sidebar.vue'), 'utf-8')
-})
-Vue.component('t-o-content', {
-  props: ['tableOfContent'],
-  template: fs.readFileSync(path.resolve(__dirname, 'tmpl/elements/t-o-content.vue'), 'utf-8')
-})
-
-// itemType === 'class' ? `${itemName.replace('/', '_')}.html` is for compatibility with old jsdoc links
-const createItemFileName = (itemType, itemName) => itemType === 'class' ? `${itemName.replace('/', '_')}.html` : `${itemType}-${itemName.replace('/', '_')}.html`
-const createItemLink = (itemType, itemName, anchor) => {
-  const link = anchor ? `${createItemFileName(itemType, itemName)}#${anchor}` : createItemFileName(itemType, itemName)
-  return encodeURI(link)
-}
-
+const {
+  createItemLink,
+  createItemFileName,
+  itemTypes,
+  groupDoclets,
+  groupRootDoclets,
+  idGeneratorFabric
+} = require('./src/utils')
+const renderFile = require('./src/vueRender')
 const filterGroupByMemberOf = (groupedItems, memberName) => groupedItems.filter(({ memberof }) => memberof === memberName)
 
 exports.publish = function (taffyData, opts, tutorials) {
   const outdir = path.normalize(env.opts.destination)
-  const staticPath = path.resolve(opts.template, 'static')
+  // const staticPath = path.resolve(opts.template, 'static')
   const outSourcePath = path.resolve(outdir, 'source')
-  const gsPath = path.resolve(outdir, '../../getting-started/samples-master/courses/tutorial-v5/cityPortalTutorials-v5')
+  const extendedConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'extendedConfig.json'), 'utf-8'))
 
+  // todo rewrite with fs
   shell(`mkdir -p ${outdir}`)
   shell(`mkdir -p ${outSourcePath}`)
 
@@ -136,227 +40,19 @@ exports.publish = function (taffyData, opts, tutorials) {
   data.sort('longname, version, since')
   const allData = data().get()
   console.log(outdir)
+  // fs.writeFileSync('/home/andrey/dev/ub-jsdoc-ubJS/alldata', JSON.stringify(allData, null, 2))
 
-  fs.writeFileSync('/home/andrey/dev/ub-jsdoc-ubJS/alldata', JSON.stringify(allData, null, 2))
+  const { prepareDoclets, replaceAllLinks } = require('./src/parsers')(allData)
 
-  const linkParser = href => {
-    // if (href === 'class:UBConnection#domain') {
-    //   debugger
-    // }
-    let type, name, anchor
-    // if has substring 'module:' two times
-    href = href.includes('module:') ? href.substring(href.lastIndexOf('module:')) : href
-    // if look like module:... or class:...
-    if (/(.*):(.*)/.test(href)) {
-      [type, name] = href.match(/[^:]+/g)
-      // else trying to find by name in all items
-    } else if (allData.filter(({ name }) => name === href).length > 0) {
-      const [item] = allData.filter(({ name }) => name === href).sort((a, b) => a.scope === 'global' ? -1 : 1)
-      if (item.scope === 'global' || ['module', 'class'].includes(item.kind)) {
-        name = href
-        type = item.kind
-      } else if (item.memberof !== undefined) {
-        return linkParser(item.longname)
-      }
-    } else {
-      name = href
-      // type = 'class'
-      //   [type, name] = parent.match(/[^:]+/g)
-      //   anchor = href
-      //   // type = 'class'
-      //   // name = href
-      //   // const [item] = allData.filter((item => item.name === href))
-      //   // type = 'module'
-      //   // name = item.longname.match(/\.module:(.*)[#~.]/g)[1]
-      //   // anchor = item.name
-      //   // search name in all items for full info
-      //   // const [item] = allData.filter((item => item.name === linkText));
-      //   //
-      //   // if (!item){
-      //   //   type = 'class'
-      //   //   name = href
-      //   // } else {
-      //   //   // [name, anchor] = item.name.match(/.module:(.*)~(.*)/g)
-      //   //   name = item.
-      //   // }
-    }
-
-    // change Class[.|~]method to Class#method
-    name = name.replace(/[.~]/, '#')
-    // parse anchor
-    if (name.includes('#')) {
-      [name, anchor] = name.match(/[^#]+/g)
-    }
-    return { type, name, anchor }
-  }
-
-  const linkReplacer = (__, link) => {
-    // if one world => linkText = href
-    const [href, linkText = href] = link.match(/\S+/g)
-    const { type, name, anchor } = linkParser(href)
-    return `<a href="${createItemLink(type, name, anchor)}">${linkText}</a>`
-  }
   const tutorialReplacer = (__, name) => {
     const link = createItemFileName('tutorial', name)
     const title = getTutorialTitle(name)
     return `<a href="${link}">${title}</a>`
   }
-  const replaceAllLinks = text => {
-    return text.replace(/{@link (.*?)}/g, linkReplacer)
-  }
 
-  const parseType = (typeObj) => {
-    const buildInJSObjects = {
-      object: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object'
-      },
-      boolean: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean'
-      },
-      number: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number'
-      },
-      string: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String'
-      },
-      array: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array'
-      },
-      arraybuffer: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer'
-      },
-      null: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null'
-      },
-      function: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function'
-      },
-      undefined: {
-        link: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined'
-      },
-      '*': {
-        link: ''
-      }
-    }
-    if (typeObj === undefined) return undefined
-    const { names } = typeObj
-    return names.map(typeName => {
-      const parsedType = jsdoctypeparse(typeName)
-      if (parsedType.type === 'NAME') {
-        typeName = parsedType.name
-      }
-      // if standard js type
-      if (Object.keys(buildInJSObjects).includes(typeName.toLowerCase())) {
-        return {
-          text: typeName,
-          link: buildInJSObjects[typeName.toLowerCase()].link
-        }
-      }
-      const { type, name, anchor } = linkParser(typeName)
-      return {
-        text: anchor || name,
-        link: createItemLink(type, name, anchor)
-      }
-    })
-  }
-
-  // replace links types etc
-  preGenerate()
-
-  const groupedItems = _.groupBy(allData, 'kind')
-  const rootGroupedItems = {} // Object.keys(groups).map(group => groups[group].filter(({ memberof }) => memberof === undefined))
-  for (let [key, value] of Object.entries(groupedItems)) {
-    rootGroupedItems[key] = value.filter(({ memberof }) => memberof === undefined)
-  }
-
-  function generateMainDocPage () {
-    const tree = {
-      currentAPI: {
-        title: 'Current API (UB V5.x)',
-        children: {
-          server: {
-            title: 'Server API',
-            link: 'server-v5/index.html'
-          },
-          adminUI: {
-            title: 'Admin UI API',
-            link: 'ubpub-v5/index.html'
-          },
-          tutorials: {
-            title: 'Tutorials',
-            link: 'server-v5/tutorialIndex.html'
-          },
-          gettingstarted: {
-            title: 'Getting Started',
-            link: 'gettingstarted/index.html'
-          }
-        }
-      },
-      configs: {
-        title: 'Configs',
-        children: {
-          server: {
-            title: 'Server (ubConfig)',
-            link: 'https://unitybase.info/docson/index.html#https://unitybase.info/models/UB/schemas/ubConfig.schema.json'
-          },
-          entity: {
-            title: 'Entity (*.meta)',
-            link: 'https://unitybase.info/docson/index.html#https://unitybase.info/models/UB/schemas/entity.schema.json'
-          },
-          scheduler: {
-            title: 'Scheduler (jobs)',
-            link: 'https://unitybase.info/docson/index.html#https://unitybase.info/models/UB/schemas/scheduler.config.schema.json'
-          }
-        }
-      },
-      docsV4: {
-        title: 'Old API (UB V4.x)',
-        children: {
-          server: {
-            title: 'Server API',
-            link: '/api/server-V41/index.html'
-          },
-          adminUI: {
-            title: 'Admin UI API',
-            link: '/api/adminUI/index.html'
-          }
-        }
-      },
-      docsV1: {
-        title: 'Old API (UB V1.x)',
-        children: {
-          server: {
-            title: 'Server API',
-            link: '/api/serverNew/index.html'
-          },
-          adminUI: {
-            title: 'Admin UI API',
-            link: '/api/adminUI/index.html'
-          }
-        }
-      }
-    }
-
-    const indexNavigation = Object.keys(tree).map(item => ({
-      name: tree[item].title,
-      submenu: Object.keys(tree[item].children).map(menuItem => ({
-        name: tree[item].children[menuItem].title,
-        isCurrent: false,
-        link: tree[item].children[menuItem].link
-      }))
-    }))
-    const html = md.render(fs.readFileSync(path.resolve(outdir, '../../DOC-MAIN-PAGE.md'), 'utf-8'))
-    copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../'))
-    copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../'))
-    renderFile({
-      readme: replaceAllLinks(html),
-      navigation: indexNavigation,
-      contents: []
-    },
-    path.resolve(__dirname, 'tmpl/mainDocIndex.vue'),
-    path.resolve(__dirname, 'tmpl/mainPageTemplate.html'),
-    path.resolve(outdir, '../index.html'))
-  }
+  const preparedDoclets = prepareDoclets(allData)
+  const groupedItems = groupDoclets(preparedDoclets)
+  const rootGroupedItems = groupRootDoclets(preparedDoclets)
 
   generateIndexPage()
   generateSourceCode()
@@ -366,100 +62,9 @@ exports.publish = function (taffyData, opts, tutorials) {
   // copyFiles(path.resolve(staticPath, 'scripts'), outdir)
 
   if (tutorials.children.length > 0) {
-    generateMainDocPage()
     generateTutorials()
-    generateGettingStarted()
-  }
-
-  function preGenerate () {
-    // replace all links in data
-    allData.forEach(item => {
-      item.readme = item.readme ? replaceAllLinks(item.readme) : undefined
-      item.description = item.description ? replaceAllLinks(item.description) : undefined
-      item.classdesc = item.classdesc ? replaceAllLinks(item.classdesc) : undefined
-      item.deprecated = typeof (item.deprecated) === 'string' ? replaceAllLinks(item.deprecated) : undefined
-      if (item.params) {
-        item.params.forEach(param => {
-          param.description = param.description ? replaceAllLinks(param.description) : undefined
-        })
-      }
-    })
-    // parse and replace with {text:..., link:...}  all types
-    allData.forEach(item => {
-      // if (item.name === 'serverConfig') debugger
-      item.type = item.type ? parseType(item.type, item.name) : undefined
-      item.returns = item.returns ? parseType(item.returns[0].type) : undefined
-
-      if (item.properties) {
-        item.properties.forEach(property => {
-          if (property.___id === undefined) { property.type = parseType(property.type, property.name) }
-        })
-      }
-      if (item.params) {
-        item.params.forEach(param => {
-          if (param.___id === undefined) { param.type = parseType(param.type) }
-        })
-      }
-    })
-
-    // parse params and grouping subparams
-    allData.forEach(item => {
-      // if complex parameter like options.encoding in getContent
-      if (item.params) {
-        item.paramsForMethods = item.params.filter(({ name }) => !name.includes('.'))
-        const args = item.params.filter(({ name }) => item.params.some(({ name: innerName }) => innerName.includes(`${name}.`)))
-        args.forEach(arg => {
-          arg.props = item.params.filter(({ name }) => name.includes(`${arg.name}.`)).map(param => ({
-            ...param,
-            name: param.name.match(/\.([^.]+)/)[1]
-          }))
-        })
-        item.params = [...args, ...item.params.filter(param => param.description && !param.name.includes('.'))]
-      }
-    })
-
-    // // grouping properties
-    // allData.forEach(item => {
-    //   // if complex parameter like options.encoding in getContent
-    //   if (item.properties) {
-    //     const arguments = item.properties.filter(({ name }) => item.properties.some(({ name: innerName }) => innerName.includes(`${name}.`)))
-    //     arguments.forEach(arg => {
-    //       arg.props = item.properties.filter(({ name }) => name.includes(`${arg.name}.`)).map(param => ({
-    //         ...param,
-    //         name: param.name.match(/\.([^.]+)/)[1]
-    //       }))
-    //     })
-    //     item.properties = [...arguments, ...item.properties.filter(param => param.description && !param.name.includes('.'))]
-    //   }
-    // })
-
-    // add links for mixin
-    allData.forEach(item => {
-      if (item.mixes) {
-        item.mixes = item.mixes.map(mixinName => {
-          const { type, name, anchor } = linkParser(mixinName)
-          return {
-            text: anchor || name,
-            link: createItemLink(type, name, anchor)
-          }
-        })
-      }
-    })
-
-    // add link to source code
-    allData.forEach(item => {
-      if (item.meta) {
-        const filePath = item.meta.path
-        const fileName = item.meta.filename
-        const line = item.meta.lineno
-        item.codeLink = 'source/' + createItemLink('source', path.basename(filePath) + '/' + fileName, 'code.' + line)
-      }
-    })
-
-    // need for highlight syntax
-    allData.forEach(item => {
-      item.classdesc = item.classdesc ? item.classdesc.replace(/<pre class="prettyprint source"><code>/g, '<pre class="prettyprint source"><code class="language-javascript">', 'g') : undefined
-      item.description = item.description ? item.description.replace(/<pre class="prettyprint source"><code>/g, '<pre class="prettyprint source"><code class="language-javascript">', 'g') : undefined
+    extendedConfig.extends.forEach(extend => {
+      require(extend)(replaceAllLinks)
     })
   }
 
@@ -516,15 +121,11 @@ exports.publish = function (taffyData, opts, tutorials) {
           'description'
         ]
       }
-    }
-    )
-
+    })
     const getFTSid = idGeneratorFabric('f')
-
     let ftsData = {}
     const addToSearch = (item, parent, link) => {
       const id = getFTSid()
-
       index.add({
         id: id,
         name: item.name,
@@ -700,6 +301,14 @@ exports.publish = function (taffyData, opts, tutorials) {
     renderType('namespace')
     renderType('mixin')
     renderType('interface')
+    // renderFile global
+    // const renderGlobal = () => {
+    //   debugger
+    //   const globalItems = allData.filter(({ scope, kind }) => scope === 'global' && ['member', 'function'].includes(kind))
+    //
+    // }
+    //
+    // renderGlobal()
 
     // serialize
     fs.writeFileSync(path.resolve(outdir, 'ftsIndex.json'), JSON.stringify(index.export()))
@@ -759,88 +368,6 @@ exports.publish = function (taffyData, opts, tutorials) {
     tutorials.children.forEach(renderTutorial)
   }
 
-  function generateGettingStarted () {
-    // ************
-    // getting started in tutorials because they execute ones
-    // ************
-    console.log('getting started')
-
-    // change links from /courses/tutorial-v5/... to relative
-    const replaceGitLabLinks = page => page.replace(/courses\/tutorial-v5\/cityPortalTutorials-v5\/(.*)\.md/g, (__, filename) => createItemFileName('gs', filename))
-
-    const tree = JSON.parse(fs.readFileSync(path.resolve(gsPath, 'tree.json'), 'utf-8'))
-    const createGSNavigation = current => Object.keys(tree).map(item => ({
-      name: tree[item].title,
-      isCurrent: true,
-      submenu: Object.keys(tree[item].children).map(i => ({
-        name: tree[item].children[i].title,
-        isCurrent: current === i,
-        link: createItemFileName('gs', i)
-      }))
-    }
-    ))
-
-    // index
-    const index = fs.readFileSync(path.resolve(gsPath, '../README.md'), 'utf8')
-    const indexWithLinks = replaceGitLabLinks(index)
-    renderFile({
-      navigation: createGSNavigation(''),
-      html: md.render(indexWithLinks),
-      tableOfContent: []
-    },
-    path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
-    path.resolve(__dirname, 'tmpl/pageTemplate.html'),
-    path.resolve(outdir, '../gettingstarted', 'index.html')
-    )
-
-    if (!fs.existsSync(path.resolve(outdir, '../gettingstarted'))) {
-      fs.mkdirSync(path.resolve(outdir, '../gettingstarted'))
-    }
-    // copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../gettingstarted'))
-    // copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../gettingstarted'))
-
-    const src = path.resolve(gsPath, 'img')
-    const dist = path.resolve(outdir, '../gettingstarted/img')
-
-    shell(`mkdir -p ${dist}`)
-    shell(`cp -r ${src}/* ${dist}`)
-
-    fs.readdirSync(gsPath, { withFileTypes: true })
-      .filter(item => !item.isDirectory())
-      .map(file => file.name)
-      .filter(file => file.endsWith('.md'))
-      .forEach(file => {
-        const page = fs.readFileSync(path.resolve(gsPath, file), 'utf8')
-
-        // move menu from page to table-of-content
-        // create table of content
-        const menu = page
-          .match(/<a name="menu"><\/a>(.*)<a name="endmenu"><\/a>/s)[1]
-          .trim()
-          .split('\n')
-          .map(line => line.match(/\[(.*)]\((#.*)\)/))
-          .map(([__, name, link]) => ({
-            name,
-            link
-          }))
-        const tableOfContent = [{ name: 'Menu', props: menu }]
-        // delete menu from page
-        const pageWithoutMenu = page.replace(/<a name="menu"><\/a>(.*)<a name="endmenu"><\/a>/s, '')
-
-        const html = md.render(replaceGitLabLinks(pageWithoutMenu))
-
-        renderFile({
-          navigation: createGSNavigation(file.slice(0, file.indexOf('.'))),
-          html,
-          tableOfContent
-        },
-        path.resolve(__dirname, 'tmpl/gettingStarted.vue'),
-        path.resolve(__dirname, 'tmpl/pageTemplate.html'),
-        path.resolve(outdir, '../gettingstarted', createItemFileName('gs', file.slice(0, file.indexOf('.'))))
-        )
-      })
-  }
-
   function getTutorialTitle (name) {
     const allTutorials = [...tutorials.children, ..._.flatten(tutorials.children.map(tutorial => tutorial.children))]
     const tutorial = allTutorials.filter(tutorial => tutorial.name === name)[0]
@@ -850,27 +377,4 @@ exports.publish = function (taffyData, opts, tutorials) {
     }
     return tutorial.title
   }
-
-// renderType('function', functionName => functionName)
-// renderFile global
-// const renderGlobal = () => {
-//   debugger
-//   const globalItems = allData.filter(({ scope, kind }) => scope === 'global' && ['member', 'function'].includes(kind))
-//
-// }
-//
-// renderGlobal()
-}
-
-const copyFiles = (from, to) => {
-  fs.readdirSync(from, { withFileTypes: true })
-    .filter(item => !item.isDirectory())
-    .map(item => item.name)
-    .forEach(fileName => {
-      fs.copyFileSync(path.resolve(from, fileName), path.resolve(to, fileName))
-    })
-}
-const idGeneratorFabric = prefix => {
-  let id = 1
-  return () => prefix + (id++)
 }

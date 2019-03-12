@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="prism.css">
     <title>Doc</title>
 </head>
 <body>
@@ -19,34 +18,26 @@
 </div>
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light py-1">
     <div class="navbar-brand">
-        <a  href="/">
-            <img src="https://unitybase.info/img/UB-logo.png" class="d-inline-block align-middle logo mr2" alt="logo"></a>
-        <a href="index.html">UB DOC</a>
+        <a href="/">
+            <img src="{{{navbar.logo.img}}}" class="d-inline-block align-middle logo mr2" alt="logo"></a>
+        <a href="{{{navbar.logo.href}}}">UB DOC</a>
     </div>
 
     <ul class="navbar-nav">
-        <li class="nav-item d-none d-md-block">
-            <a class="nav-link" href="server-v5/index.html">Server Docs</a>
-        </li>
-        <li class="nav-item d-none d-md-block">
-            <a class="nav-link" href="ubpub-v5/index.html">Client Docs</a>
-        </li>
-        <li class="nav-item d-none d-md-block">
-            <a class="nav-link" href="server-v5/tutorialIndex.html">Tutorials</a>
-        </li>
-        <li class="nav-item d-none d-md-block">
-            <a class="nav-link" href="gettingstarted/index.html">Getting Started</a>
-        </li>
+        {{#navbar.nav}}
+            <li class="nav-item d-none d-md-block">
+                <a class="nav-link" href="{{{href}}}">{{name}}</a>
+            </li>
+        {{/navbar.nav}}
         <li class="nav-item dropdown d-xl-none d-lg-none d-md-none">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                aria-haspopup="true" aria-expanded="false">
                 Links
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="server-v5/index.html">Server Docs</a>
-                <a class="dropdown-item" href="ubpub-v5/index.html">Client Docs</a>
-                <a class="dropdown-item" href="server-v5/tutorialIndex.html">Tutorials</a>
-                <a class="dropdown-item" href="gettingstarted/index.html">Getting Started</a>
+                {{#navbar.nav}}
+                    <a class="dropdown-item" href="{{{href}}}">{{name}}</a>
+                {{/navbar.nav}}
             </div>
         </li>
     </ul>
@@ -62,15 +53,15 @@
 </div>
 <!-- Optional JavaScript -->
 <script>
-  // const buttons = document.querySelectorAll('button[data-toggle="collapse"]')
-  // buttons.forEach(btn => {
-  //   btn.addEventListener('click', (event) => {
-  //     // console.log(event.target)
-  //     buttons.forEach(b => {
-  //       b.childNodes[0].textContent = b === event.target && !b.getAttribute('aria-expanded') ? '►' : '▼'
-  //     })
-  //   })
-  // })
+    // const buttons = document.querySelectorAll('button[data-toggle="collapse"]')
+    // buttons.forEach(btn => {
+    //   btn.addEventListener('click', (event) => {
+    //     // console.log(event.target)
+    //     buttons.forEach(b => {
+    //       b.childNodes[0].textContent = b === event.target && !b.getAttribute('aria-expanded') ? '►' : '▼'
+    //     })
+    //   })
+    // })
 </script>
 
 
@@ -88,7 +79,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/lunr@2/lunr.min.js"></script>
 
 </body>
 </html>

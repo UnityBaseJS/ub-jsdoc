@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../prism.css">
+    <title>Doc</title>
+</head>
+<body>
+<div class="dropdown">
+    <div class="dropdown-menu" id="search-result">
+    </div>
+</div>
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light py-1">
+    <div class="navbar-brand">
+        <a href="/">
+            <img src={{{navbar.logo.img}}} class="d-inline-block align-middle logo mr2"
+                 alt="logo"></a>
+        <a href="../{{{navbar.logo.href}}}">UB DOC</a>
+    </div>
+
+    <ul class="navbar-nav">
+        {{#navbar.nav}}
+            <li class="nav-item d-none d-md-block">
+                <a class="nav-link" href="../{{{href}}}">{{name}}</a>
+            </li>
+        {{/navbar.nav}}
+
+        <li class="nav-item dropdown d-xl-none d-lg-none d-md-none">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+                Links
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {{#navbar.nav}}
+                    <a class="dropdown-item" href="../{{{href}}}">{{name}}</a>
+                {{/navbar.nav}}
+            </div>
+        </li>
+    </ul>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+</nav>
+<div class="container-fluid">
+    <!--vue-ssr-outlet-->
+</div>
+<!-- Optional JavaScript -->
+<script>
+  // const buttons = document.querySelectorAll('button[data-toggle="collapse"]')
+  // buttons.forEach(btn => {
+  //   btn.addEventListener('click', (event) => {
+  //     // console.log(event.target)
+  //     buttons.forEach(b => {
+  //       b.childNodes[0].textContent = b === event.target && !b.getAttribute('aria-expanded') ? '►' : '▼'
+  //     })
+  //   })
+  // })
+</script>
+<script src="https://cdn.jsdelivr.net/gh/nextapps-de/flexsearch@0.6.2/dist/flexsearch.min.js"></script>
+
+<script>
+  //search
+  const feeds = new FlexSearch({
+      doc: {
+        id: 'id',
+        field: [
+          'name',
+          'description'
+        ]
+      }
+    }
+  )
+  const getFTSData = () => {
+    window.FTSData = window.FTSData ? Promise.resolve(window.FTSData) : Promise.all([
+      window.fetch('ftsIndex.json'),
+      window.fetch('ftsData.json')
+    ]).then(values => Promise.all([values[0].json(), values[1].json()]))
+      .then(valuesInJSON => {
+        feeds.import(valuesInJSON[0])
+        return {
+          ftsIndex: feeds,
+          ftsData: valuesInJSON[1]
+        }
+      })
+    return window.FTSData
+  }
+  const fullTextSearch = textToSearch => {
+    getFTSData().then(searchData => {
+      const result = searchData.ftsIndex.search(textToSearch)
+      console.log(result)
+      const dataToDisplay = result.slice(0, 10).map(el => ({
+        ...searchData.ftsData[el.id],
+        name: el.name,
+        description: el.description
+      }))
+      console.log(dataToDisplay)
+      document.querySelector('#search-result').classList.add('show')
+      document.querySelector('#search-result').innerHTML = dataToDisplay.length > 0 ? dataToDisplay
+        .map(el => renderItem(el, textToSearch)).join('<div class="dropdown-divider"></div>') : '<div class="dropdown-item">No results found</div>'
+    })
+
+    const renderItem = (el, textToSearch) => {
+      const tranc = (fullText, searchText) => {
+        const letterCount = 100
+        const searchPos = fullText.indexOf(searchText)
+        return (searchPos > letterCount / 2) ?
+          fullText.slice(searchPos - letterCount / 2, searchPos + letterCount / 2) :
+          fullText.slice(0, letterCount)
+      }
+      const highlight = text => text.replace(new RegExp(textToSearch, 'ig'), `<span class="text-primary">$&</span>`)
+      return `<a href="${el.link}" class="dropdown-item search-item text-truncate">
+    <h6 class="text-truncate"><b>${highlight(el.parent)}</b></h6>
+    <span class="light-bold">${highlight(el.name)}</span><br>
+    ${el.description ? highlight(tranc(el.description, textToSearch)) : ''}</a>`
+    }
+  }
+
+  document.querySelector('#search').addEventListener('input', (event) => {
+    if (event.target.value) {
+      fullTextSearch(event.target.value)
+    } else {
+      document.querySelector('#search-result').classList.remove('show')
+    }
+  })
+  document.querySelector('#search').addEventListener('search', (event) => {
+    if (event.target.value) {
+      fullTextSearch(event.target.value)
+    } else {
+      document.querySelector('#search-result').classList.remove('show')
+    }
+  })
+  document.querySelector('#search').addEventListener('focus', (event) => {
+    if (event.target.value) {
+      fullTextSearch(event.target.value)
+    }
+  })
+  document.querySelector('#search').addEventListener('blur', (event) => {
+    setTimeout(() => document.querySelector('#search-result').classList.remove('show'), 200)
+  })
+  document.querySelector('#search').addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      document.querySelector('#search-result').classList.remove('show')
+    }
+  })
+</script>
+
+
+<script src="../prism.js"></script>
+<script>
+  // copy link on click on anchor
+  document.querySelectorAll('.anchor').forEach(e =>
+    e.addEventListener('click', event => copyToClipboard(`${window.location.href}#${event.currentTarget.dataset.id}`))
+  )
+
+  const copyToClipboard = str => new Promise(function (resolve, reject) {
+    let success = false
+    const listener = e => {
+      e.clipboardData.clearData()
+      e.clipboardData.setData('text/plain', str)
+      e.preventDefault()
+      success = true
+    }
+
+    document.addEventListener('copy', listener)
+    document.execCommand('copy')
+    document.removeEventListener('copy', listener)
+    success ? resolve() : reject()
+  })
+</script>
+<script defer src="https://use.fontawesome.com/releases/v5.7.2/js/all.js"
+        integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP"
+        crossorigin="anonymous"></script>
+
+<script>
+  //fix intend for code tag
+  document.querySelectorAll('pre').forEach(node => {
+    if (node.childNodes[0].nodeName === '#text')
+      node.childNodes[0].parentNode.removeChild(node.childNodes[0])
+  })
+  document.querySelectorAll('code').forEach(node => node.textContent = node.textContent.trim())
+</script>
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/lunr@2/lunr.min.js"></script>-->
+<script src="../script.js"></script>
+
+</body>
+</html>
