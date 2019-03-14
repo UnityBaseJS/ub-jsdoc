@@ -40,16 +40,14 @@ const gettingStarted = () => {
     html: md.render(indexWithLinks),
     tableOfContent: []
   },
-  path.resolve(__dirname, '../../tmpl/gettingStarted.vue'),
-  path.resolve(__dirname, '../../tmpl/pageTemplate.html'),
+  path.resolve(__dirname, '../../tmpl/vue/gettingStarted.vue'),
+  path.resolve(__dirname, '../../tmpl/html/pageTemplate.html'),
   path.resolve(outdir, '../gettingstarted', 'index.html')
   )
 
   if (!fs.existsSync(path.resolve(outdir, '../gettingstarted'))) {
     fs.mkdirSync(path.resolve(outdir, '../gettingstarted'))
   }
-  // copyFiles(path.resolve(staticPath, 'styles'), path.resolve(outdir, '../gettingstarted'))
-  // copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../gettingstarted'))
 
   const src = path.resolve(gsPath, 'img')
   const dist = path.resolve(outdir, '../gettingstarted/img')
@@ -86,8 +84,8 @@ const gettingStarted = () => {
         html,
         tableOfContent
       },
-      path.resolve(__dirname, '../../tmpl/gettingStarted.vue'),
-      path.resolve(__dirname, '../../tmpl/pageTemplate.html'),
+      path.resolve(__dirname, '../../tmpl/vue/gettingStarted.vue'),
+      path.resolve(__dirname, '../../tmpl/html/pageTemplate.html'),
       path.resolve(outdir, '../gettingstarted', createItemFileName('gs', file.slice(0, file.indexOf('.'))))
       )
     })

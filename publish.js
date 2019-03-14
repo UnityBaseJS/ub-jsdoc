@@ -4,7 +4,7 @@ const path = require('path')
 const _ = require('lodash')
 const FlexSearch = require('flexsearch')
 const env = require('jsdoc/env')
-
+const Mustache = require('mustache')
 const md = require('markdown-it')({ html: true }) // for anchors in md <a name=...>
 // autocreate anchor from headers #...####
 md.use(require('markdown-it-anchor'), {
@@ -26,10 +26,20 @@ const renderFile = require('./src/vueRender')
 const filterGroupByMemberOf = (groupedItems, memberName) => groupedItems.filter(({ memberof }) => memberof === memberName)
 
 exports.publish = function (taffyData, opts, tutorials) {
+  const extendedConfig = env.conf.extendedConfig
   const outdir = path.normalize(env.opts.destination)
-  // const staticPath = path.resolve(opts.template, 'static')
   const outSourcePath = path.resolve(outdir, 'source')
-  const extendedConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'extendedConfig.json'), 'utf-8'))
+
+  // create html templates from mustache
+  fs.readdirSync(path.resolve(__dirname, 'tmpl/html'), { withFileTypes: true })
+    .filter(item => !item.isDirectory())
+    .map(item => item.name)
+    .filter(name => name.endsWith('.mustache'))
+    .forEach(name => {
+      const file = fs.readFileSync(path.resolve(__dirname, 'tmpl/html', name), 'utf-8')
+      const outputPath = path.resolve(__dirname, 'tmpl/html', name.replace('mustache', 'html'))
+      fs.writeFileSync(outputPath, Mustache.render(file, extendedConfig))
+    })
 
   // todo rewrite with fs
   shell(`mkdir -p ${outdir}`)
@@ -58,11 +68,10 @@ exports.publish = function (taffyData, opts, tutorials) {
   generateSourceCode()
   generateDoc()
 
-  // copyFiles(path.resolve(staticPath, 'styles'), outdir)
-  // copyFiles(path.resolve(staticPath, 'scripts'), outdir)
-
   if (tutorials.children.length > 0) {
     generateTutorials()
+  }
+  if (extendedConfig.extends) {
     extendedConfig.extends.forEach(extend => {
       require(extend)(replaceAllLinks)
     })
@@ -81,12 +90,12 @@ exports.publish = function (taffyData, opts, tutorials) {
     }))
 
     renderFile({
-      readme: replaceAllLinks(opts.readme).replace(/{@tutorial (.*?)}/g, tutorialReplacer),
+      readme: replaceAllLinks(env.opts.readme).replace(/{@tutorial (.*?)}/g, tutorialReplacer),
       navigation: indexNavigation,
       contents: []
     },
-    path.resolve(__dirname, 'tmpl/index.vue'),
-    path.resolve(__dirname, 'tmpl/pageTemplate.html'),
+    path.resolve(__dirname, 'tmpl/vue/index.vue'),
+    path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
     path.resolve(outdir, 'index.html'))
   }
 
@@ -105,8 +114,8 @@ exports.publish = function (taffyData, opts, tutorials) {
       renderFile({
         code
       },
-      path.resolve(__dirname, 'tmpl/source.vue'),
-      path.resolve(__dirname, 'tmpl/source.html'),
+      path.resolve(__dirname, 'tmpl/vue/source.vue'),
+      path.resolve(__dirname, 'tmpl/html/source.html'),
       path.resolve(outdir, 'source', createItemFileName('source', `${path.basename(file.path)}/${file.name}`)))
     })
   }
@@ -288,8 +297,8 @@ exports.publish = function (taffyData, opts, tutorials) {
           events,
           tableOfContent: tableOfContent
         },
-        path.resolve(__dirname, `tmpl/${item.kind}.vue`),
-        path.resolve(__dirname, 'tmpl/pageTemplate.html'),
+        path.resolve(__dirname, `tmpl/vue/${item.kind}.vue`),
+        path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
         path.resolve(outdir, createItemFileName(item.kind, item.name)))
       }
       if (rootGroupedItems[type]) {
@@ -338,12 +347,12 @@ exports.publish = function (taffyData, opts, tutorials) {
     renderFile({
       navigation: createTutorialNavigation('')
     },
-    path.resolve(__dirname, 'tmpl/tutorialIndex.vue'),
-    path.resolve(__dirname, 'tmpl/pageTemplate.html'),
+    path.resolve(__dirname, 'tmpl/vue/tutorialIndex.vue'),
+    path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
     path.resolve(outdir, 'tutorialIndex.html')
     )
 
-    const imgTutorialFolderSrc = path.resolve(opts.template, '../../', opts.tutorials, 'img')
+    const imgTutorialFolderSrc = path.resolve(env.opts.template, '../../', env.opts.tutorials, 'img')
     const imgTutorialFolderDist = path.resolve(outdir, 'img')
     shell(`mkdir -p ${imgTutorialFolderSrc}`)
     shell(`cp -r ${imgTutorialFolderSrc} ${imgTutorialFolderDist}`)
@@ -358,8 +367,8 @@ exports.publish = function (taffyData, opts, tutorials) {
         navigation: createTutorialNavigation(tutorial.name),
         html
       },
-      path.resolve(__dirname, 'tmpl/tutorial.vue'),
-      path.resolve(__dirname, 'tmpl/pageTemplate.html'),
+      path.resolve(__dirname, 'tmpl/vue/tutorial.vue'),
+      path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
       path.resolve(outdir, createItemFileName('tutorial', tutorial.name))
       )
       tutorial.children.forEach(renderTutorial)

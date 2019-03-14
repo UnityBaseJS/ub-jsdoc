@@ -10,7 +10,7 @@ md.use(require('markdown-it-anchor'), {
 const renderFile = require('../vueRender')
 const { copyFiles } = require('../utils')
 
-const extendedConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../', 'extendedConfig.json'), 'utf-8'))
+const extendedConfig = env.conf.extendedConfig
 const outdir = path.normalize(env.opts.destination)
 const staticPath = path.resolve(env.opts.template, 'static')
 
@@ -32,8 +32,8 @@ const generate = (replaceAllLinks) => {
     navigation: indexNavigation,
     contents: []
   },
-  path.resolve(__dirname, '../../tmpl/mainDocIndex.vue'),
-  path.resolve(__dirname, '../../tmpl/mainPageTemplate.html'),
+  path.resolve(__dirname, '../../tmpl/vue/mainDocIndex.vue'),
+  path.resolve(__dirname, '../../tmpl/html/mainPageTemplate.html'),
   path.resolve(outdir, '../index.html'))
 }
 

@@ -1,13 +1,14 @@
-const fs = require('fs')
 const path = require('path')
+const env = require('jsdoc/env')
 const jsdoctypeparse = require('jsdoctypeparser').parse
 const { createItemLink } = require('./utils')
 
-const extendedConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../', 'extendedConfig.json'), 'utf-8'))
-const buildInJSObjects = extendedConfig.buildInJSObjects.objects
-for (let key in buildInJSObjects) {
-  buildInJSObjects[key].link = extendedConfig.buildInJSObjects.url + buildInJSObjects[key].link
-}
+// const extendedConfig = env.conf.extendedConfig
+debugger
+const buildInJSObjects = env.conf.templates.buildins
+// for (let key in buildInJSObjects) {
+//   buildInJSObjects[key].link = extendedConfig.buildInJSObjects.url + buildInJSObjects[key].link
+// }
 
 function parsers (allDoclets) {
   const linkParser = href => {
@@ -70,10 +71,10 @@ function parsers (allDoclets) {
         typeName = parsedType.name
       }
       // if standard js type
-      if (Object.keys(buildInJSObjects).includes(typeName.toLowerCase())) {
+      if (buildInJSObjects.includes(typeName.toLowerCase())) {
         return {
           text: typeName,
-          link: buildInJSObjects[typeName.toLowerCase()].link
+          link: env.conf.templates.buildInURL + typeName.toLowerCase()
         }
       }
       const { type, name, anchor } = linkParser(typeName)
