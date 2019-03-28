@@ -27,7 +27,6 @@ Live sample is a [UnityBase framework documentation](https://unitybase.info/api/
 ## Uses
 
 - [flexsearch](https://github.com/nextapps-de/flexsearch)
-- [the Taffy Database library](http://taffydb.com/)
 - [Vue server side rendering](https://ssr.vuejs.org/)
 
 
