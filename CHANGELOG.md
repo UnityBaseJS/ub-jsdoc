@@ -4,9 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.1]
+### Fixed
+ - Google Analytics will be injected in all pages in case `templates.googleAnalytics` key is defined
+ 
+## [2.0.1]
+### Added
+ - added extendedConfig 
+  
+## [2.0.0]
+### Changed
+ - documentation generation using Vue server-side rendering
+
 ## [1.7.3]
 ### Fixed
- - link to live sample in REDAME
+ - link to live sample in README
 
 ## [1.7.2]
 ### Added
