@@ -90,13 +90,13 @@ exports.publish = function (taffyData, opts, tutorials) {
     }))
 
     renderFile({
-        readme: replaceAllLinks(env.opts.readme).replace(/{@tutorial (.*?)}/g, tutorialReplacer),
-        navigation: indexNavigation,
-        contents: []
-      },
-      path.resolve(__dirname, 'tmpl/vue/index.vue'),
-      path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
-      path.resolve(outdir, 'index.html'))
+      readme: replaceAllLinks(env.opts.readme).replace(/{@tutorial (.*?)}/g, tutorialReplacer),
+      navigation: indexNavigation,
+      contents: []
+    },
+    path.resolve(__dirname, 'tmpl/vue/index.vue'),
+    path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
+    path.resolve(outdir, 'index.html'))
   }
 
   function generateSourceCode () {
@@ -112,11 +112,11 @@ exports.publish = function (taffyData, opts, tutorials) {
       const code = fs.readFileSync(`${file.path}/${file.name}`, 'utf-8')
 
       renderFile({
-          code
-        },
-        path.resolve(__dirname, 'tmpl/vue/source.vue'),
-        path.resolve(__dirname, 'tmpl/html/source.html'),
-        path.resolve(outdir, 'source', createItemFileName('source', `${path.basename(file.path)}/${file.name}`)))
+        code
+      },
+      path.resolve(__dirname, 'tmpl/vue/source.vue'),
+      path.resolve(__dirname, 'tmpl/html/source.html'),
+      path.resolve(outdir, 'source', createItemFileName('source', `${path.basename(file.path)}/${file.name}`)))
     })
   }
 
@@ -286,20 +286,20 @@ exports.publish = function (taffyData, opts, tutorials) {
           }
         ]
         renderFile({
-            navigation: createNavigation(item.kind, item.name),
-            [item.kind === 'class' ? 'clazz' : item.kind]: item,
-            subclasses,
-            submodules,
-            mixins,
-            members,
-            funcs,
-            types,
-            events,
-            tableOfContent: tableOfContent
-          },
-          path.resolve(__dirname, `tmpl/vue/${item.kind}.vue`),
-          path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
-          path.resolve(outdir, createItemFileName(item.kind, item.name)))
+          navigation: createNavigation(item.kind, item.name),
+          [item.kind === 'class' ? 'clazz' : item.kind]: item,
+          subclasses,
+          submodules,
+          mixins,
+          members,
+          funcs,
+          types,
+          events,
+          tableOfContent: tableOfContent
+        },
+        path.resolve(__dirname, `tmpl/vue/${item.kind}.vue`),
+        path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
+        path.resolve(outdir, createItemFileName(item.kind, item.name)))
       }
       if (rootGroupedItems[type]) {
         rootGroupedItems[type].forEach(item => renderItem(item))
@@ -345,11 +345,11 @@ exports.publish = function (taffyData, opts, tutorials) {
 
     // renderFile index
     renderFile({
-        navigation: createTutorialNavigation('')
-      },
-      path.resolve(__dirname, 'tmpl/vue/tutorialIndex.vue'),
-      path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
-      path.resolve(outdir, 'tutorialIndex.html')
+      navigation: createTutorialNavigation('')
+    },
+    path.resolve(__dirname, 'tmpl/vue/tutorialIndex.vue'),
+    path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
+    path.resolve(outdir, 'tutorialIndex.html')
     )
 
     const imgTutorialFolderSrc = path.resolve(env.opts.template, '../../', env.opts.tutorials, 'img')
@@ -364,12 +364,12 @@ exports.publish = function (taffyData, opts, tutorials) {
     const renderTutorial = tutorial => {
       const html = md.render(tutorial.content)
       renderFile({
-          navigation: createTutorialNavigation(tutorial.name),
-          html
-        },
-        path.resolve(__dirname, 'tmpl/vue/tutorial.vue'),
-        path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
-        path.resolve(outdir, createItemFileName('tutorial', tutorial.name))
+        navigation: createTutorialNavigation(tutorial.name),
+        html
+      },
+      path.resolve(__dirname, 'tmpl/vue/tutorial.vue'),
+      path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
+      path.resolve(outdir, createItemFileName('tutorial', tutorial.name))
       )
       tutorial.children.forEach(renderTutorial)
     }
