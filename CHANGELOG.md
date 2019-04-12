@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.3]
+### Added
+ - Use `[[toc]]` tag in markdown to add table-of-content block
+### Fixed
+ - Remove resetting headers font size in html parts from md 
+ 
 ## [2.1.1]
 ### Fixed
  - Google Analytics will be injected in all pages in case `templates.googleAnalytics` key is defined

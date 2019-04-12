@@ -4,7 +4,6 @@ const jsdoctypeparse = require('jsdoctypeparser').parse
 const { createItemLink } = require('./utils')
 
 // const extendedConfig = env.conf.extendedConfig
-debugger
 const buildInJSObjects = env.conf.templates.buildins
 // for (let key in buildInJSObjects) {
 //   buildInJSObjects[key].link = extendedConfig.buildInJSObjects.url + buildInJSObjects[key].link

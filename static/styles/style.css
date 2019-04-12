@@ -225,9 +225,9 @@ main p > img {
     outline: none;
 }
 
-.fromMD h1, .fromMD h2, .fromMD h3, .fromMD h4, .fromMD h5, .fromMD h6 {
-    font-size: 1rem;
-}
+/*.fromMD h1, .fromMD h2, .fromMD h3, .fromMD h4, .fromMD h5, .fromMD h6 {*/
+/*    font-size: 1rem;*/
+/*}*/
 
 .fromMD p {
     margin-bottom: 0;

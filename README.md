@@ -26,8 +26,9 @@ Live sample is a [UnityBase framework documentation](https://unitybase.info/api/
 
 ## Uses
 
-- [flexsearch](https://github.com/nextapps-de/flexsearch)
 - [Vue server side rendering](https://ssr.vuejs.org/)
+- [flexsearch](https://github.com/nextapps-de/flexsearch)
+- [markdown-it](https://github.com/markdown-it/markdown-it)
 
 
 ## Install
@@ -63,6 +64,14 @@ In your `.jsdoc.json` file, add a template option.
   "template": "node_modules/ub-jsdoc"
 }
 ```
+
+### Markdown
+Used [markdown-it](https://github.com/markdown-it/markdown-it) and plugins:
+ - [markdown-it-anchor](https://www.npmjs.com/package/markdown-it-anchor)
+ - [markdown-it-table-of-contents](https://www.npmjs.com/package/markdown-it-table-of-contents)
+   Use `[[toc]]` tag in markdown to add table-of-content block
+ - [markdown-it-emoji](https://www.npmjs.com/package/markdown-it-emoji)
+   
 
 ### Extend
 You can easy extend generations with you own docs. 
