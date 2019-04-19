@@ -46,8 +46,8 @@
                 <code>{{property.name}}</code>
                 <span v-if="property.optional" class="badge badge-pill badge-light">opt</span>
                 <span
-                        v-if="property.defaultvalue !== undefined"> = {{property.defaultvalue}} </span>: <a
-                    v-if="property.type" :href="property.type[0].link">{{property.type[0].text}}</a>
+                        v-if="property.defaultvalue !== undefined"> = {{property.defaultvalue}} </span>: <span
+                    v-if="property.type" v-html="property.type[0]"></span>
                 <div class="fromMD">
                     <p v-if="property.description" v-html="property.description"></p>
                 </div>

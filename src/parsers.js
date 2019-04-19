@@ -1,13 +1,12 @@
 const path = require('path')
 const env = require('jsdoc/env')
-const jsdoctypeparse = require('jsdoctypeparser').parse
+const { parse: jsdoctypeparse, createDefaultPublisher, publish } = require('jsdoctypeparser')
 const { createItemLink } = require('./utils')
 
 // const extendedConfig = env.conf.extendedConfig
 const buildInJSObjects = env.conf.templates.buildins
-// for (let key in buildInJSObjects) {
-//   buildInJSObjects[key].link = extendedConfig.buildInJSObjects.url + buildInJSObjects[key].link
-// }
+
+const customPublisher = createDefaultPublisher()
 
 function parsers (allDoclets) {
   const linkParser = href => {
@@ -61,26 +60,32 @@ function parsers (allDoclets) {
     return { type, name, anchor }
   }
 
+  const hrefFromType = typeName => {
+    // if standard js type
+    if (buildInJSObjects.includes(typeName.toLowerCase())) {
+      return {
+        text: typeName,
+        link: env.conf.templates.buildInURL + typeName.toLowerCase()
+      }
+    }
+    const { type, name, anchor } = linkParser(typeName)
+    return {
+      text: anchor || name,
+      link: createItemLink(type, name, anchor)
+    }
+  }
+
+  customPublisher.NAME = (node, pub) => {
+    const { text, link } = hrefFromType(node.name)
+    return `<a href="${link}">${text}</a>`
+  }
+
   const parseType = (typeObj) => {
     if (typeObj === undefined) return undefined
     const { names } = typeObj
     return names.map(typeName => {
-      const parsedType = jsdoctypeparse(typeName)
-      if (parsedType.type === 'NAME') {
-        typeName = parsedType.name
-      }
-      // if standard js type
-      if (buildInJSObjects.includes(typeName.toLowerCase())) {
-        return {
-          text: typeName,
-          link: env.conf.templates.buildInURL + typeName.toLowerCase()
-        }
-      }
-      const { type, name, anchor } = linkParser(typeName)
-      return {
-        text: anchor || name,
-        link: createItemLink(type, name, anchor)
-      }
+      const ast = jsdoctypeparse(typeName)
+      return publish(ast, customPublisher)
     })
   }
 
@@ -138,7 +143,7 @@ function parsers (allDoclets) {
             name: param.name.match(/\.([^.]+)/)[1]
           }))
         })
-        doclet.params = [...args, ...doclet.params.filter(param => param.description && !param.name.includes('.'))]
+        doclet.params = [...args, ...doclet.params.filter(param => param.description && !param.name.includes('.') && !args.includes(param))]
       }
     })
 
