@@ -10,7 +10,7 @@ const md = require('markdown-it')({ html: true }) // for anchors in md <a name=.
 md.use(require('markdown-it-anchor'), {
   slugify: (s) => encodeURIComponent(String(s).trim().toLowerCase().replace(/,?\s+,?/g, '-')) // change headers with comas
 })
-md.use(require('markdown-it-table-of-contents'))
+md.use(require('markdown-it-table-of-contents'), { includeLevel: [1, 2, 3] })
 md.use(require('markdown-it-emoji')) // for :!: emoji and not only
 
 // not work on Windows
