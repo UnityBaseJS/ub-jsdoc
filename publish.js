@@ -13,8 +13,7 @@ md.use(require('markdown-it-anchor'), {
 md.use(require('markdown-it-table-of-contents'), { includeLevel: [1, 2, 3] })
 md.use(require('markdown-it-emoji')) // for :!: emoji and not only
 
-// not work on Windows
-const shell = require('child_process').execSync
+const shell = require('shelljs')
 
 const {
   createItemLink,
@@ -44,8 +43,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     })
 
   // todo rewrite with fs
-  shell(`mkdir -p ${outdir}`)
-  shell(`mkdir -p ${outSourcePath}`)
+  shell.mkdir('-p', outdir, outSourcePath)
 
   // fs.writeFileSync('/home/andrey/dev/ub-jsdoc-ubJS/data', JSON.stringify(taffyData().get(), null, 2))
   const data = helper.prune(taffyData)
@@ -356,8 +354,8 @@ exports.publish = function (taffyData, opts, tutorials) {
 
     const imgTutorialFolderSrc = path.resolve(env.opts.template, '../../', env.opts.tutorials, 'img')
     const imgTutorialFolderDist = path.resolve(outdir, 'img')
-    shell(`mkdir -p ${imgTutorialFolderSrc}`)
-    shell(`cp -r ${imgTutorialFolderSrc} ${imgTutorialFolderDist}`)
+    shell.mkdir('-p', imgTutorialFolderSrc)
+    shell.cp('-r', imgTutorialFolderSrc, imgTutorialFolderDist)
     // if (!fs.existsSync(path.resolve(outdir, '../tutorials'))) {
     //   fs.mkdirSync(path.resolve(outdir, '../tutorials'))
     // }
