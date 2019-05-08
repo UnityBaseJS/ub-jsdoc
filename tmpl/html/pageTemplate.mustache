@@ -110,16 +110,14 @@
   const fullTextSearch = textToSearch => {
     getFTSData().then(searchData => {
       const result = searchData.ftsIndex.search(textToSearch)
-      console.log(result)
-      const dataToDisplay = result.slice(0, 10).map(el => ({
-        ...searchData.ftsData[el.id],
-        name: el.name,
-        description: el.description
-      }))
-      console.log(dataToDisplay)
+      const dataToDisplay = result.slice(0, 10).map(el =>
+              Object.assign(searchData.ftsData[el.id], {
+                name: el.name,
+                description: el.description
+              }))
       document.querySelector('#search-result').classList.add('show')
       document.querySelector('#search-result').innerHTML = dataToDisplay.length > 0 ? dataToDisplay
-        .map(el => renderItem(el, textToSearch)).join('<div class="dropdown-divider"></div>') : '<div class="dropdown-item">No results found</div>'
+              .map(el => renderItem(el, textToSearch)).join('<div class="dropdown-divider"></div>') : '<div class="dropdown-item">No results found</div>'
     })
 
     const renderItem = (el, textToSearch) => {
