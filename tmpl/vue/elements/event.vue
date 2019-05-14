@@ -12,9 +12,10 @@
         <div class="fromMD">
             <p v-html="event.description"></p>
         </div>
-        <template v-if="event.returns">
-            <p v-if="event.returns && event.returns[0].type">Return: {{ event.returns[0].type.names[0]}}</p>
-            <p v-else>{{event.returns[0].description}}</p>
+        <template v-if="event.returns && event.returns[0].description">
+            <p></p>
+            <p class="arguments-title">Return:</p>
+            <template v-html="event.returns[0].description"></template>
         </template>
         <template v-if="event.params && event.params.length > 0">
             <p>Params</p>

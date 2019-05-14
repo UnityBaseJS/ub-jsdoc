@@ -1,10 +1,6 @@
 <div class="item border-bottom" :id="member.name">
     <h5 class="alert alert-primary">
-        <span :class="{ deprecated: !!member.deprecated }"><a :href="member.codeLink">{{member.name}}</a></span>
-        <template v-if="member.type && member.type.length > 0">:
-            <span v-html="member.type[0]"></span></template>
-        <span v-if="member.deprecated" class="badge badge-danger">deprecated</span>
-        <span v-if="member.scope" class="badge badge-light">{{member.scope}}</span>
+        <span :class="{ deprecated: !!member.deprecated }"><a :href="member.codeLink">{{member.name}}</a></span><template v-if="member.type && member.type.length > 0">: <span v-html="member.type[0]"></span></template><span v-if="member.deprecated" class="badge badge-danger">deprecated</span><span v-if="member.scope" class="badge badge-light">{{member.scope}}</span>
         <anchor :id="member.name"></anchor>
     </h5>
     <div class="fromMD">

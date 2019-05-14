@@ -9,6 +9,7 @@ const buildInJSObjects = env.conf.templates.buildins
 const customPublisher = createDefaultPublisher()
 
 function parsers (allDoclets) {
+  // todo rewrite through jsdoctypeparse
   const linkParser = href => {
     // if (href === 'class:UBConnection#domain') {
     //   debugger
@@ -80,6 +81,12 @@ function parsers (allDoclets) {
     return `<a href="${link}">${text}</a>`
   }
 
+  // todo rewrite with #12
+  customPublisher.MODULE = (node, pub) => {
+    const { text, link } = hrefFromType(`module:${node.value.path}`)
+    return `<a href="${link}">${text}</a>`
+  }
+
   const parseType = (typeObj) => {
     if (typeObj === undefined) return undefined
     const { names } = typeObj
@@ -113,11 +120,13 @@ function parsers (allDoclets) {
         })
       }
     })
-    // parse and replace with {text:..., link:...}  all types
+    // parse all types and replace it with html string
     doclets.forEach(doclet => {
       // if (doclet.name === 'serverConfig') debugger
       doclet.type = doclet.type ? parseType(doclet.type, allDoclets) : undefined
-      doclet.returns = doclet.returns ? parseType(doclet.returns[0].type, allDoclets) : undefined
+      if (doclet.returns) {
+        doclet.returns[0].type = parseType(doclet.returns[0].type, allDoclets)
+      }
 
       if (doclet.properties) {
         doclet.properties.forEach(property => {
