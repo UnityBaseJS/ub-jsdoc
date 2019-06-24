@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.9]
+### Fixed
+ - Correct update image from tutorials
+ - Change shell executor to cross-platform in gettingStarted
+
 ## [2.1.8]
 ### Fixed
  - Generating link for `module` type
@@ -55,4 +60,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  
 ### Changed
  - body use [System Font Stack](https://css-tricks.com/snippets/css/system-font-stack/)
-     

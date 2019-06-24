@@ -355,7 +355,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     const imgTutorialFolderSrc = path.resolve(env.opts.template, '../../', env.opts.tutorials, 'img')
     const imgTutorialFolderDist = path.resolve(outdir, 'img')
     shell.mkdir('-p', imgTutorialFolderSrc)
-    shell.cp('-r', imgTutorialFolderSrc, imgTutorialFolderDist)
+    shell.cp('-rf', imgTutorialFolderSrc, imgTutorialFolderDist)
     // if (!fs.existsSync(path.resolve(outdir, '../tutorials'))) {
     //   fs.mkdirSync(path.resolve(outdir, '../tutorials'))
     // }

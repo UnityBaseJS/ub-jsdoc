@@ -1,7 +1,7 @@
 const fs = require('fs')
 const env = require('jsdoc/env')
 const path = require('path')
-const shell = require('child_process').execSync
+const shell = require('shelljs')
 const md = require('markdown-it')({ html: true }) // for anchors in md <a name=...>
 // autocreate anchor from headers #...####
 md.use(require('markdown-it-anchor'), {
@@ -52,8 +52,8 @@ const gettingStarted = () => {
   const src = path.resolve(gsPath, 'img')
   const dist = path.resolve(outdir, '../gettingstarted/img')
 
-  shell(`mkdir -p ${dist}`)
-  shell(`cp -r ${src}/* ${dist}`)
+  shell.mkdir('-p', dist)
+  shell.cp('-rf', src, dist)
 
   fs.readdirSync(gsPath, { withFileTypes: true })
     .filter(item => !item.isDirectory())
