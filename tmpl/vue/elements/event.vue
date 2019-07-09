@@ -27,7 +27,7 @@
             </ul>
         </template>
         <template v-if="event.examples">
-            <p>Examples</p>
+            <p class="arguments-title">Examples:</p>
             <example
                     v-for="example in event.examples"
                     :key="1"

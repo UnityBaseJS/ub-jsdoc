@@ -7,7 +7,7 @@
             <p v-if="namespace.description" v-html="namespace.description"></p>
         </div>
         <template v-if="namespace.examples">
-            <p>Examples</p>
+            <p class="arguments-title">Examples:</p>
             <example
                     v-for="example in namespace.examples"
                     :key="1"

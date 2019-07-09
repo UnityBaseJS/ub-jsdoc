@@ -9,6 +9,14 @@
     <template v-if="member.deprecated">
         <p>{{member.deprecated}}</p>
     </template>
+    <template v-if="member.examples">
+        <p class="arguments-title">Examples:</p>
+        <example
+                v-for="example in member.examples"
+                :key="1"
+                :example="example"
+        ></example>
+    </template>
     <template v-if="member.properties && member.properties.length > 0">
         <table class="table table-striped table-sm">
             <thead>

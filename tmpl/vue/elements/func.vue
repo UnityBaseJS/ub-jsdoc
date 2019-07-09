@@ -42,7 +42,7 @@
             </ul>
         </div>
         <template v-if="func.examples">
-            <p>Examples</p>
+            <p class="arguments-title">Examples:</p>
             <example
                     v-for="example in func.examples"
                     :key="1"
