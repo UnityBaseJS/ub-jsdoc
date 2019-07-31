@@ -104,6 +104,8 @@ nav .navbar-nav {
     width: 90%;
     z-index: 5000;
     margin-left: 15px;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .search-item {
