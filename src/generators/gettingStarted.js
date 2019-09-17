@@ -50,7 +50,7 @@ const gettingStarted = () => {
   }
 
   const src = path.resolve(gsPath, 'img')
-  const dist = path.resolve(outdir, '../gettingstarted/img')
+  const dist = path.resolve(outdir, '../gettingstarted')
 
   shell.mkdir('-p', dist)
   shell.cp('-rf', src, dist)
