@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## [2.2.0]
+### Added
+ - code highlight to json5, bash/shell (by updating prism.js)
+### Changed
+ - update all dependencies
+### Fixed
+ - doubling location.hash when copy direct link 
 
 ## [2.1.12]
 ### Fixed

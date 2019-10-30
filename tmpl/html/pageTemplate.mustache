@@ -170,7 +170,7 @@
 <script>
   // copy link on click on anchor
   document.querySelectorAll('.anchor').forEach(e =>
-    e.addEventListener('click', event => copyToClipboard(`${window.location.href}#${event.currentTarget.dataset.id}`))
+          e.addEventListener('click', event => copyToClipboard(`${window.location.href.replace(window.location.hash, '')}#${event.currentTarget.dataset.id}`))
   )
 
   const copyToClipboard = str => new Promise(function (resolve, reject) {

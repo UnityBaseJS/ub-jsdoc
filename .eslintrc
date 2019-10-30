@@ -1,6 +1,5 @@
 {
   "extends": [
-    "plugin:vue/recommended",
-    "standard"
+    "plugin:vue/recommended"
   ]
 }
