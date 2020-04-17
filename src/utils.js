@@ -40,7 +40,7 @@ const itemTypes = {
 const groupDoclets = doclets => _.groupBy(doclets, 'kind')
 const groupRootDoclets = doclets => {
   const rootGroupedItems = {} // Object.keys(groups).map(group => groups[group].filter(({ memberof }) => memberof === undefined))
-  for (let [key, value] of Object.entries(groupDoclets(doclets))) {
+  for (const [key, value] of Object.entries(groupDoclets(doclets))) {
     rootGroupedItems[key] = value.filter(({ memberof }) => memberof === undefined)
   }
   return rootGroupedItems

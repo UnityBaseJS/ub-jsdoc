@@ -24,7 +24,7 @@ const {
   idGeneratorFabric
 } = require('./src/utils')
 const renderFile = require('./src/vueRender')
-const filterGroupByMemberOf = (groupedItems, memberName) => groupedItems.filter(({ memberof }) => memberof === memberName)
+const filterGroupByMemberOf = (groupedItems = [], memberName) => groupedItems.filter(({ memberof }) => memberof === memberName)
 
 exports.publish = function (taffyData, opts, tutorials) {
   const extendedConfig = env.conf.extendedConfig
@@ -45,12 +45,9 @@ exports.publish = function (taffyData, opts, tutorials) {
   // todo rewrite with fs
   shell.mkdir('-p', outdir, outSourcePath)
 
-  // fs.writeFileSync('/home/andrey/dev/ub-jsdoc-ubJS/data', JSON.stringify(taffyData().get(), null, 2))
   const data = helper.prune(taffyData)
   data.sort('longname, version, since')
   const allData = data().get()
-  console.log(outdir)
-  // fs.writeFileSync('/home/andrey/dev/ub-jsdoc-ubJS/alldata', JSON.stringify(allData, null, 2))
 
   const { prepareDoclets, replaceAllLinks } = require('./src/parsers')(allData)
 
@@ -89,14 +86,16 @@ exports.publish = function (taffyData, opts, tutorials) {
       }))
     }))
 
-    renderFile({
-      readme: replaceAllLinks(env.opts.readme).replace(/{@tutorial (.*?)}/g, tutorialReplacer),
-      navigation: indexNavigation,
-      contents: []
-    },
-    path.resolve(__dirname, 'tmpl/vue/index.vue'),
-    path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
-    path.resolve(outdir, 'index.html'))
+    renderFile(
+      {
+        readme: replaceAllLinks(env.opts.readme).replace(/{@tutorial (.*?)}/g, tutorialReplacer),
+        navigation: indexNavigation,
+        contents: []
+      },
+      path.resolve(__dirname, 'tmpl/vue/index.vue'),
+      path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
+      path.resolve(outdir, 'index.html')
+    )
   }
 
   function generateSourceCode () {
@@ -111,12 +110,12 @@ exports.publish = function (taffyData, opts, tutorials) {
     codeFiles.forEach(file => {
       const code = fs.readFileSync(`${file.path}/${file.name}`, 'utf-8')
 
-      renderFile({
-        code
-      },
-      path.resolve(__dirname, 'tmpl/vue/source.vue'),
-      path.resolve(__dirname, 'tmpl/html/source.html'),
-      path.resolve(outdir, 'source', createItemFileName('source', `${path.basename(file.path)}/${file.name}`)))
+      renderFile(
+        { code },
+        path.resolve(__dirname, 'tmpl/vue/source.vue'),
+        path.resolve(__dirname, 'tmpl/html/source.html'),
+        path.resolve(outdir, 'source', createItemFileName('source', `${path.basename(file.path)}/${file.name}`))
+      )
     })
   }
 
@@ -132,7 +131,7 @@ exports.publish = function (taffyData, opts, tutorials) {
       }
     })
     const getFTSid = idGeneratorFabric('f')
-    let ftsData = {}
+    const ftsData = {}
     const addToSearch = (item, parent, link) => {
       const id = getFTSid()
       index.add({
@@ -285,21 +284,22 @@ exports.publish = function (taffyData, opts, tutorials) {
             }))
           }
         ]
-        renderFile({
-          navigation: createNavigation(item.kind, item.name),
-          [item.kind === 'class' ? 'clazz' : item.kind]: item,
-          subclasses,
-          submodules,
-          mixins,
-          members,
-          funcs,
-          types,
-          events,
-          tableOfContent: tableOfContent
-        },
-        path.resolve(__dirname, `tmpl/vue/${item.kind}.vue`),
-        path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
-        path.resolve(outdir, createItemFileName(item.kind, item.name)))
+        renderFile(
+          {
+            navigation: createNavigation(item.kind, item.name),
+            [item.kind === 'class' ? 'clazz' : item.kind]: item,
+            subclasses,
+            submodules,
+            mixins,
+            members,
+            funcs,
+            types,
+            events,
+            tableOfContent: tableOfContent
+          },
+          path.resolve(__dirname, `tmpl/vue/${item.kind}.vue`),
+          path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
+          path.resolve(outdir, createItemFileName(item.kind, item.name)))
       }
       if (rootGroupedItems[type]) {
         rootGroupedItems[type].forEach(item => renderItem(item))
@@ -319,7 +319,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     //
     // renderGlobal()
 
-    // serialize
+    // serialize search
     fs.writeFileSync(path.resolve(outdir, 'ftsIndex.json'), JSON.stringify(index.export()))
     fs.writeFileSync(path.resolve(outdir, 'ftsData.json'), JSON.stringify(ftsData))
   }
@@ -344,12 +344,11 @@ exports.publish = function (taffyData, opts, tutorials) {
       }))
 
     // renderFile index
-    renderFile({
-      navigation: createTutorialNavigation('')
-    },
-    path.resolve(__dirname, 'tmpl/vue/tutorialIndex.vue'),
-    path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
-    path.resolve(outdir, 'tutorialIndex.html')
+    renderFile(
+      { navigation: createTutorialNavigation('') },
+      path.resolve(__dirname, 'tmpl/vue/tutorialIndex.vue'),
+      path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
+      path.resolve(outdir, 'tutorialIndex.html')
     )
 
     const imgTutorialFolderSrc = path.resolve(env.opts.template, '../../', env.opts.tutorials, 'img')
@@ -363,13 +362,14 @@ exports.publish = function (taffyData, opts, tutorials) {
     // copyFiles(path.resolve(staticPath, 'scripts'), path.resolve(outdir, '../tutorials'))
     const renderTutorial = tutorial => {
       const html = md.render(tutorial.content)
-      renderFile({
-        navigation: createTutorialNavigation(tutorial.name),
-        html
-      },
-      path.resolve(__dirname, 'tmpl/vue/tutorial.vue'),
-      path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
-      path.resolve(outdir, createItemFileName('tutorial', tutorial.name))
+      renderFile(
+        {
+          navigation: createTutorialNavigation(tutorial.name),
+          html
+        },
+        path.resolve(__dirname, 'tmpl/vue/tutorial.vue'),
+        path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
+        path.resolve(outdir, createItemFileName('tutorial', tutorial.name))
       )
       tutorial.children.forEach(renderTutorial)
     }
@@ -381,7 +381,7 @@ exports.publish = function (taffyData, opts, tutorials) {
     const allTutorials = [...tutorials.children, ..._.flatten(tutorials.children.map(tutorial => tutorial.children))]
     const tutorial = allTutorials.filter(tutorial => tutorial.name === name)[0]
     if (tutorial === undefined) {
-      console.error(`Can't find ${name} tutorial. Please check and rename `)
+      console.error(`Can't find ${name} tutorial. Please check and rename`)
       return name
     }
     return tutorial.title
