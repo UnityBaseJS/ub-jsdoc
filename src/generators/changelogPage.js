@@ -98,6 +98,27 @@ const changelog = () => {
   if (!fs.existsSync(path.resolve(outDir, '../changelog'))) {
     fs.mkdirSync(path.resolve(outDir, '../changelog'))
   }
+  const renderNavigation = navigation =>
+    '# Monthly changes\n' + navigation
+      .map(({ name, submenu }) => `#### ${name}\n` + submenu
+        .map(({ link, name: mName }) => `* [${mName}](${link})`)
+        .join('\n'))
+      .join('\n')
+
+  const navigation = createNavigation(changelogDateTree)
+
+  // create index.html
+  const indexHtml = md.render(renderNavigation(navigation))
+  renderFile(
+    {
+      navigation,
+      html: indexHtml,
+      tableOfContent: []
+    },
+    path.resolve(__dirname, '../../tmpl/vue/gettingStarted.vue'),
+    path.resolve(__dirname, '../../tmpl/html/pageTemplate.html'),
+    path.resolve(outDir, '../changelog', 'index.html')
+  )
 
   Object.entries(changelogDateTree).forEach(([year, months]) => {
     Object.entries(months).forEach(([month, cls]) => {
