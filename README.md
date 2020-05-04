@@ -20,7 +20,7 @@ Live sample is a [UnityBase framework documentation](https://unitybase.info/api/
 - Click on member name will navigate to source
 - Compact layout on members
 - Responsive design
-- In case @module marked as a member of other module using `@memberOf module:parentModule` it dose not appear in navigation panel
+- In case @module marked as a member of other module using `@memberOf module:parentModule` it does not appear in navigation panel
 - Click on anchor to copy link of any member to clipboard 
 
 
@@ -85,7 +85,7 @@ module.exports = () => {
     'output/path')
 }
 ```
-Than add path to file in `extends` in your jsdoc config.
+Then add path to file in `extends` in your jsdoc config.
 ```json
 "extends": [
       "path/to/module"
