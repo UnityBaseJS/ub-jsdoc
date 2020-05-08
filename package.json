@@ -31,8 +31,8 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-table-of-contents": "^0.4.4",
     "mustache": "^4.0.1",
-    "shelljs": "^0.8.3",
-    "ub-changelog-parser": "^1.0.1",
+    "shelljs": "^0.8.4",
+    "ub-changelog-parser": "^1.1.0",
     "vue": "^2.6.11",
     "vue-server-renderer": "^2.6.11"
   },

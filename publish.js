@@ -5,6 +5,7 @@ const _ = require('lodash')
 const FlexSearch = require('flexsearch')
 const env = require('jsdoc/env')
 const Mustache = require('mustache')
+const shell = require('shelljs')
 const md = require('markdown-it')({ html: true }) // for anchors in md <a name=...>
 // autocreate anchor from headers #...####
 md.use(require('markdown-it-anchor'), {
@@ -12,8 +13,6 @@ md.use(require('markdown-it-anchor'), {
 })
 md.use(require('markdown-it-table-of-contents'), { includeLevel: [1, 2, 3] })
 md.use(require('markdown-it-emoji')) // for :!: emoji and not only
-
-const shell = require('shelljs')
 
 const {
   createItemLink,

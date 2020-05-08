@@ -198,7 +198,7 @@ main p > img {
 }
 
 /* for right top intend on open anchor link*/
-.bd-content .item[id]::before, .bd-content h2[id]::before {
+.bd-content .item[id]::before, .bd-content h2[id]::before, .bd-content h1[id]::before {
     display: block;
     height: calc(var(--navbar-height) + 43px);
     margin-top: calc(-1 * var(--navbar-height) - 43px);
