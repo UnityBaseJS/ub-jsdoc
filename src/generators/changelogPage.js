@@ -2,7 +2,6 @@ const FlexSearch = require('flexsearch')
 const fs = require('fs')
 const env = require('jsdoc/env')
 const path = require('path')
-const shell = require('shelljs')
 const md = require('markdown-it')()
 // autocreate anchor from headers #...####
 md.use(require('markdown-it-anchor'), {
@@ -110,24 +109,25 @@ const changelog = () => {
     fs.mkdirSync(path.resolve(outDir, '../changelog'))
   }
 
+  const renderChangelog = (changelogData, year, month, fileName) => {
+    const menu = changelogData.map(({ name }) => ({ name, link: `#${name}` }))
+    const tableOfContent = [{ name: 'Packages', props: menu }]
+    const html = md.render(renderToMD(changelogData))
+    renderFile(
+      {
+        navigation: createNavigation(changelogDateTree, year, month),
+        html,
+        tableOfContent
+      },
+      path.resolve(__dirname, '../../tmpl/vue/gettingStarted.vue'),
+      path.resolve(__dirname, '../../tmpl/html/pageTemplate.html'),
+      path.resolve(outDir, '../changelog', fileName)
+    )
+  }
   Object.entries(changelogDateTree).forEach(([year, months]) => {
     Object.entries(months).forEach(([month, cls]) => {
-      const menu = cls.map(({ name }) => ({ name, link: `#${name}` }))
-      const tableOfContent = [{ name: 'Packages', props: menu }]
-      // if (year === '2020') {debugger} else return
-      const html = md.render(renderToMD(cls))
       const fileName = createItemFileName('cl', `${year}-${month}`)
-      renderFile(
-        {
-          navigation: createNavigation(changelogDateTree, year, month),
-          html,
-          tableOfContent
-        },
-        path.resolve(__dirname, '../../tmpl/vue/gettingStarted.vue'),
-        path.resolve(__dirname, '../../tmpl/html/pageTemplate.html'),
-        path.resolve(outDir, '../changelog', fileName)
-      )
-
+      renderChangelog(cls, year, month, fileName)
       cls.forEach(cl => addToSearch(cl, fileName))
     })
   })
@@ -136,9 +136,7 @@ const changelog = () => {
   // we can't get current year or month because it may not contain changes
   const lastPresentYear = Math.max(...Object.keys(changelogDateTree).map(Number))
   const lastPresentMonth = Math.max(...Object.keys(changelogDateTree[String(lastPresentYear)]).map(Number))
-  shell.cp('-f',
-    path.resolve(outDir, '../changelog', createItemFileName('cl', `${lastPresentYear}-${lastPresentMonth}`)),
-    path.resolve(outDir, '../changelog', 'index.html'))
+  renderChangelog(changelogDateTree[lastPresentYear][lastPresentMonth], lastPresentYear, lastPresentMonth, 'index.html')
 
   fs.writeFileSync(path.resolve(outDir, '../changelog', 'ftsIndex.json'), JSON.stringify(index.export()))
   fs.writeFileSync(path.resolve(outDir, '../changelog', 'ftsData.json'), JSON.stringify(ftsData))
