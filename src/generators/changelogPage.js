@@ -136,7 +136,7 @@ const changelog = () => {
   // we can't get current year or month because it may not contain changes
   const lastPresentYear = Math.max(...Object.keys(changelogDateTree).map(Number))
   const lastPresentMonth = Math.max(...Object.keys(changelogDateTree[String(lastPresentYear)]).map(Number))
-  renderChangelog(changelogDateTree[lastPresentYear][lastPresentMonth], lastPresentYear, lastPresentMonth, 'index.html')
+  renderChangelog(changelogDateTree[lastPresentYear][lastPresentMonth], String(lastPresentYear), String(lastPresentMonth), 'index.html')
 
   fs.writeFileSync(path.resolve(outDir, '../changelog', 'ftsIndex.json'), JSON.stringify(index.export()))
   fs.writeFileSync(path.resolve(outDir, '../changelog', 'ftsData.json'), JSON.stringify(ftsData))

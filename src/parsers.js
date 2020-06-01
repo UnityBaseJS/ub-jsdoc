@@ -122,7 +122,7 @@ function parsers (allDoclets) {
     })
     // parse all types and replace it with html string
     doclets.forEach(doclet => {
-      // if (doclet.name === 'serverConfig') debugger
+      // if (doclet.name === 'lock') debugger
       doclet.type = doclet.type ? parseType(doclet.type, allDoclets) : undefined
       if (doclet.returns) {
         doclet.returns[0].type = parseType(doclet.returns[0].type, allDoclets)
@@ -145,11 +145,11 @@ function parsers (allDoclets) {
       // if complex parameter like options.encoding in getContent
       if (doclet.params) {
         doclet.paramsForMethods = doclet.params.filter(({ name }) => !name.includes('.'))
-        const args = doclet.params.filter(({ name }) => doclet.params.some(({ name: innerName }) => innerName.includes(`${name}.`)))
+        const args = doclet.params.filter(({ name }) => doclet.params.some(({ name: innerName }) => innerName.startsWith(`${name}.`)))
         args.forEach(arg => {
-          arg.props = doclet.params.filter(({ name }) => name.includes(`${arg.name}.`)).map(param => ({
+          arg.props = doclet.params.filter(({ name }) => name.startsWith(`${arg.name}.`) && name.split(`${arg.name}.`)[1].indexOf('.') === -1).map(param => ({
             ...param,
-            name: param.name.match(/\.([^.]+)/)[1]
+            name: param.name.split('.')[param.name.split('.').length - 1]
           }))
         })
         doclet.params = [...args, ...doclet.params.filter(param => param.description && !param.name.includes('.') && !args.includes(param))]

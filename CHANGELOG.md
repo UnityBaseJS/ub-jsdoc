@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+## [2.3.4]
+### Fixed
+ - set year and month for index page in changelog correctly
+ - correct names in methods arguments with 3-level nesting
+
 ## [2.3.3]
 ### Fixed
  - index page in changelog filled correctly
