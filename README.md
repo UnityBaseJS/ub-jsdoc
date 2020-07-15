@@ -4,12 +4,15 @@ Documentation template theme for JSDoc 3 based on [Vue server side rendering](ht
 Inspired by [godoc](https://godoc.org/golang.org/x/tools/cmd/godoc).
 
  - support for multiple modules:  
+ 
 ![Screenshot](screenshot.png)
 
  - build-in full text search across all available modules:
+ 
 ![ScreenshotMobile](screenshotMobile.png)
 
- - responsive design (mobile screen) 
+ - responsive design (mobile screen):
+  
 ![ScreenshotSearch](screenshotSearch.png)
 
 Live sample is a [UnityBase framework documentation](https://unitybase.info/api/index.html)
