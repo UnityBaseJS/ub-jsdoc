@@ -9,11 +9,11 @@ Inspired by [godoc](https://godoc.org/golang.org/x/tools/cmd/godoc).
 
  - build-in full text search across all available modules:
  
-![ScreenshotMobile](screenshotMobile.png)
+![ScreenshotSearch](screenshotSearch.png)
 
  - responsive design (mobile screen):
   
-![ScreenshotSearch](screenshotSearch.png)
+![ScreenshotMobile](screenshotMobile.png)
 
 Live sample is a [UnityBase framework documentation](https://unitybase.info/api/index.html)
 
