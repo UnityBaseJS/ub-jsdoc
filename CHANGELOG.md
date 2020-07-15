@@ -3,11 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
 ## [2.4.0]
 ### Added
- - CSS styles from gitbook(.markdown-section class from <https://indigo-iam.github.io/docs/v/current/gitbook/style.css>) to make nicer page view
+ - CSS styles from gitbook (.markdown-section class from <https://indigo-iam.github.io/docs/v/current/gitbook/style.css>) to make nicer page view
+ 
 ### Changed
- - prism(syntax highlighter) configuration now allows SQL code highlighting
+ - SQL code highlighting added (prism) 
 
 ## [2.3.4]
 ### Fixed
