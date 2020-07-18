@@ -1,6 +1,6 @@
 <div class="row flex-xl-nowrap">
     <sidebar :navigation="navigation"></sidebar>
-    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" role="main">
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content markdown-section" role="main">
         <h3 class="page-breadcrumb">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
@@ -15,6 +15,14 @@
             <h5 class="alert alert-primary">
                 new {{clazz.name}}(<template v-if="clazz.paramsForMethods && clazz.paramsForMethods.length > 0"><template v-for="param in clazz.paramsForMethods.slice(0, -1)">{{param.name}}<span v-if="param.optional" class="badge badge-pill badge-light">opt</span><span v-if="param.type && param.type.length > 0">: <span v-html="param.type[0]"></span></span><span>, </span></template>{{clazz.paramsForMethods.slice(-1)[0].name}}<span v-if="clazz.paramsForMethods.slice(-1)[0].optional"  class="badge badge-pill badge-light">opt</span><span v-if="clazz.paramsForMethods.slice(-1)[0].type && clazz.paramsForMethods.slice(-1)[0].type.length > 0">: <span v-html="clazz.paramsForMethods.slice(-1)[0].type[0]"></span></span></template>)<span class="anchor" :data-id="clazz.name">#</span>
             </h5>
+            <template v-if="clazz.examples">
+                <p class="arguments-title">Examples:</p>
+                <example
+                        v-for="example in clazz.examples"
+                        :key="1"
+                        :example="example"
+                ></example>
+            </template>
             <div v-if="clazz.mixes && clazz.mixes.length > 0">
                 Mixes In:
                 <ul>

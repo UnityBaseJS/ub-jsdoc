@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.2]
+### Changed
+ - more accurate applying styles from gitbook
+
 ## [2.4.0]
 ### Added
  - CSS styles from gitbook (.markdown-section class from <https://indigo-iam.github.io/docs/v/current/gitbook/style.css>) to make nicer page view
