@@ -16,7 +16,7 @@
  -webkit-box-sizing:border-box;
  font-size:inherit
 }
-.markdown-section>:first-child {
+.markdown-section>:first-child:not(.page-breadcrumb) {
  margin-top:0!important
 }
 .markdown-section>:last-child {
@@ -187,8 +187,8 @@
 .markdown-section table th {
  font-weight:700
 }
-.markdown-section ol,
-.markdown-section ul {
+.markdown-section ol:not(.breadcrumb),
+.markdown-section ul:not(.breadcrumb){
  padding:0;
  margin:0;
  margin-bottom:.85em;
@@ -236,4 +236,10 @@
 .markdown-section .glossary-term {
  cursor:help;
  text-decoration:underline
+}
+
+/* for correct height and bigger sizr for all headers of members, methods, etc (all blue blocks) */
+.markdown-section .alert {
+ line-height:1.7;
+ font-size: 1.15em;
 }

@@ -128,12 +128,12 @@ main {
     font-family: 'Roboto', sans-serif;
 }
 
-main .page-breadcrumb {
-    /*font-size: 3rem;*/
+/*main .page-breadcrumb {
+    !*font-size: 3rem;*!
     position: sticky;
     top: var(--navbar-height);
     z-index: 1000;
-}
+}*/
 
 main .subsection-title {
     margin-top: 50px;

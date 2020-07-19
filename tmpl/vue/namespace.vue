@@ -1,6 +1,6 @@
 <div class="row flex-xl-nowrap">
     <sidebar :navigation="navigation"></sidebar>
-    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content" role="main">
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content markdown-section" role="main">
         <h1 class="page-title">{{ namespace.name }}</h1>
         <div class="fromMD">
             <p v-html=namespace.readme></p>
