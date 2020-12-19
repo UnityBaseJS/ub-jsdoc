@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.4.3]
+### Fixed
+ - exit with exit code 1 in case on errors in rendering process
+
 ### Added
  - permalink added for all headers. This helps to share a link to a specific part of the documentation
 

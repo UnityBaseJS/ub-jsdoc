@@ -70,6 +70,7 @@ const renderFile = (data, vueTemplPath, htmlTemplPath, outputPath) => {
     fs.writeFileSync(outputPath, html)
   }).catch(err => {
     console.error(err)
+    process.exit(1)
   })
 }
 
