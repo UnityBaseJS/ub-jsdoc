@@ -72,7 +72,7 @@ const addToSearch = (cl, link) => {
 }
 
 const changelog = () => {
-  console.log('changelog')
+  console.log('Rendering changelog')
   const configPath = path.resolve(process.cwd(), 'changelog.config.json')
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
   const pathsToChangelogs = getChangelogPaths(config.pathToPackages.include, config.pathToPackages.exclude)

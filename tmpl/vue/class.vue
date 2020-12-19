@@ -13,7 +13,8 @@
         <div class="item border-bottom" :id="clazz.name">
             <!--all in one line to prevent creating redundant spaces during vue render-->
             <h5 class="alert alert-primary">
-                new {{clazz.name}}(<template v-if="clazz.paramsForMethods && clazz.paramsForMethods.length > 0"><template v-for="param in clazz.paramsForMethods.slice(0, -1)">{{param.name}}<span v-if="param.optional" class="badge badge-pill badge-light">opt</span><span v-if="param.type && param.type.length > 0">: <span v-html="param.type[0]"></span></span><span>, </span></template>{{clazz.paramsForMethods.slice(-1)[0].name}}<span v-if="clazz.paramsForMethods.slice(-1)[0].optional"  class="badge badge-pill badge-light">opt</span><span v-if="clazz.paramsForMethods.slice(-1)[0].type && clazz.paramsForMethods.slice(-1)[0].type.length > 0">: <span v-html="clazz.paramsForMethods.slice(-1)[0].type[0]"></span></span></template>)<span class="anchor" :data-id="clazz.name">#</span>
+                new {{clazz.name}}(<template v-if="clazz.paramsForMethods && clazz.paramsForMethods.length > 0">
+              <template v-for="param in clazz.paramsForMethods.slice(0, -1)">{{param.name}}<span v-if="param.optional" class="badge small-badge badge-light">opt</span><span v-if="param.type && param.type.length > 0">: <span v-html="param.type[0]"></span></span><span>, </span></template>{{clazz.paramsForMethods.slice(-1)[0].name}}<span v-if="clazz.paramsForMethods.slice(-1)[0].optional"  class="badge small-badge badge-light">opt</span><span v-if="clazz.paramsForMethods.slice(-1)[0].type && clazz.paramsForMethods.slice(-1)[0].type.length > 0">: <span v-html="clazz.paramsForMethods.slice(-1)[0].type[0]"></span></span></template>)<span class="anchor" :data-id="clazz.name">#</span>
             </h5>
             <template v-if="clazz.examples">
                 <p class="arguments-title">Examples:</p>

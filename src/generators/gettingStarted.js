@@ -35,7 +35,7 @@ const createGSNavigation = current => Object.keys(tree).map(item => ({
 ))
 
 const gettingStarted = () => {
-  console.log('getting started')
+  console.log('Rendering getting started')
 
   // index
   const index = fs.readFileSync(path.resolve(gsPath, '../README.md'), 'utf8')

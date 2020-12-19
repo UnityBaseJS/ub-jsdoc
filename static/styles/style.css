@@ -255,6 +255,12 @@ main p > img {
     font-weight: 500;
 }
 
+.small-badge {
+    font-size: 50%;
+    border-radius: 10rem;
+    vertical-align: top;
+}
+
 
 /*Small devices (landscape phones, 576px and up)*/
 @media (min-width: 576px) {

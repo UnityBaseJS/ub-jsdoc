@@ -59,6 +59,10 @@ const idGeneratorFabric = prefix => {
   return () => prefix + (id++)
 }
 
+function isVerbose () {
+  const myArgs = process.argv.slice(2)
+  return myArgs.indexOf('--verbose') !== -1
+}
 module.exports = {
   createItemLink,
   createItemFileName,
@@ -66,5 +70,6 @@ module.exports = {
   groupDoclets,
   groupRootDoclets,
   copyFiles,
-  idGeneratorFabric
+  idGeneratorFabric,
+  isVerbose: isVerbose()
 }

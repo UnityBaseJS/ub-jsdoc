@@ -1,7 +1,7 @@
 <div class="item border-bottom" :id="event.name">
     <h5 class="alert alert-primary">
         <span :class="{ deprecated: !!event.deprecated }"><a :href="event.codeLink">{{event.name}}</a></span>
-        <span v-if="event.scope" class="badge badge-light">{{event.scope}}</span>
+        <span v-if="event.scope" class="badge small-badge badge-light">{{event.scope}}</span>
         <anchor :id="event.name"></anchor>
     </h5>
     <div class="fromMD" v-if="event.deprecated">

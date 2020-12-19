@@ -25,7 +25,8 @@ const {
   itemTypes,
   groupDoclets,
   groupRootDoclets,
-  idGeneratorFabric
+  idGeneratorFabric,
+  isVerbose
 } = require('./src/utils')
 const renderFile = require('./src/vueRender')
 const filterGroupByMemberOf = (groupedItems = [], memberName) => groupedItems.filter(({ memberof }) => memberof === memberName)
@@ -288,6 +289,7 @@ exports.publish = function (taffyData, opts, tutorials) {
             }))
           }
         ]
+        if (isVerbose) console.log(`Render ${item.kind} ${item.name} from ${item.meta.filename} using ${item.kind}.vue`)
         renderFile(
           {
             navigation: createNavigation(item.kind, item.name),
@@ -329,7 +331,7 @@ exports.publish = function (taffyData, opts, tutorials) {
   }
 
   function generateTutorials () {
-    console.log('tutorials')
+    console.log('Rendering tutorials')
     // tutorialNavigation
     const createTutorialNavigation = current => tutorials.children
       .sort(({ title: a }, { title: b }) => a.localeCompare(b))

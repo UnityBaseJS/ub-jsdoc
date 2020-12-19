@@ -4,12 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.4.3]
+## [2.5.0]
 ### Fixed
- - exit with exit code 1 in case on errors in rendering process
+ - process exit with exit code 1 in case on errors in rendering process
+ - for function with wrong returns definition add a "->[wrong jsdoc]" in the end.
+   This fix "slice of undefined" error during render
 
 ### Added
  - permalink added for all headers. This helps to share a link to a specific part of the documentation
+ - in `--verbose` mode cli output a file/class what renders. This helps to find a bug in sources documentation
+
+### Changed
+ - badges (opt, inherits etc) now small (.5em) and top-aligned
 
 ## [2.4.2]
 ### Changed

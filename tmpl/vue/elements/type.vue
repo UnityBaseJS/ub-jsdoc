@@ -1,8 +1,8 @@
 <div class="item border-bottom" :id="type.name">
     <h5 class="alert alert-primary">
         <span :class="{ deprecated: !!type.deprecated }"><a :href="type.codeLink">{{type.name}}</a></span>
-        <span v-if="type.deprecated" class="badge badge-danger">deprecated</span>
-        <span v-if="type.scope" class="badge badge-light">{{type.scope}}</span>
+        <span v-if="type.deprecated" class="badge small-badge badge-danger">deprecated</span>
+        <span v-if="type.scope" class="badge small-badge badge-light">{{type.scope}}</span>
         <anchor :id="type.name"></anchor>
     </h5>
     <div class="fromMD">
@@ -44,7 +44,7 @@
         <ul>
             <li v-for="property in type.properties">
                 <code>{{property.name}}</code>
-                <span v-if="property.optional" class="badge badge-pill badge-light">opt</span>
+                <span v-if="property.optional" class="badge small-badge badge-light">opt</span>
                 <span
                         v-if="property.defaultvalue !== undefined"> = {{property.defaultvalue}} </span>: <span
                     v-if="property.type" v-html="property.type[0]"></span>
