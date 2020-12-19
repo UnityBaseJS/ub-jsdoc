@@ -243,3 +243,9 @@
  line-height:1.7;
  font-size: 1.15em;
 }
+.markdown-section .header-anchor {
+  color: rgb(246, 246, 246);
+}
+.header-anchor:hover {
+  color: rgb(200, 200, 200);
+}

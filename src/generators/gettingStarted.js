@@ -5,6 +5,11 @@ const shell = require('shelljs')
 const md = require('markdown-it')({ html: true }) // for anchors in md <a name=...>
 // autocreate anchor from headers #...####
 md.use(require('markdown-it-anchor'), {
+  permalink: true,
+  permalinkClass: 'header-anchor',
+  permalinkSymbol: '#',
+  permalinkBefore: false,
+
   slugify: (s) => encodeURIComponent(String(s).trim().toLowerCase().replace(/,?\s+,?/g, '-')) // change headers with comas
 }).use(require('markdown-it-emoji')) // for :!: emoji and not only
 

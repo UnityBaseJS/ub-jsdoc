@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.4.3]
 ### Added
- - permalink added for all headers. This helps to share a link to a spesific part of the documentation
+ - permalink added for all headers. This helps to share a link to a specific part of the documentation
 
 ## [2.4.2]
 ### Changed

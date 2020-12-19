@@ -5,6 +5,11 @@ const path = require('path')
 const md = require('markdown-it')()
 // autocreate anchor from headers #...####
 md.use(require('markdown-it-anchor'), {
+  permalink: true,
+  permalinkClass: 'header-anchor',
+  permalinkSymbol: '#',
+  permalinkBefore: false,
+
   // for preventing change @ and / to %xx
   // assumed that package name already slugified
   slugify: s => s
