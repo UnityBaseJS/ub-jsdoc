@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.3]
+### Added
+ - permalink added for all headers. This helps to share a link to a spesific part of the documentation
+
 ## [2.4.2]
 ### Changed
  - more accurate applying styles from gitbook
