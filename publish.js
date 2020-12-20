@@ -18,6 +18,7 @@ md.use(require('markdown-it-anchor'), {
 })
 md.use(require('markdown-it-table-of-contents'), { includeLevel: [1, 2, 3] })
 md.use(require('markdown-it-emoji')) // for :!: emoji and not only
+md.use(require('markdown-it-mermaid-plugin'))
 
 const {
   createItemLink,

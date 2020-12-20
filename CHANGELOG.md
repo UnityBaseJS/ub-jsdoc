@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
  - permalink added for all headers. This helps to share a link to a specific part of the documentation
  - in `--verbose` mode cli output a file/class what renders. This helps to find a bug in sources documentation
+ - a [mermaid](http://mermaid-js.github.io/mermaid/#/) plugin is added. Can be used by adding a code block of `mermaid`
+   type in the md file. Example: 
+<pre>
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+```
+</pre>
+  Such blocks are rendered in SVG on runtime.
+
 
 ### Changed
  - badges (opt, inherits etc) now small (.5em) and top-aligned
