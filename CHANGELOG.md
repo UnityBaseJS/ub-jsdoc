@@ -24,9 +24,9 @@ graph TD;
 </pre>
   Such blocks are rendered in SVG on runtime.
 
-
 ### Changed
  - badges (opt, inherits etc) now small (.5em) and top-aligned
+ - all dependencies are updated to the up-to-date versions 
 
 ## [2.4.2]
 ### Changed
