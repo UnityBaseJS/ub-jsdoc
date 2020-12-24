@@ -76,6 +76,7 @@ Used [markdown-it](https://github.com/markdown-it/markdown-it) and plugins:
  - [markdown-it-table-of-contents](https://www.npmjs.com/package/markdown-it-table-of-contents)
    Use `[[toc]]` tag in markdown to add table-of-content block
  - [markdown-it-emoji](https://www.npmjs.com/package/markdown-it-emoji)
+ - [markdown-it-mermaid-plugin](https://github.com/DCsunset/markdown-it-mermaid-plugin)
    
 
 ### Extend
