@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.1]
+### Fixed
+ - fix #11:
+   - in case `templates.buildInURL` or `templates.buildins` is not defined in config - skip creation of href for build-in types
+   - `{@link` replacer will ignore non-string parameters (as reported in #11 `param.description` can be a non-string)
+   
 ## [2.5.0]
 ### Fixed
  - process exit with exit code 1 in case on errors in rendering process

@@ -31,25 +31,6 @@ function parsers (allDoclets) {
       }
     } else {
       name = href
-      // type = 'class'
-      //   [type, name] = parent.match(/[^:]+/g)
-      //   anchor = href
-      //   // type = 'class'
-      //   // name = href
-      //   // const [item] = allDoclets.filter((item => item.name === href))
-      //   // type = 'module'
-      //   // name = item.longname.match(/\.module:(.*)[#~.]/g)[1]
-      //   // anchor = item.name
-      //   // search name in all items for full info
-      //   // const [item] = allDoclets.filter((item => item.name === linkText));
-      //   //
-      //   // if (!item){
-      //   //   type = 'class'
-      //   //   name = href
-      //   // } else {
-      //   //   // [name, anchor] = item.name.match(/.module:(.*)~(.*)/g)
-      //   //   name = item.
-      //   // }
     }
 
     // change Class[.|~]method to Class#method
@@ -62,11 +43,13 @@ function parsers (allDoclets) {
   }
 
   const hrefFromType = typeName => {
-    // if standard js type
-    if (buildInJSObjects.includes(typeName.toLowerCase())) {
-      return {
-        text: typeName,
-        link: env.conf.templates.buildInURL + typeName.toLowerCase()
+    // for build-in types - add a link to buildInURL
+    if (buildInJSObjects && env.conf.templates.buildInURL) {
+      if (buildInJSObjects.includes(typeName.toLowerCase())) {
+        return {
+          text: typeName,
+          link: env.conf.templates.buildInURL + typeName.toLowerCase()
+        }
       }
     }
     const { type, name, anchor } = linkParser(typeName)
@@ -103,7 +86,7 @@ function parsers (allDoclets) {
     return `<a href="${createItemLink(type, name, anchor)}">${linkText}</a>`
   }
   const replaceAllLinks = text => {
-    return text.replace(/{@link (.*?)}/g, linkReplacer)
+    return (typeof text === 'string') ? text.replace(/{@link (.*?)}/g, linkReplacer) : text
   }
 
   // replace links types etc
