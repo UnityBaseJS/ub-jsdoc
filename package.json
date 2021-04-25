@@ -24,14 +24,14 @@
     "flexsearch": "^0.6.32",
     "jsdoc": "^3.6.6",
     "jsdoctypeparser": "^9.0.0",
-    "lodash": "^4.17.20",
-    "markdown-it": "^12.0.3",
+    "lodash": "^4.17.21",
+    "markdown-it": "^12.0.6",
     "markdown-it-anchor": "^6.0.1",
     "markdown-it-emoji": "^2.0.0",
     "markdown-it-mermaid-plugin": "^0.1.0",
     "markdown-it-sub": "^1.0.0",
-    "markdown-it-table-of-contents": "^0.5.1",
-    "mustache": "^4.1.0",
+    "markdown-it-table-of-contents": "^0.5.2",
+    "mustache": "^4.2.0",
     "shelljs": "^0.8.4",
     "ub-changelog-parser": "^1.1.0",
     "vue": "^2.6.12",
@@ -44,7 +44,7 @@
     "theme"
   ],
   "devDependencies": {
-    "eslint-plugin-vue": "^7.3.0",
+    "eslint-plugin-vue": "^7.9.0",
     "standard": "^16.0.3"
   }
 }
