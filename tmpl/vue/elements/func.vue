@@ -22,11 +22,10 @@
     <p class="arguments-title">Return:</p>
     <template v-html="func.returns[0].description"></template>
   </template>
-  <div v-if="func.params && func.params.length > 0" class="arguments">
-    <p></p>
+  <div v-if="func.paramsForMethods && func.paramsForMethods.length > 0" class="arguments">
     <p class="arguments-title">Arguments info:</p>
     <ul>
-      <li v-for="param in func.params">
+      <li v-for="param in func.paramsForMethods">
         <code>{{ param.name }}</code>
         <span v-if="param.defaultvalue !== undefined"> = {{ param.defaultvalue }} </span>:
         <span v-for="(pt, idx) in param.type">

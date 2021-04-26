@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.3]
+### Fixed
+- `Arguments info:` section for function parameters now contains all attributes, even ones without description 
+  
 ## [2.5.2]
 ### Fixed
  - output all types for parameters with multiple type: `@param {number|string} a` -> `a: number | string`; 
