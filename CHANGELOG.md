@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.4]
+### Changed
+ - `Arguments info:` renamed to `Paramters`
+
+### Added
+ - constructor's parameters description added (as for other functions/methods)
+
 ## [2.5.3]
 ### Fixed
 - `Arguments info:` section for function parameters now contains all attributes, even ones without description 

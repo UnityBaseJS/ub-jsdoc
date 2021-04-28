@@ -3,9 +3,27 @@ const Vue = require('vue')
 const fs = require('fs')
 const path = require('path')
 
+/**
+ * Remove spaces and CR LF between tags from template to prevent unexpected whitespaces in HTML result
+ * @param {string} tplStr
+ */
+function sanitizeTemplate (tplStr) {
+  return tplStr
+    .replace(/>(\s*?)</g, '><')
+    .replace(/>(\s*?){{/g, '>{{')
+    .replace(/}}(\s*?)</g, '}}<')
+}
 Vue.component('anchor', {
   props: ['id'],
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/anchor.vue'), 'utf-8')
+})
+Vue.component('func-signature', {
+  props: ['func'],
+  template: sanitizeTemplate(fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/funcSignature.vue'), 'utf-8'))
+})
+Vue.component('func-params', {
+  props: ['func'],
+  template: sanitizeTemplate(fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/funcParams.vue'), 'utf-8'))
 })
 Vue.component('func', {
   props: ['func'],
