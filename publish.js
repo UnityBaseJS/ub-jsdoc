@@ -294,6 +294,7 @@ exports.publish = function (taffyData, opts, tutorials) {
         renderFile(
           {
             navigation: createNavigation(item.kind, item.name),
+            cmpClass: item.kind === 'class' ? 'clazz' : item.kind,
             [item.kind === 'class' ? 'clazz' : item.kind]: item,
             subclasses,
             submodules,
@@ -304,7 +305,7 @@ exports.publish = function (taffyData, opts, tutorials) {
             events,
             tableOfContent: tableOfContent
           },
-          path.resolve(__dirname, `tmpl/vue/${item.kind}.vue`),
+          path.resolve(__dirname, 'tmpl/vue/article.vue'),
           path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
           path.resolve(outdir, createItemFileName(item.kind, item.name)))
       }

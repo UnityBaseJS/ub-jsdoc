@@ -1,4 +1,4 @@
-<div class="d-none d-xl-block col-xl-2 bd-toc">
+<aside>
     <template v-for="content in tableOfContent">
         <div class="description" v-if="content.props.length > 0">
             <a v-if="content.name">{{content.name}}</a>
@@ -9,4 +9,4 @@
             </ul>
         </div>
     </template>
-</div>
+</aside>
