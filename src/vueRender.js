@@ -73,15 +73,21 @@ Vue.component('t-o-content', {
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/t-o-content.vue'), 'utf-8')
 })
 
-// render one file
-const renderFile = (data, vueTemplPath, htmlTemplPath, outputPath) => {
+/**
+ * Render one file
+ * @param {object} data Page data
+ * @param {string} vueTplPath
+ * @param {string} htmlTplPath
+ * @param {string} outputPath
+ */
+function renderFile (data, vueTplPath, htmlTplPath, outputPath) {
   const app = new Vue({
     data,
-    template: fs.readFileSync(vueTemplPath, 'utf-8')
+    template: fs.readFileSync(vueTplPath, 'utf-8')
   })
 
   const renderer = vueRender.createRenderer({
-    template: fs.readFileSync(htmlTemplPath, 'utf-8')
+    template: fs.readFileSync(htmlTplPath, 'utf-8')
   })
 
   renderer.renderToString(app).then(html => {

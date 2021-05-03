@@ -37,16 +37,16 @@ exports.publish = function (taffyData, opts, tutorials) {
   const outdir = path.normalize(env.opts.destination)
   const outSourcePath = path.resolve(outdir, 'source')
 
+  const navbarPartial = fs.readFileSync(path.resolve(__dirname, 'tmpl/html/navbar.partial'), 'utf-8')
   // create html templates from mustache
-  fs.readdirSync(path.resolve(__dirname, 'tmpl/html'), { withFileTypes: true })
-    .filter(item => !item.isDirectory())
-    .map(item => item.name)
-    .filter(name => name.endsWith('.mustache'))
-    .forEach(name => {
-      const file = fs.readFileSync(path.resolve(__dirname, 'tmpl/html', name), 'utf-8')
-      const outputPath = path.resolve(__dirname, 'tmpl/html', name.replace('mustache', 'html'))
-      fs.writeFileSync(outputPath, Mustache.render(file, env.conf))
-    })
+  let file = fs.readFileSync(path.resolve(__dirname, 'tmpl/html/mainPageTemplate.mustache'), 'utf-8')
+  let outputPath = path.resolve(__dirname, 'tmpl/html/mainPageTemplate.html')
+  fs.writeFileSync(outputPath, Mustache.render(file, env.conf, { navbar: navbarPartial }))
+
+  file = fs.readFileSync(path.resolve(__dirname, 'tmpl/html/pageTemplate.mustache'), 'utf-8')
+  outputPath = path.resolve(__dirname, 'tmpl/html/pageTemplate.html')
+  const cfg = Object.assign({ isChild: true }, env.conf)
+  fs.writeFileSync(outputPath, Mustache.render(file, cfg, { navbar: navbarPartial }))
 
   // todo rewrite with fs
   shell.mkdir('-p', outdir, outSourcePath)
