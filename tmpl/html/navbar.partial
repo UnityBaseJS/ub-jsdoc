@@ -3,7 +3,7 @@
         <a href="/">
             <img src={{{navbar.logo.img}}} class="d-inline-block align-middle logo mr2"
                  alt="logo"></a>
-        <a href="../{{{navbar.logo.href}}}">UB DOC</a>
+        <a href="{{#isChild}}../{{/isChild}}{{{navbar.logo.href}}}">UB DOC</a>
     </div>
 
     <ul class="navbar-nav">
