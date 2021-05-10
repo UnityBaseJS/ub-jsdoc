@@ -13,8 +13,7 @@
     <p v-if="module.description" v-html="module.description"></p>
 </div>
 <template v-if="module.examples">
-    <p class="subsection-title" id="examples">Examples</p>
-    <example
+    <example id="examples"
             v-for="example in module.examples"
             :key="1"
             :example="example"
@@ -22,7 +21,7 @@
 </template>
 
 <template v-if="subclasses.length > 0">
-    <h3 class="subsection-title" id="Classes">Classes</h3>
+    <h3 class="ud-member__group" id="Classes">Classes</h3>
     <ul class="subclasses">
         <li v-for="clazz in subclasses">
             <a :href="clazz.link">{{ clazz.name }}</a>
@@ -31,7 +30,7 @@
 </template>
 
 <template v-if="submodules.length > 0">
-    <h3 class="subsection-title" id="Submodules">Submodules</h3>
+    <h3 class="ud-member__group" id="Submodules">Submodules</h3>
     <ul class="submodules">
         <li v-for="submodule in submodules">
             <a :href="submodule.link">{{ submodule.name }}</a>
@@ -40,7 +39,7 @@
 </template>
 
 <template v-if="mixins.length > 0">
-    <h3 class="subsection-title" id="Mixins">Mixins</h3>
+    <h3 class="ud-member__group" id="Mixins">Mixins</h3>
     <ul class="mixins">
         <li v-for="mixin in mixins">
             <a :href="mixin.link">{{ mixin.name }}</a>
@@ -49,7 +48,7 @@
 </template>
 
 <template v-if="members.length > 0">
-    <h3 class="subsection-title" id="Members">Members</h3>
+    <h3 class="ud-member__group" id="Members">Members</h3>
     <member
             v-for="member in members"
             :key="member.___id"
@@ -58,7 +57,7 @@
 </template>
 
 <template v-if="funcs.length > 0">
-    <h3 class="subsection-title" id="Methods">Methods</h3>
+    <h3 class="ud-member__group" id="Methods">Methods</h3>
     <func
             v-for="func in funcs"
             :key="func.___id"
@@ -67,11 +66,21 @@
 </template>
 
 <template v-if="types.length > 0">
-    <h3 class="subsection-title" id="Types">Types</h3>
+    <h3 class="ud-member__group" id="Types">Types</h3>
     <type
             v-for="type in types"
             :key="type.___id"
             :type="type"
     ></type>
 </template>
+
+<template v-if="events.length > 0">
+  <h3 class="ud-member__group" id="events">Events</h3>
+  <event
+      v-for="event in events"
+      :key="event.___id"
+      :event="event"
+  ></event>
+</template>
+
 </main>

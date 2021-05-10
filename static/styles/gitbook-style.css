@@ -205,11 +205,9 @@
  list-style-type:lower-roman
 }
 .markdown-section blockquote {
- margin:0;
- margin-bottom:.85em;
- padding:0 15px;
- color:#858585;
- border-left:4px solid #e5e5e5
+ padding-left: 20px;
+ border-left: 4px solid #42b983;
+ margin-top: 2em;
 }
 .markdown-section blockquote:first-child {
  margin-top:0
@@ -238,7 +236,7 @@
  text-decoration:underline
 }
 
-/* for correct height and bigger sizr for all headers of members, methods, etc (all blue blocks) */
+/* for correct height and bigger size for all headers of members, methods, etc (all blue blocks) */
 .markdown-section .alert {
  line-height:1.7;
  font-size: 1.15em;

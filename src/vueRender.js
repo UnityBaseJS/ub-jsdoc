@@ -14,7 +14,7 @@ function sanitizeTemplate (tplStr) {
     .replace(/}}(\s*?)</g, '}}<')
 }
 Vue.component('anchor', {
-  props: ['id'],
+  props: ['member'],
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/anchor.vue'), 'utf-8')
 })
 Vue.component('func-signature', {
@@ -44,13 +44,6 @@ Vue.component('event', {
 Vue.component('example', {
   props: ['example'],
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/example.vue'), 'utf-8')
-})
-Vue.component('search', {
-  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/search.vue'), 'utf-8')
-})
-Vue.component('nav-plain', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/nav-plain.vue'), 'utf-8')
 })
 Vue.component('sidebar', {
   props: ['navigation', 'with-search'],
@@ -83,9 +76,9 @@ Vue.component('interface', {
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/interface.vue'), 'utf-8')
 })
 
-Vue.component('atricle', {
-  // props: [...articleProps],
-  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/article.vue'), 'utf-8')
+Vue.component('chapter', {
+  props: ['with-toc'],
+  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/chapter.vue'), 'utf-8')
 })
 
 /**

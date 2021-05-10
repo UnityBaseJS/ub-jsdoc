@@ -1,7 +1,7 @@
 {
   "name": "ub-jsdoc",
-  "version": "2.5.4",
-  "description": "JSDoc 3 Template / Theme",
+  "version": "3.0.0",
+  "description": "JSDoc 3 Template / Theme generated using VueJS SSR",
   "main": "publish.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -39,6 +39,7 @@
   },
   "keywords": [
     "jsdoc",
+    "vue",
     "documentation",
     "template",
     "theme"

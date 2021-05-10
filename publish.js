@@ -108,10 +108,12 @@ exports.publish = function (taffyData, opts, tutorials) {
     // copyFiles(path.resolve(staticPath, 'styles'), outSourcePath)
     // copyFiles(path.resolve(staticPath, 'scripts'), outSourcePath)
 
-    const files = allData.map(item => item.meta ? {
-      path: item.meta.path,
-      name: item.meta.filename
-    } : undefined).filter(v => v)
+    const files = allData.map(item => item.meta
+      ? {
+          path: item.meta.path,
+          name: item.meta.filename
+        }
+      : undefined).filter(v => v)
     const codeFiles = _.uniqBy(files, file => `${file.path}/${file.name}`)
     codeFiles.forEach(file => {
       const code = fs.readFileSync(`${file.path}/${file.name}`, 'utf-8')
@@ -143,7 +145,10 @@ exports.publish = function (taffyData, opts, tutorials) {
       index.add({
         id: id,
         name: item.name,
-        description: item.readme ? item.readme.replace(/<.*?>/g, ' ') : undefined || item.classdesc ? item.classdesc.replace(/<.*?>/g, ' ') : undefined || item.description ? item.description.replace(/<.*?>/g, ' ') : undefined || item.content /* for tutorials */
+        description: (item.readme ? item.readme.replace(/<.*?>/g, ' ') : undefined) ||
+          (item.classdesc ? item.classdesc.replace(/<.*?>/g, ' ') : undefined) ||
+          (item.description ? item.description.replace(/<.*?>/g, ' ') : undefined) ||
+          item.content /* for tutorials */
       })
       ftsData[id] = {
         link,
@@ -305,7 +310,7 @@ exports.publish = function (taffyData, opts, tutorials) {
             events,
             tableOfContent: tableOfContent
           },
-          path.resolve(__dirname, 'tmpl/vue/article.vue'),
+          path.resolve(__dirname, 'tmpl/vue/chapter.vue'),
           path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
           path.resolve(outdir, createItemFileName(item.kind, item.name)))
       }

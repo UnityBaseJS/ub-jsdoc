@@ -1,12 +1,18 @@
-<aside>
+<nav aria-label="Secondary navigation">
+  <nav id="toc">
+    <ul>
     <template v-for="content in tableOfContent">
-        <div class="description" v-if="content.props.length > 0">
-            <a v-if="content.name">{{content.name}}</a>
-            <ul>
-                <li v-for="prop in content.props">
-                    <a :href="prop.link">{{prop.name}}</a>
-                </li>
-            </ul>
-        </div>
+      <template v-if="content.props.length > 0">
+        <li>
+          <a :href="'#'+content.name" v-if="content.name">{{content.name}}</a>
+          <ul>
+            <li v-for="prop in content.props">
+              <a :href="prop.link">{{prop.name}}</a>
+            </li>
+          </ul>
+        </li>
+      </template>
     </template>
-</aside>
+    </ul>
+  </nav>
+</nav>
