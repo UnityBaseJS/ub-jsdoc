@@ -37,16 +37,16 @@ exports.publish = function (taffyData, opts, tutorials) {
   const outdir = path.normalize(env.opts.destination)
   const outSourcePath = path.resolve(outdir, 'source')
 
+  const navbarPartial = fs.readFileSync(path.resolve(__dirname, 'tmpl/html/navbar.partial'), 'utf-8')
   // create html templates from mustache
-  fs.readdirSync(path.resolve(__dirname, 'tmpl/html'), { withFileTypes: true })
-    .filter(item => !item.isDirectory())
-    .map(item => item.name)
-    .filter(name => name.endsWith('.mustache'))
-    .forEach(name => {
-      const file = fs.readFileSync(path.resolve(__dirname, 'tmpl/html', name), 'utf-8')
-      const outputPath = path.resolve(__dirname, 'tmpl/html', name.replace('mustache', 'html'))
-      fs.writeFileSync(outputPath, Mustache.render(file, env.conf))
-    })
+  let file = fs.readFileSync(path.resolve(__dirname, 'tmpl/html/mainPageTemplate.mustache'), 'utf-8')
+  let outputPath = path.resolve(__dirname, 'tmpl/html/mainPageTemplate.html')
+  fs.writeFileSync(outputPath, Mustache.render(file, env.conf, { navbar: navbarPartial }))
+
+  file = fs.readFileSync(path.resolve(__dirname, 'tmpl/html/pageTemplate.mustache'), 'utf-8')
+  outputPath = path.resolve(__dirname, 'tmpl/html/pageTemplate.html')
+  const cfg = Object.assign({ isChild: true }, env.conf)
+  fs.writeFileSync(outputPath, Mustache.render(file, cfg, { navbar: navbarPartial }))
 
   // todo rewrite with fs
   shell.mkdir('-p', outdir, outSourcePath)
@@ -108,10 +108,12 @@ exports.publish = function (taffyData, opts, tutorials) {
     // copyFiles(path.resolve(staticPath, 'styles'), outSourcePath)
     // copyFiles(path.resolve(staticPath, 'scripts'), outSourcePath)
 
-    const files = allData.map(item => item.meta ? {
-      path: item.meta.path,
-      name: item.meta.filename
-    } : undefined).filter(v => v)
+    const files = allData.map(item => item.meta
+      ? {
+          path: item.meta.path,
+          name: item.meta.filename
+        }
+      : undefined).filter(v => v)
     const codeFiles = _.uniqBy(files, file => `${file.path}/${file.name}`)
     codeFiles.forEach(file => {
       const code = fs.readFileSync(`${file.path}/${file.name}`, 'utf-8')
@@ -143,7 +145,10 @@ exports.publish = function (taffyData, opts, tutorials) {
       index.add({
         id: id,
         name: item.name,
-        description: item.readme ? item.readme.replace(/<.*?>/g, ' ') : undefined || item.classdesc ? item.classdesc.replace(/<.*?>/g, ' ') : undefined || item.description ? item.description.replace(/<.*?>/g, ' ') : undefined || item.content /* for tutorials */
+        description: (item.readme ? item.readme.replace(/<.*?>/g, ' ') : undefined) ||
+          (item.classdesc ? item.classdesc.replace(/<.*?>/g, ' ') : undefined) ||
+          (item.description ? item.description.replace(/<.*?>/g, ' ') : undefined) ||
+          item.content /* for tutorials */
       })
       ftsData[id] = {
         link,
@@ -294,6 +299,7 @@ exports.publish = function (taffyData, opts, tutorials) {
         renderFile(
           {
             navigation: createNavigation(item.kind, item.name),
+            cmpClass: item.kind === 'class' ? 'clazz' : item.kind,
             [item.kind === 'class' ? 'clazz' : item.kind]: item,
             subclasses,
             submodules,
@@ -304,7 +310,7 @@ exports.publish = function (taffyData, opts, tutorials) {
             events,
             tableOfContent: tableOfContent
           },
-          path.resolve(__dirname, `tmpl/vue/${item.kind}.vue`),
+          path.resolve(__dirname, 'tmpl/vue/chapter.vue'),
           path.resolve(__dirname, 'tmpl/html/pageTemplate.html'),
           path.resolve(outdir, createItemFileName(item.kind, item.name)))
       }

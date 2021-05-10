@@ -39,7 +39,8 @@ const generate = (replaceAllLinks) => {
   },
   path.resolve(__dirname, '../../tmpl/vue/mainDocIndex.vue'),
   path.resolve(__dirname, '../../tmpl/html/mainPageTemplate.html'),
-  path.resolve(outdir, '../index.html'))
+  path.resolve(outdir, '../index.html')
+  )
 }
 
 module.exports = generate

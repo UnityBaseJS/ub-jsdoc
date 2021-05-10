@@ -3,95 +3,50 @@
 
 :root {
     --nav-padding: 1rem;
-    /*--main-padding: 15px;*/
     --nav-item-current-color: #202020;
     --nav-item-main-color: #10154e;
     --nav-item-not-current-color: #7b7b7b;
-    --navbar-height: 50px;
 }
 
-.container-fluid {
-    margin-top: var(--navbar-height);
-}
 
 .logo {
     margin-right: 10px;
     width: 30px;
 }
 
-.navbar-brand a {
-    color: rgba(0, 0, 0, 0.8)
+.fts-autocomplete {
+    display: inline-block !important;
+    flex: 1;
 }
 
-.bd-sidebar {
-    border-right: 1px solid rgba(0, 0, 0, .1);
+/*Methods, members etc*/
+.ud-member__group {
+    background: #e0ebf5;
+    padding: 0.5rem;
+
+}
+.ud-member__signature {
+
+}
+/*member description section*/
+.ud-member__descr {
+    margin: 1.25rem;
 }
 
-.sidebar {
-    padding-left: 0;
-}
-
-.sidebar ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-.sidebar .main-nav > li {
-    margin-top: 5px;
-}
-
-.sidebar .main-nav > li > button, .sidebar .main-nav > li > span, .sidebar .main-nav > li > a {
-    color: var(--nav-item-main-color);
-    font-weight: 600;
-    font-size: 95%;
-}
-
-.sidebar .main-nav > li > button {
-    align-items: center;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+.ud-anchor {
+    color: #42b983 !important;
 }
 
 
-.sidebar ul.sub-nav, .bd-toc ul {
-    padding-left: var(--nav-padding);
-}
-
-.sidebar ul.sub-nav a, .bd-toc ul a {
-    color: var(--nav-item-not-current-color)
-}
-
-.sidebar ul.sub-nav a.current {
-    color: var(--nav-item-current-color);
-    font-weight: bold;
-
-}
-
-.navbar-brand a:hover, .sidebar ul.sub-nav a:hover, .bd-toc ul a:hover {
-    color: rgba(0, 0, 0, .75);
-    text-decoration: none;
-}
-
-.sidebar .sub-nav a, .bd-toc a {
-    color: #000;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 80%;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-}
-
-.sidebar .main-nav > li > button:hover {
-    background-color: #e9ecef !important;
-}
-
-.sidebar .btn.focus, .sidebar .btn:focus {
-    box-shadow: none;
-}
-
-nav .navbar-nav {
-    flex-direction: row;
+/* top margin to reserve space taken by navbar during navigation using TOV*/
+main > section[id]::before,
+.markdown-section > h2[id]::before,
+.markdown-section > h3[id]::before,
+.markdown-section > h4[id]::before {
+    display: block;
+    height: 6rem;
+    margin-top: -6rem;
+    content: ""
 }
 
 .navbar-nav .dropdown-menu {
@@ -100,7 +55,7 @@ nav .navbar-nav {
 
 #search-result {
     position: fixed;
-    top: 100px;
+    top: 8rem;
     width: 90%;
     z-index: 5000;
     margin-left: 15px;
@@ -135,12 +90,6 @@ main {
     z-index: 1000;
 }*/
 
-main .subsection-title {
-    margin-top: 50px;
-    font-weight: 600;
-    /*font-size: 1.1rem;*/
-}
-
 main .subclasses, main .submodules, main .mixins {
     list-style-type: none;
 }
@@ -168,7 +117,7 @@ main .item {
 }
 
 main .deprecated {
-    text-decoration: line-through
+    text-decoration: line-through !important;
 }
 
 main .arguments-title {
@@ -197,35 +146,13 @@ main p > img {
     max-width: 100%;
 }
 
-/* for right top intend on open anchor link*/
-.bd-content .item[id]::before, .bd-content h2[id]::before, .bd-content h1[id]::before {
-    display: block;
-    height: calc(var(--navbar-height) + 43px);
-    margin-top: calc(-1 * var(--navbar-height) - 43px);
-    content: "";
-}
-
-.anchor-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.anchor {
-    /*font-size: 2rem;*/
-    cursor: pointer;
-    float: right;
-}
-
-.anchor:hover {
-    text-decoration: none;
-    /*background-color: #de935f;*/
-    border-radius: 2px;
-}
-
-.anchor:focus {
-    outline: none;
-}
+/*!* for right top intend on open anchor link*!*/
+/*.bd-content .item[id]::before, .bd-content h2[id]::before, .bd-content h1[id]::before {*/
+/*    display: block;*/
+/*    height: calc(var(--navbar-height) + 43px);*/
+/*    margin-top: calc(-1 * var(--navbar-height) - 43px);*/
+/*    content: "";*/
+/*}*/
 
 /*.fromMD h1, .fromMD h2, .fromMD h3, .fromMD h4, .fromMD h5, .fromMD h6 {*/
 /*    font-size: 1rem;*/
@@ -235,21 +162,21 @@ main p > img {
     margin-bottom: 0;
 }
 
-.bd-toc li {
-    list-style-type: none;
-}
+/*.bd-toc li {*/
+/*    list-style-type: none;*/
+/*}*/
 
-.navbar-expand-lg .navbar-nav .nav-link {
-    padding-right: .5rem;
-    padding-left: .5rem;
-}
+/*.navbar-expand-lg .navbar-nav .nav-link {*/
+/*    padding-right: .5rem;*/
+/*    padding-left: .5rem;*/
+/*}*/
 
-.navbar-expand-lg {
-    -ms-flex-flow: row nowrap;
-    flex-flow: row nowrap;
-    -ms-flex-pack: start;
-    justify-content: space-between;
-}
+/*.navbar-expand-lg {*/
+/*    -ms-flex-flow: row nowrap;*/
+/*    flex-flow: row nowrap;*/
+/*    -ms-flex-pack: start;*/
+/*    justify-content: space-between;*/
+/*}*/
 
 .light-bold {
     font-weight: 500;
@@ -275,28 +202,28 @@ main p > img {
 /*// Medium devices (tablets, 768px and up)*/
 @media (min-width: 768px) {
 
-    .navbar-expand-lg {
-        -ms-flex-flow: row nowrap;
-        flex-flow: row nowrap;
-        -ms-flex-pack: start;
-        justify-content: flex-start;
-    }
+    /*.navbar-expand-lg {*/
+    /*    -ms-flex-flow: row nowrap;*/
+    /*    flex-flow: row nowrap;*/
+    /*    -ms-flex-pack: start;*/
+    /*    justify-content: flex-start;*/
+    /*}*/
 
-    .bd-sidebar, .bd-toc {
-        position: sticky;
-        position: -webkit-sticky;
-        top: var(--navbar-height);
-        height: calc(100vh - 2 * var(--navbar-height));
-        overflow-y: auto;
-    }
+    /*.bd-sidebar, .bd-toc {*/
+    /*    position: sticky;*/
+    /*    position: -webkit-sticky;*/
+    /*    top: var(--navbar-height);*/
+    /*    height: calc(100vh - 2 * var(--navbar-height));*/
+    /*    overflow-y: auto;*/
+    /*}*/
 
-    .bd-sidebar {
-        display: block !important;
-    }
+    /*.bd-sidebar {*/
+    /*    display: block !important;*/
+    /*}*/
 
-    .navbar-expand-lg .navbar-toggler {
-        display: none;
-    }
+    /*.navbar-expand-lg .navbar-toggler {*/
+    /*    display: none;*/
+    /*}*/
 
     #search-result {
         width: 60%;
@@ -315,4 +242,14 @@ main p > img {
     #search-result {
         width: 30%;
     }
+}
+
+/* sidebar */
+.doc-sidebar {
+    border-right: 1px solid #e5e5e5;
+}
+/* article TOC */
+.doc-content-body > aside {
+    padding: 15px;
+    border-left: 1px solid #e5e5e5 ;
 }

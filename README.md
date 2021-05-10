@@ -1,9 +1,10 @@
 # ub-jsdoc
 
 Documentation template theme for JSDoc 3 based on [Vue server side rendering](https://ssr.vuejs.org/).
-Inspired by [godoc](https://godoc.org/golang.org/x/tools/cmd/godoc).
 
- - support for multiple modules:  
+Features:
+
+ - multiple modules support:  
  
 ![Screenshot](screenshot.png)
 
@@ -19,15 +20,13 @@ Live sample is a [UnityBase framework documentation](https://unitybase.info/api/
 
 ## Features
 
-- Designed for a framework with many modules inside
+- Designed for a framework what contains many modules
 - Full Text Search with rank
 - Links to [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) for a standard built-in objects
 - Click on member name will navigate to source
 - Compact layout for members
 - Responsive design
 - In case @module marked as a member of other module using `@memberOf module:parentModule` it does not appear in navigation panel
-- Click on anchor to copy link of any member to clipboard 
-
 
 ## Uses
 
@@ -54,17 +53,17 @@ $ jsdoc entry-file.js -t path/to/ub-jsdoc
 
 ### Node.js Dependency
 
-In your projects `package.json` file add a generate script:
+In project `package.json` file add generate script:
 
-```json
+```
 "script": {
   "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
 }
 ```
 
-In your `.jsdoc.json` file, add a template option.
+In `.jsdoc.json` file, add a template option.
 
-```json
+```
 "opts": {
   "template": "node_modules/ub-jsdoc"
 }
@@ -92,10 +91,10 @@ module.exports = () => {
 }
 ```
 Then add path to file in `extends` in your jsdoc config.
-```json
+```
 "extends": [
-      "path/to/module"
-    ]
+   "path/to/module"
+ ]
 ```
 
 ### Example JSDoc Config

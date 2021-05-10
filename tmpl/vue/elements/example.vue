@@ -1,5 +1,5 @@
 <pre class="prettyprint source lang-javascript">
-    <code>
-        {{example}}
-    </code>
+  <code>
+      {{example}}
+  </code>
 </pre>

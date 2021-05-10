@@ -14,7 +14,7 @@ function sanitizeTemplate (tplStr) {
     .replace(/}}(\s*?)</g, '}}<')
 }
 Vue.component('anchor', {
-  props: ['id'],
+  props: ['member'],
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/anchor.vue'), 'utf-8')
 })
 Vue.component('func-signature', {
@@ -45,46 +45,60 @@ Vue.component('example', {
   props: ['example'],
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/example.vue'), 'utf-8')
 })
-Vue.component('search', {
-  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/search.vue'), 'utf-8')
-})
-Vue.component('nav-collapse', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/nav-collapse.vue'), 'utf-8')
-})
-Vue.component('nav-plain', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/nav-plain.vue'), 'utf-8')
-})
-Vue.component('tutor-sidebar', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/tutor-sidebar.vue'), 'utf-8')
-})
 Vue.component('sidebar', {
-  props: ['navigation'],
+  props: ['navigation', 'with-search'],
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/sidebar.vue'), 'utf-8')
-})
-Vue.component('main-sidebar', {
-  props: ['navigation'],
-  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/main-sidebar.vue'), 'utf-8')
 })
 Vue.component('t-o-content', {
   props: ['tableOfContent'],
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/t-o-content.vue'), 'utf-8')
 })
 
-// render one file
-const renderFile = (data, vueTemplPath, htmlTemplPath, outputPath) => {
-  const app = new Vue({
-    data,
-    template: fs.readFileSync(vueTemplPath, 'utf-8')
+const articleProps = ['subclasses', 'submodules', 'mixins', 'members', 'funcs', 'types', 'events', 'tableOfContent']
+Vue.component('clazz', {
+  props: ['clazz', ...articleProps],
+  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/class.vue'), 'utf-8')
+})
+Vue.component('module', {
+  props: ['module', ...articleProps],
+  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/module.vue'), 'utf-8')
+})
+Vue.component('mixin', {
+  props: ['mixin', ...articleProps],
+  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/mixin.vue'), 'utf-8')
+})
+Vue.component('namespace', {
+  props: ['namespace', ...articleProps],
+  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/namespace.vue'), 'utf-8')
+})
+Vue.component('interface', {
+  props: ['interface', ...articleProps],
+  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/interface.vue'), 'utf-8')
+})
+
+Vue.component('chapter', {
+  props: ['with-toc'],
+  template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/chapter.vue'), 'utf-8')
+})
+
+/**
+ * Render one file
+ * @param {object} data Page data
+ * @param {string} vueTplPath
+ * @param {string} htmlTplPath
+ * @param {string} outputPath
+ */
+function renderFile (data, vueTplPath, htmlTplPath, outputPath) {
+  const pageCmp = new Vue({
+    data: { ...data, allData: data },
+    template: fs.readFileSync(vueTplPath, 'utf-8')
   })
 
   const renderer = vueRender.createRenderer({
-    template: fs.readFileSync(htmlTemplPath, 'utf-8')
+    template: fs.readFileSync(htmlTplPath, 'utf-8')
   })
 
-  renderer.renderToString(app).then(html => {
+  renderer.renderToString(pageCmp).then(html => {
     fs.writeFileSync(outputPath, html)
   }).catch(err => {
     console.error(err)

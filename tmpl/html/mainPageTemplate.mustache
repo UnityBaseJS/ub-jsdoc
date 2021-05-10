@@ -6,12 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="docs.css">
     <!-- GitBook Markdown CSS -->
     <link rel="stylesheet" href="gitbook-style.css">
-    <title>Doc</title>
+    <title>UB docs</title>
     {{#templates.googleAnalytics}}
         <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -25,74 +27,26 @@
     {{/templates.googleAnalytics}}
 </head>
 <body>
-<div class="dropdown">
-    <div class="dropdown-menu" id="search-result">
-    </div>
-</div>
 {{#extendedConfig}}
-<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light py-1">
-    <div class="navbar-brand">
-        <a href="/">
-            <img src="{{{navbar.logo.img}}}" class="d-inline-block align-middle logo mr2" alt="logo"></a>
-        <a href="{{{navbar.logo.href}}}">UB DOC</a>
-    </div>
-
-    <ul class="navbar-nav">
-        {{#navbar.nav}}
-            <li class="nav-item d-none d-md-block">
-                <a class="nav-link" href="{{{href}}}">{{name}}</a>
-            </li>
-        {{/navbar.nav}}
-        <li class="nav-item dropdown d-xl-none d-lg-none d-md-none">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-               aria-haspopup="true" aria-expanded="false">
-                Links
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                {{#navbar.nav}}
-                    <a class="dropdown-item" href="{{{href}}}">{{name}}</a>
-                {{/navbar.nav}}
-            </div>
-        </li>
-    </ul>
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</nav>
+  {{> navbar}}
 {{/extendedConfig}}
 <div class="container-fluid">
     <!--vue-ssr-outlet-->
 </div>
 <!-- Optional JavaScript -->
-<script>
-    // const buttons = document.querySelectorAll('button[data-toggle="collapse"]')
-    // buttons.forEach(btn => {
-    //   btn.addEventListener('click', (event) => {
-    //     // console.log(event.target)
-    //     buttons.forEach(b => {
-    //       b.childNodes[0].textContent = b === event.target && !b.getAttribute('aria-expanded') ? '►' : '▼'
-    //     })
-    //   })
-    // })
-</script>
-
 
 <script defer src="https://use.fontawesome.com/releases/v5.7.2/js/all.js"
         integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP"
         crossorigin="anonymous"></script>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
 
 </body>
 </html>
