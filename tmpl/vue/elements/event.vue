@@ -2,7 +2,7 @@
 <h4 class="ud-member__signature">
   <anchor :member="event.name"></anchor>
   <a :href="event.codeLink" :class="{ deprecated: !!event.deprecated }">{{ event.name }}</a>
-  <span v-if="event.scope" class="badge small-badge badge-light">{{ event.scope }}</span>
+  &nbsp;-->&nbsp;(<func-signature :func="event"></func-signature>)
 </h4>
 <section class="ud-member__descr">
   <p v-html="event.description"></p>
@@ -19,14 +19,6 @@
     </p>
     <template v-html="event.returns[0].description"></template>
   </template>
-  <template v-if="event.params && event.params.length > 0">
-    <p>Params</p>
-    <ul>
-      <li v-for="param in event.params">
-        <p>{{ param.name }}</p>
-        <p v-if="param.type">{{ param.type.names[0] }}</p>
-      </li>
-    </ul>
-  </template>
+  <func-params :func="event"></func-params>
 </section>
 </section>

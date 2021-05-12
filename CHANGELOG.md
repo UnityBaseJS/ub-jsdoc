@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.0]
+### Added
+- added rendering of `@events` arguments using same widget as for function arguments
+- module subclasses are added into right-side sidebar menu 
+
 ## [3.0.1]
 ### Fixed
 - content for main page is centered  

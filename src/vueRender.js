@@ -17,6 +17,10 @@ Vue.component('anchor', {
   props: ['member'],
   template: fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/anchor.vue'), 'utf-8')
 })
+Vue.component('arguments-details', {
+  props: ['args'],
+  template: sanitizeTemplate(fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/argumentsDetails.vue'), 'utf-8'))
+})
 Vue.component('func-signature', {
   props: ['func'],
   template: sanitizeTemplate(fs.readFileSync(path.resolve(__dirname, '../tmpl/vue/elements/funcSignature.vue'), 'utf-8'))

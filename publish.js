@@ -281,6 +281,13 @@ exports.publish = function (taffyData, opts, tutorials) {
             }))
           },
           {
+            name: 'Classes',
+            props: subclasses.map(subclass => ({
+              name: subclass.name,
+              link: `${subclass.link}`
+            }))
+          },
+          {
             name: 'Types',
             props: types.map(type => ({
               name: type.name,
