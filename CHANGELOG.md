@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.1]
+### Fixed
+ - fix rendering of complex function argument | type property, line {string|object}
+
 ## [3.1.0]
 ### Added
 - added rendering of `@events` arguments using same widget as for function arguments
