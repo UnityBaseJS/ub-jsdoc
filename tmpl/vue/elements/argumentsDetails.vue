@@ -9,9 +9,13 @@
   <div v-if="param.props">
     <ul>
       <li v-for="prop in param.props">
-        <code>{{ prop.name }}</code><span v-if="prop.defaultvalue">={{ prop.defaultvalue }}</span>:
-        <span
-            v-if="prop.type" v-html="prop.type[0]"></span>
+        <code>{{ prop.name }}</code><span v-if="prop.defaultvalue">={{ prop.defaultvalue }}</span>
+        <span v-if="prop.type && prop.type.length > 0">:&nbsp;
+          <span v-for="(pt, idx) in prop.type">
+            <template v-html="pt"></template>
+            <template v-if="idx<prop.type.length-1">&nbsp;|&nbsp;</template>
+          </span>
+        </span>
         <p v-html="prop.description"></p>
       </li>
     </ul>

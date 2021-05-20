@@ -10,10 +10,10 @@
     </span>
     <span>, </span>
   </template>
-  {{ func.paramsForMethods.slice(-1)[0].name }}
-  <span v-if="func.paramsForMethods.slice(-1)[0].optional" class="badge small-badge badge-light">opt</span>
-  <span v-if="func.paramsForMethods.slice(-1)[0].type && func.paramsForMethods.slice(-1)[0].type.length > 0">:&nbsp;
-    <span v-html="func.paramsForMethods.slice(-1)[0].type[0]"></span>
-  </span>
-</template>
+    {{ func.paramsForMethods.slice(-1)[0].name }}
+    <span v-if="func.paramsForMethods.slice(-1)[0].optional" class="badge small-badge badge-light">opt</span>
+    <span v-if="func.paramsForMethods.slice(-1)[0].type && func.paramsForMethods.slice(-1)[0].type.length > 0">:&nbsp;
+      <span v-html="func.paramsForMethods.slice(-1)[0].type[0]"></span>
+    </span>
+  </template>
 </span>
