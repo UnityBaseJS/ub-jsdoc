@@ -1,0 +1,17 @@
+{{#packages}}
+    {{#link}}
+# [{{name}}]({{link}})
+    {{/link}}
+    {{^link}}
+# {{name}}
+    {{/link}}
+    {{#changes}}
+#### {{type}}
+        {{#versions}}
+###### ~{{version}}~ ~{{date}}~
+            {{#log}}
+{{{.}}}
+            {{/log}}
+        {{/versions}}
+    {{/changes}}
+{{/packages}}
