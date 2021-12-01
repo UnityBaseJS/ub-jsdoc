@@ -23,7 +23,7 @@ const { idGeneratorFabric, createItemFileName } = require('../utils')
 const {
   getChangelogPaths, getParsedChangelogs, getParseErrors,
   groupingChanges, filterLogByDate, sortPackagesByNames, renderToMD
-} = require('ub-changelog-parser')
+} = require('../changelog-parser')
 
 const outDir = path.normalize(env.opts.destination)
 const isEmptyObj = obj => Object.keys(obj).length === 0
@@ -91,7 +91,7 @@ const changelog = () => {
     const endMonth = year === nowYear ? nowMonth : 11
     for (let month = 0; month <= endMonth; month++) {
       const fromDate = new Date(year, month, 1)
-      const toDate = new Date(year, month + 1, 0)
+      const toDate = new Date(year, month + 1, 1)
       const monthCl = parsedChangelogs
         .map(cl => filterLogByDate(cl, fromDate, toDate))
         .map(cl => groupingChanges(cl))

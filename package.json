@@ -1,6 +1,6 @@
 {
   "name": "ub-jsdoc",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "JSDoc 3 Template / Theme generated using VueJS SSR",
   "main": "publish.js",
   "scripts": {
@@ -22,10 +22,11 @@
   "homepage": "https://github.com/UnityBaseJS/ub-jsdoc",
   "dependencies": {
     "flexsearch": "^0.6.32",
-    "jsdoc": "^3.6.6",
+    "glob": "^7.1.6",
+    "jsdoc": "^3.6.7",
     "jsdoctypeparser": "^9.0.0",
     "lodash": "^4.17.21",
-    "markdown-it": "^12.0.6",
+    "markdown-it": "^12.2.0",
     "markdown-it-anchor": "^6.0.1",
     "markdown-it-emoji": "^2.0.0",
     "markdown-it-mermaid-plugin": "^0.1.0",
@@ -33,9 +34,8 @@
     "markdown-it-table-of-contents": "^0.5.2",
     "mustache": "^4.2.0",
     "shelljs": "^0.8.4",
-    "ub-changelog-parser": "^1.1.0",
-    "vue": "^2.6.12",
-    "vue-server-renderer": "^2.6.12"
+    "vue": "^2.6.14",
+    "vue-server-renderer": "^2.6.14"
   },
   "keywords": [
     "jsdoc",
@@ -45,7 +45,7 @@
     "theme"
   ],
   "devDependencies": {
-    "eslint-plugin-vue": "^7.9.0",
-    "standard": "^16.0.3"
+    "eslint-plugin-vue": "^7.20.0",
+    "standard": "^16.0.4"
   }
 }

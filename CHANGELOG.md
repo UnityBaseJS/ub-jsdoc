@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.2]
+### Fixed
+ - fix rendering of commutative changelog for packages, published on the last day of month (before the fix, such changes were lost)
+
+### Changed
+ - dependencies updated, changelog parser is moved form external package `ub-changelog-parser` into `ub-jsdoc`
+
 ## [3.1.1]
 ### Fixed
  - fix rendering of complex function argument | type property, line {string|object}
