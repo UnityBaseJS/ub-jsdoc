@@ -2,41 +2,12 @@
 <h4 class="ud-member__signature">
   <anchor :member="type.name"></anchor>
   <a :href="type.codeLink" :class="{ deprecated: !!type.deprecated }">{{ type.name }}</a>
+  <span v-if="type.paramsForMethods && type.paramsForMethods.length > 0">(<func-signature :func="type"></func-signature>)</span>
   <span v-if="type.deprecated" class="badge small-badge badge-danger">deprecated</span>
   <span v-if="type.scope" class="badge small-badge badge-light">{{ type.scope }}</span>
 </h4>
 <section class="ud-member__descr">
   <p v-html="type.description"></p>
-
-<!--<p>{{func.return}}</p>-->
-
-<!--<template v-if="type.deprecated">-->
-<!--<p>{{type.deprecated}}</p>-->
-<!--</template>-->
-
-<!--alternate template for properties-->
-
-<!--<template v-if="type.properties && type.properties.length > 0">-->
-<!--<table class="table table-striped table-sm">-->
-<!--<thead>-->
-<!--<tr>-->
-<!--<th scope="col">Name</th>-->
-<!--<th scope="col">Type</th>-->
-<!--<th scope="col">Attributes</th>-->
-<!--&lt;!&ndash;<th scope="col">Default</th>&ndash;&gt;-->
-<!--&lt;!&ndash;<th scope="col">Description</th>&ndash;&gt;-->
-<!--</tr>-->
-<!--</thead>-->
-<!--<tbody>-->
-<!--<tr v-for="property in type.properties">-->
-<!--<td>{{property.name}}</td>-->
-<!--<td><a v-if="property.type && property.type.length > 0" :href="property.type[0].link">{{property.type[0].text}}</a>-->
-<!--</td>-->
-<!--<td><p v-html="property.description"></p></td>-->
-<!--</tr>-->
-<!--</tbody>-->
-<!--</table>-->
-<!--</template>-->
 
   <section v-if="type.properties && type.properties.length > 0">
     <p class="arguments-title">Properties</p>
@@ -56,6 +27,9 @@
         </div>
       </li>
     </ul>
+  </section>
+  <section v-if="type.paramsForMethods && type.paramsForMethods.length > 0">
+    <func-params :func="type"></func-params>
   </section>
 </section>
 </section>
