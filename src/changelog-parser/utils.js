@@ -107,6 +107,7 @@ const groupingChanges = changelog => {
     Deprecated: [],
     Removed: [],
     Fixed: [],
+    Chores: [],
     Security: []
   }
   for (const version of changelog.versions) {
