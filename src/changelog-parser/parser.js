@@ -80,7 +80,6 @@ at ${index + 1} line`)
     if (subheadReqExp.exec(line)) {
       const key = line.replace('###', '').trim()
       if (!changeTypes.has(key)) {
-
         // this.parseErrors.push
         console.error(`
 Line containing one of ${changesTypesArr.join(', ')} is expected.
