@@ -8,7 +8,8 @@ Adopted by Andrey Kukuruza
 const EOL = require('os').EOL
 const fs = require('fs')
 
-const changeTypes = new Set(['Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Security'])
+const changesTypesArr = ['Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Chores', 'Security']
+const changeTypes = new Set(changesTypesArr)
 
 // patterns
 const semverReqExp = /\[?v?([\w\d.-]+\.[\w\d.-]+[a-zA-Z0-9])]?/
@@ -79,8 +80,9 @@ at ${index + 1} line`)
     if (subheadReqExp.exec(line)) {
       const key = line.replace('###', '').trim()
       if (!changeTypes.has(key)) {
-        this.parseErrors.push(`
-Line containing one of 'Added', 'Changed', 'Deprecated', 'Removed', 'Fixed', 'Security' is expected.
+        // this.parseErrors.push
+        console.error(`
+Line containing one of ${changesTypesArr.join(', ')} is expected.
 Received: 
 ${line}
 at ${index + 1} line`)
